@@ -1,0 +1,44 @@
+{% load static %}
+{% load custom_filters %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Checkout</title>
+    <link rel="stylesheet" href="{% static 'css/tailwind.min.css' %}">
+</head>
+<body class="bg-gray-100 flex flex-col items-center min-h-screen p-6">
+    <div class="bg-white p-6 rounded-lg shadow-md w-full max-w-lg">
+        <h2 class="text-3xl font-bold text-center mb-4">Checkout</h2>
+
+        <!-- Cart Items Display -->
+        <ul class="space-y-4">
+            {% for item in cart_items %}
+                <li class="flex justify-between items-center">
+                    <span class="flex items-center">
+                        <img src="{{ item.product.image.url }}" alt="{{ item.product.name }}" class="h-12 w-12 mr-4">
+                        {{ item.product.name }} - ${{ item.product.price|floatformat:2 }} x {{ item.quantity }} = ${{ item.total_price|floatformat:2 }}
+                    </span>
+                </li>
+            {% empty %}
+                <li class="text-gray-500 text-center">Your cart is empty.</li>
+            {% endfor %}
+        </ul>
+        
+        <!-- Total Price Display -->
+        <div class="font-bold mt-4">
+            Total: ${{ total_sum|floatformat:2 }}
+        </div>
+        
+        <!-- Checkout Form -->
+        <div class="mt-6 text-center">
+            <form method="POST">
+                {% csrf_token %}
+                <button type="submit" class="bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600">Confirm Purchase</button>
+            </form>
+        </div>
+    </div>
+</body>
+</html>

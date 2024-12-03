@@ -1,0 +1,260 @@
+{% load static %}
+{% load custom_filters %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{% block header %}Fmk Shop{% endblock %}</title>  <!-- Default Title -->
+
+    <link rel="stylesheet" href="{% static 'css/tailwind.min.css' %}">
+    <link rel="stylesheet" href="{% static 'bootstrap-icons/font/bootstrap-icons.css' %}">
+    <style>
+        body {
+          overflow-x: hidden;
+        }
+        .carousel-item {
+            transition: transform 0.5s ease-in-out;
+        }
+    </style>
+    <style>
+        .animate-shine {
+            animation: shine-animation 0.5s ease-in-out;
+        }
+    
+        @keyframes shine-animation {
+            0% {
+                transform: scale(1);
+                opacity: 1;
+            }
+            50% {
+                transform: scale(1.2);
+                opacity: 0.7;
+            }
+            100% {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+
+        /* Sidebar and Navbar customizations */
+        @media (min-width: 768px) {
+            .sidebar-sticky {
+                position: sticky;
+                top: 48px;
+                height: calc(100vh - 48px);
+                z-index: 1;
+            }
+        }
+
+        /* Navbar adjustments */
+        .navbar-brand {
+            padding-top: 0.75rem;
+            padding-bottom: 0.75rem;
+            background-color: rgba(0, 0, 0, 0.25);
+            box-shadow: inset -1px 0 0 rgba(0, 0, 0, 0.25);
+        }
+
+        /* Navbar sticky effect */
+        header.sticky {
+            position: sticky;
+            top: 0;
+            z-index: 2;
+        }
+
+        /* Sidebar Toggle visibility */
+        .sidebar-hidden {
+            display: none;
+        }
+
+        /* Smooth transition for sidebar */
+        .transition-all {
+            transition: all 0.3s ease;
+        }
+    </style>
+</head>
+<body class="flex flex-col min-h-screen">
+
+    <!-- Navbar -->
+    <nav class="bg-yellow-700 text-white flex justify-between items-center px-4 py-2 fixed top-0 left-0 w-full z-50 shadow">
+        <div class="flex justify-between items-center">
+            <button id="toggle-sidebar" class="text-white text-2xl mr-4">&#9776;</button>
+            <span class="text-xl font-bold">My Shop</span>
+        </div>
+
+        <ul class="hidden md:flex space-x-6">
+
+            {% if current_tab == 'home' %}
+            <li><a href="{% url 'home' %}" class="text-yellow-400">Home</a></li>
+            {% else %}
+            <li><a href="{% url 'home' %}" class="hover:text-yellow-400">Home</a></li>
+            {% endif %}
+
+            {% if current_tab == 'shop' %}
+            <li><a href="{% url 'shop' %}" class="text-yellow-400">Shop</a></li>
+            {% else %}
+            <li><a href="{% url 'shop' %}" class="hover:text-yellow-400">Shop</a></li>
+            {% endif %}
+
+            {% if current_tab == 'faq' %}
+            <li><a href="{% url 'faq' %}" class="text-yellow-400">FAQ</a></li>
+            {% else %}
+            <li><a href="{% url 'faq' %}" class="hover:text-yellow-400">FAQ</a></li>
+            {% endif %}
+
+            {% if current_tab == 'about' %}
+            <li><a href="{% url 'about' %}" class="text-yellow-400">About</a></li>
+            {% else %}
+            <li><a href="{% url 'about' %}" class="hover:text-yellow-400">About</a></li>
+            {% endif %}
+
+            {% if current_tab == 'contact' %}
+            <li><a href="{% url 'contact' %}" class="text-yellow-400">Contact</a></li>
+            {% else %}
+            <li><a href="{% url 'contact' %}" class="hover:text-yellow-400">Contact</a></li>
+            {% endif %}
+            
+        </ul>
+      
+        <ul class="flex space-x-3 md:space-x-6">
+            {% if user.is_authenticated %}
+            <li><a href="{% url 'logout' %}" class="hidden md:block hover:text-yellow-400"><i class="bi bi-door-closed"> </i>Logout</a></li>
+            <li><span class="hidden md:block">Welcome, {{user.username}}</span></li>
+            {% else %}
+            <li><a href="{% url 'register' %}" class="hidden md:block hover:text-yellow-400"><i class="bi bi-door-closed"> </i>Register</a></li>
+            <li><a href="{% url 'login' %}" class="hidden md:block hover:text-yellow-400"><i class="bi bi-door-closed"> </i>Login</a></li>
+            {% endif %}
+            <li><a href="#" class="md:hidden hover:text-yellow-400">Account</a></li>
+            <li>
+                <a href="{% url 'view_cart' %}" class="{% if current_tab == 'cart' %} text-yellow-400 relative p-2 {% else %} relative p-2 hover:text-yellow-400 {% endif %}" aria-label="View cart">
+                    Cart
+                    <i class="bi bi-cart"></i>
+                    <span id="cart-item-count" class="absolute top-0 right-0 bg-yellow-500 text-white text-xs rounded-full px-1">
+                        {{ cart_item_count }}
+                    </span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+    
+    <!-- Sidebar -->
+    <div id="sidebar" class="fixed mt-6 pt-6 w-full md:w-64 inset-y-0 left-0 bg-yellow-600 text-white z-40 overflow-y-auto transform -translate-x-full transition-transform duration-300 h-screen">
+      <ul class="space-y-6 pt-6 pl-6 pb-6">
+        {% for category in categories %}
+          <li><a href="{% url 'products_by_category' category.name %}" class="hover:text-yellow-400"><i class="bi bi-house-fill"> </i>{{ category.name }}</a></li>
+        {% endfor %}
+      </ul>
+    </div>
+  
+    <div class="flex mt-10 bg-yellow-600 text-white justify-center items-center">
+        <ul class="md:hidden pt-4 flex my-2 space-x-3">
+
+            {% if current_tab == 'home' %}
+            <li><a href="{% url 'home' %}" class="text-yellow-400">Home</a></li>
+            {% else %}
+            <li><a href="{% url 'home' %}" class="hover:text-yellow-400">Home</a></li>
+            {% endif %}
+
+            {% if current_tab == 'shop' %}
+            <li><a href="{% url 'shop' %}" class="text-yellow-400">Shop</a></li>
+            {% else %}
+            <li><a href="{% url 'shop' %}" class="hover:text-yellow-400">Shop</a></li>
+            {% endif %}
+
+            {% if current_tab == 'faq' %}
+            <li><a href="{% url 'faq' %}" class="text-yellow-400">FAQ</a></li>
+            {% else %}
+            <li><a href="{% url 'faq' %}" class="hover:text-yellow-400">FAQ</a></li>
+            {% endif %}
+
+            {% if current_tab == 'about' %}
+            <li><a href="{% url 'about' %}" class="text-yellow-400">About Us</a></li>
+            {% else %}
+            <li><a href="{% url 'about' %}" class="hover:text-yellow-400">About Us</a></li>
+            {% endif %}
+
+            {% if current_tab == 'contact' %}
+            <li><a href="{% url 'contact' %}" class="text-yellow-400">Contact</a></li>
+            {% else %}
+            <li><a href="{% url 'contact' %}" class="hover:text-yellow-400">Contact</a></li>
+            {% endif %}
+
+        </ul>
+    </div>
+    
+    <!-- Main Content -->
+    {% block main_block %}
+    {% endblock %}
+    
+    <!-- Footer Section -->
+    <footer class="bg-yellow-800 text-white py-8">
+      <div class="container mx-auto px-4">
+          <div class="flex flex-wrap justify-between items-center border-t border-yellow-600 pt-4">
+              <!-- Footer Links Section -->
+              <div class="flex flex-wrap justify-center md:justify-start gap-6 mb-4 md:mb-0">
+                  <a href="/about" class="hover:underline text-yellow-300 hover:text-white transition duration-300">About Us</a>
+                  <a href="/shop" class="hover:underline text-yellow-300 hover:text-white transition duration-300">Shop</a>
+                  <a href="/contact" class="hover:underline text-yellow-300 hover:text-white transition duration-300">Contact Us</a>
+                  <a href="/faq" class="hover:underline text-yellow-300 hover:text-white transition duration-300">FAQ</a>
+                  <a href="/privacy-policy" class="hover:underline text-yellow-300 hover:text-white transition duration-300">Privacy Policy</a>
+                  <a href="/terms-of-service" class="hover:underline text-yellow-300 hover:text-white transition duration-300">Terms of Service</a>
+              </div>
+              <!-- Social Media Links -->
+              <div class="flex justify-center gap-4 mb-4 md:mb-0">
+                  <a href="https://www.facebook.com" target="_blank" class="text-yellow-300 hover:text-white transition duration-300">Facebook</a>
+                  <a href="https://www.instagram.com" target="_blank" class="text-yellow-300 hover:text-white transition duration-300">Instagram</a>
+                  <a href="https://www.twitter.com" target="_blank" class="text-yellow-300 hover:text-white transition duration-300">Twitter</a>
+              </div>
+          </div>
+          <!-- Copyright Section -->
+          <div class="text-center mt-4">
+              <p>&copy; 2024 My Shop. All rights reserved.</p>
+          </div>
+      </div>
+    </footer>
+  
+    <script>
+      // Sidebar toggle functionality
+      const sidebarToggle = document.getElementById('toggle-sidebar');
+      const sidebar = document.getElementById('sidebar');
+  
+      sidebarToggle.addEventListener('click', () => {
+        if (sidebar.classList.contains('-translate-x-full')) {
+          sidebar.classList.remove('-translate-x-full');
+          document.body.style.overflowY = 'hidden'; // Disable scrolling when sidebar is open
+        } else {
+          sidebar.classList.add('-translate-x-full');
+          document.body.style.overflowY = 'auto'; // Re-enable scrolling when sidebar is closed
+        }
+      });
+  
+      const slides = document.getElementById('carousel-slides');
+      const prev = document.getElementById('prev');
+      const next = document.getElementById('next');
+      const totalSlides = slides.children.length;
+  
+      let currentIndex = 0;
+  
+      function showSlide(index) {
+        slides.style.transform = `translateX(-${index * 100}%)`;
+      }
+  
+      prev.addEventListener('click', () => {
+        currentIndex = (currentIndex - 1 + totalSlides) % totalSlides;
+        showSlide(currentIndex);
+      });
+  
+      next.addEventListener('click', () => {
+        currentIndex = (currentIndex + 1) % totalSlides;
+        showSlide(currentIndex);
+      });
+  
+      // Auto-slide (optional)
+      setInterval(() => {
+        currentIndex = (currentIndex + 1) % totalSlides;
+        showSlide(currentIndex);
+      }, 5000);
+    </script>
+  
+</body>
+</html>

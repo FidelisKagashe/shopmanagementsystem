@@ -1,0 +1,46 @@
+{% extends 'users/home.html' %}
+{% load static %}
+{% block header %}
+Fmk Shop - About
+{% endblock %}
+{% block main_block %}
+<div class="py-6 px-8 md:px-12 bg-yellow-100">
+    <!-- Header Section -->
+    <header class="mb-6 mt-2">
+        <h1 class="text-3xl font-bold text-center">About Our Shop</h1>
+        <p class="text-center text-lg mt-2">Learn more about our mission, values, and what makes us unique.</p>
+    </header>
+
+    <!-- About Us Section -->
+    <section class="mb-6">
+        <h2 class="text-2xl font-semibold mb-4">Our Mission</h2>
+        <p class="text-gray-700">
+            At Our Shop, we believe in providing high-quality products at affordable prices to serve the diverse needs of our customers. Our goal is to create a shopping experience that is both enjoyable and rewarding for everyone.
+        </p>
+    </section>
+
+    <section class="mb-8">
+        <h2 class="text-2xl font-semibold mb-4">Our Values</h2>
+        <ul class="list-disc list-inside text-gray-700">
+            <li>Customer Satisfaction: We put our customers at the heart of everything we do.</li>
+            <li>Quality: We strive to offer only the best products that meet our high standards.</li>
+            <li>Integrity: We conduct business with honesty and transparency.</li>
+            <li>Community: We support local initiatives and strive to make a positive impact.</li>
+        </ul>
+    </section>
+
+    <section class="mb-8">
+        <h2 class="text-2xl font-semibold mb-4">Our Story</h2>
+        <p class="text-gray-700">
+            Our Shop was founded with the vision of creating a space where customers can find everything they need in one place. From humble beginnings to becoming a trusted source for quality products, we’ve grown thanks to our dedicated team and the loyalty of our customers.
+        </p>
+    </section>
+
+    <!-- Call to Action -->
+    <section class="text-center">
+        <p class="text-gray-700 mb-4">Join us on our journey as we continue to serve you and grow as a community.</p>
+        <a href="{% url 'shop' %}" class="inline-block bg-yellow-700 text-white px-6 py-2 rounded hover:bg-yellow-600">Shop Now</a>
+    </section>
+</div>
+{% endblock %}
+

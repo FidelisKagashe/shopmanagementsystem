@@ -1,0 +1,39 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+    <link rel="stylesheet" href="{% static 'css/tailwind.min.css' %}">
+</head>
+<body class="bg-gradient-to-l from-yellow-50 to-yellow-200 flex items-center justify-center min-h-screen">
+    <div class="bg-white p-8 rounded-lg m-3 shadow-lg w-full max-w-md">
+        <h2 class="text-2xl font-extrabold mb-6 text-center text-yellow-500">Login</h2>
+
+        {% if form.errors %}
+            <div class="mb-4 p-4 rounded bg-red-100 text-red-800 text-center" role="alert">
+                Invalid username or password. Please try again.
+            </div>
+        {% endif %}
+
+        <form method="post" class="space-y-4">
+            {% csrf_token %}
+            <div>
+                <label for="id_username" class="block text-sm font-medium text-gray-700">Username:</label>
+                <input type="text" name="username" maxlength="150" required id="id_username" class="mt-1 p-2 border border-gray-300 rounded w-full focus:outline-none focus:border-yellow-500">
+            </div>
+            <div>
+                <label for="id_password" class="block text-sm font-medium text-gray-700">Password:</label>
+                <input type="password" name="password" required id="id_password" class="mt-1 p-2 border border-gray-300 rounded w-full focus:outline-none focus:border-yellow-500">
+            </div>
+            <button type="submit" class="w-full bg-yellow-500 text-white py-2 rounded hover:bg-yellow-600 transition duration-200">Login</button>
+        </form>
+
+        <div class="mt-4 text-center">
+            <a href="{% url 'register' %}" class="text-yellow-700 hover:underline">Don't have an account? Register here</a>
+        </div>
+    </div>
+</body>
+
+</html>

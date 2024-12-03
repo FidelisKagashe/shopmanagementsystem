@@ -1,0 +1,58 @@
+{% extends 'users/home.html' %}
+{% load static %}
+{% block header %}
+Fmk Shop - Contact
+{% endblock %}
+{% block main_block %}
+<div class="py-6 px-8 md:px-12 bg-yellow-100">
+    <!-- Header Section -->
+    <header class="mb-6 mt-2">
+        <h1 class="text-3xl font-bold text-center">Contact Us</h1>
+        <p class="text-center text-lg mt-2">We're here to help! Get in touch with us for any inquiries or support.</p>
+    </header>
+
+    <!-- Contact Information Section -->
+    <section class="mb-8">
+        <h2 class="text-2xl font-semibold mb-4">Get in Touch</h2>
+        <p class="text-gray-700 mb-4">
+            Feel free to reach out to us through any of the following methods:
+        </p>
+        <ul class="text-gray-700">
+            <li><strong>Email:</strong> <a href="mailto:support@ourshop.com" class="text-blue-600 hover:underline">support@ourshop.com</a></li>
+            <li><strong>Phone:</strong> <a href="tel:+1234567890" class="text-blue-600 hover:underline">+1 (234) 567-890</a></li>
+            <li><strong>Address:</strong> 123 Shop Street, Your City, Your State, 12345</li>
+        </ul>
+    </section>
+
+    <!-- Contact Form Section -->
+    <section class="mb-8">
+        <h2 class="text-2xl font-semibold mb-4">Send Us a Message</h2>
+        <form action="/submit-contact-form" method="post" class="space-y-4">
+            <div>
+                <label for="name" class="block text-gray-700 mb-2">Name</label>
+                <input type="text" id="name" name="name" class="w-full border border-gray-300 rounded px-3 py-2" required>
+            </div>
+            <div>
+                <label for="email" class="block text-gray-700 mb-2">Email</label>
+                <input type="email" id="email" name="email" class="w-full border border-gray-300 rounded px-3 py-2" required>
+            </div>
+            <div>
+                <label for="message" class="block text-gray-700 mb-2">Message</label>
+                <textarea id="message" name="message" rows="4" class="w-full border border-gray-300 rounded px-3 py-2" required></textarea>
+            </div>
+            <button type="submit" class="bg-yellow-700 text-white px-6 py-2 rounded hover:bg-yellow-600">Send Message</button>
+        </form>
+    </section>
+
+    <!-- Social Media Section -->
+    <section class="mb-8">
+        <h2 class="text-2xl font-semibold mb-4">Follow Us</h2>
+        <p class="text-gray-700 mb-4">Stay connected with us on social media for updates and special promotions:</p>
+        <div class="flex justify-center gap-4">
+            <a href="https://facebook.com/ourshop" class="text-blue-600 hover:underline">Facebook</a>
+            <a href="https://twitter.com/ourshop" class="text-blue-600 hover:underline">Twitter</a>
+            <a href="https://instagram.com/ourshop" class="text-pink-600 hover:underline">Instagram</a>
+        </div>
+    </section>
+</div>
+{% endblock %}

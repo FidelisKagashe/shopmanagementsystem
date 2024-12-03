@@ -1,0 +1,73 @@
+{% extends "users/home.html" %}
+{% load static %}
+{% load custom_filters %}
+
+{% block header %}
+Fmk Shop - {{ product.name }} Details
+{% endblock %}
+
+{% block main_block %}
+<div class="flex justify-center mt-6 bg-gray-100 p-6">
+    <div class="max-w-2xl w-full bg-white rounded-lg shadow-lg p-6">
+        <!-- Product Image -->
+        <img src="{{ product.image.url }}" alt="{{ product.name }}" class="w-full h-96 object-cover rounded-md shadow-md">
+
+        <!-- Product Name -->
+        <h1 class="text-4xl font-bold text-yellow-700 mt-6">{{ product.name }}</h1>
+
+        <!-- Product Description -->
+        <p class="text-lg text-gray-700 mt-4">{{ product.description }}</p>
+
+        <!-- Product Price -->
+        <p class="text-2xl font-bold text-yellow-700 mt-6">Price: ${{ product.price }}</p>
+
+        <!-- Add to Cart Section -->
+        <div class="mt-8">
+            <form class="add-to-cart-form flex items-center" data-product-id="{{ product.id }}">
+                {% csrf_token %}
+                <label for="quantity" class="text-gray-600 mr-4">Quantity:</label>
+                <input type="number" id="quantity" name="quantity" min="1" value="1"
+                       class="border border-gray-300 rounded-md p-2 w-20 text-center mr-4 focus:outline-none focus:ring-2 focus:ring-yellow-700 focus:border-yellow-700">
+                <button type="submit"
+                        class="bg-yellow-700 text-white py-2 px-6 rounded-lg shadow hover:bg-yellow-800 transition">
+                    Add to Cart
+                </button>
+            </form>
+        </div>
+
+        <!-- Back to Products Link -->
+        <div class="mt-6 text-right">
+            <a href="{% url 'product_list' %}" class="text-lg text-blue-500 hover:underline">
+                Back to Products
+            </a>
+        </div>
+    </div>
+</div>
+
+<!-- JavaScript to Handle Add to Cart -->
+<script>
+document.querySelector('.add-to-cart-form').addEventListener('submit', function(event) {
+    event.preventDefault();
+
+    const productId = this.getAttribute('data-product-id');
+    const quantity = this.querySelector('[name="quantity"]').value;
+
+    fetch("{% url 'add_to_cart' 0 %}".replace('0', productId), {
+        method: 'POST',
+        body: new FormData(this),
+        headers: {
+            'X-CSRFToken': document.querySelector('[name="csrfmiddlewaretoken"]').value,
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        alert('Product added to cart!');
+        document.getElementById('cart-item-count').textContent = data.cart_item_count;
+        document.getElementById('cart-total').textContent = `$${data.cart_total}`;
+    })
+    .catch(error => {
+        console.error('Error adding product to cart:', error);
+    });
+});
+</script>
+{% endblock %}

@@ -1,0 +1,107 @@
+{% extends 'users/home.html' %}
+{% load static %}
+{% load custom_filters %}
+{% block header %}
+Fmk Shop - Home
+{% endblock %}
+{% block main_block %}
+<div>
+    <!-- Carousel Container -->
+    <div id="carousel" class="relative overflow-hidden w-full h-64 mx-auto">
+        <!-- Slides -->
+        <div id="carousel-slides" class="flex">
+        <!-- Slide 1 -->
+        <div class="carousel-item flex-shrink-0 w-full h-64 bg-cover bg-center relative" style="background-image: url('{% static "pictures/shop1.jpg" %}');">
+            <div class="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center">
+            <h1 class="text-white text-center px-4 text-4xl font-bold">Big Word for Slide 1</h1>
+            </div>
+        </div>
+        <!-- Slide 2 -->
+        <div class="carousel-item flex-shrink-0 w-full h-64 bg-cover bg-center relative" style="background-image: url('{% static "pictures/shop2.jpg" %}');">
+            <div class="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center">
+            <h1 class="text-white text-center px-4 text-4xl font-bold">Big Word for Slide 2</h1>
+            </div>
+        </div>
+        <!-- Slide 3 -->
+        <div class="carousel-item flex-shrink-0 w-full h-64 bg-cover bg-center relative" style="background-image: url('{% static "pictures/shop3.jpeg" %}');">
+            <div class="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center">
+            <h1 class="text-white text-center px-4 text-4xl font-bold">Big Word for Slide 3</h1>
+            </div>
+        </div>
+        </div>
+
+        <!-- Navigation Buttons -->
+        <button id="prev" class="absolute left-4 top-1/2 transform -translate-y-1/2 bg-yellow-800 bg-opacity-50 text-white rounded-full w-10 h-10 flex items-center justify-center">‹</button>
+        <button id="next" class="absolute right-4 top-1/2 transform -translate-y-1/2 bg-yellow-800 bg-opacity-50 text-white rounded-full w-10 h-10 flex items-center justify-center">›</button>
+
+    </div>
+    <div class="flex-1 py-4 px-6 md:py-8 bg-yellow-100">
+        <!-- Header Section -->
+        <header class="mb-8">
+            <h1 class="text-3xl font-bold text-center">Welcome to Our Shop!</h1>
+            <p class="text-center text-lg">Find the best products for your needs at unbeatable prices.</p>
+        </header>
+    
+        <!-- Categories Section -->
+        <section class="mb-8">
+            <h2 class="text-2xl font-semibold mb-4">Shop by Category</h2>
+            
+            <div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                
+                {% for category in categories %}
+                    <a href="{% url 'products_by_category' category.name %}" class="block bg-white p-4 border rounded shadow hover:bg-yellow-50">
+                        <div class="grid grid-cols-2 gap-2">
+                            {% for product in category.products.all %}
+                                <img src="{{ product.image.url }}" alt="{{ product.name }}" class="w-full h-full object-cover rounded">
+                            {% endfor %}
+                        </div>
+                        <h3 class="text-center font-semibold mt-2">{{ category.name }}</h3>
+                    </a>
+                {% endfor %}
+
+            </div>
+        </section>
+        
+        <!-- Featured Products Section -->
+        <section class="mb-8">
+            <h2 class="text-2xl font-semibold mb-4">Featured Products</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <div class="bg-white p-4 border rounded shadow">
+                    <img src="images (1).jpeg" alt="Product 1" class="w-full h-48 object-cover mb-4">
+                    <h3 class="text-lg font-semibold">Product 1</h3>
+                    <p class="text-gray-600">$25.99</p>
+                    <button class="mt-2 bg-yellow-700 text-white px-4 py-2 rounded hover:bg-yellow-600">Buy Now</button>
+                </div>
+                <div class="bg-white p-4 border rounded shadow">
+                    <img src="images (1).jpeg" alt="Product 2" class="w-full h-48 object-cover mb-4">
+                    <h3 class="text-lg font-semibold">Product 2</h3>
+                    <p class="text-gray-600">$45.99</p>
+                    <button class="mt-2 bg-yellow-700 text-white px-4 py-2 rounded hover:bg-yellow-600">Buy Now</button>
+                </div>
+                <div class="bg-white p-4 border rounded shadow">
+                    <img src="images (1).jpeg" alt="Product 3" class="w-full h-48 object-cover mb-4">
+                    <h3 class="text-lg font-semibold">Product 3</h3>
+                    <p class="text-gray-600">$15.99</p>
+                    <button class="mt-2 bg-yellow-700 text-white px-4 py-2 rounded hover:bg-yellow-600">Buy Now</button>
+                </div>
+            </div>
+        </section>
+    
+        <!-- Special Offers Section -->
+        <section class="mb-8">
+            <h2 class="text-2xl font-semibold mb-4">Special Offers</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="bg-yellow-700 text-white p-6 border rounded shadow">
+                    <h3 class="text-xl font-semibold mb-2">Buy 1 Get 1 Free on All Tops!</h3>
+                    <p>For a limited time only, purchase any top and get another one free. Don't miss out!</p>
+                </div>
+                <div class="bg-yellow-700 text-white p-6 border rounded shadow">
+                    <h3 class="text-xl font-semibold mb-2">20% Off Electronics!</h3>
+                    <p>Get your favorite electronics at a discounted price. Offer valid while supplies last.</p>
+                </div>
+            </div>
+        </section>
+    
+    </div>
+</div>
+{% endblock %}
