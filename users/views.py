@@ -213,7 +213,12 @@ def register_email(request):
         form = EmailForm(request.POST)
         if form.is_valid():
             email = form.cleaned_data['email']
-
+            
+            if User.objects.filter(email=email).exists():
+                return render(request, 'users/email_taken.html', {
+                    'error_message': "This email address is already registered. Please try another one or log in."
+                })
+            
             # Generate a secure token for the registration link
             token = get_random_string(32)
             cache_key = f"registration_token_{token}"
