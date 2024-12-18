@@ -194,85 +194,132 @@ def Shop(request):
     }
     return render(request, 'users/shop.html', context)
 
-from django.shortcuts import render, redirect
-from django.urls import reverse
+from django.shortcuts import render
 from django.core.mail import send_mail
-from django.conf import settings
-from django.http import HttpResponse
-from .forms import EmailForm
+from django.core.cache import cache
+from django.urls import reverse
 from django.contrib.sites.shortcuts import get_current_site
+from django.conf import settings
+from django.utils.crypto import get_random_string
+import logging
+from .forms import EmailForm
+
+# Initialize logger
+logger = logging.getLogger(__name__)
 
 def register_email(request):
-    """First step: Get email and send registration link."""
+    """Handle email registration and send a secure registration link."""
     if request.method == 'POST':
         form = EmailForm(request.POST)
         if form.is_valid():
             email = form.cleaned_data['email']
-            
-            # Store email in session with an expiry time of 1 hour
-            request.session['email'] = email
-            request.session.set_expiry(3600)  # Set session expiry to 1 hour
 
-            # Build registration completion link
-            link = request.build_absolute_uri(reverse('register_complete'))
+            # Generate a secure token for the registration link
+            token = get_random_string(32)
+            cache_key = f"registration_token_{token}"
+            cache_timeout = 3600  # 1 hour in seconds
 
+            # Store email and token securely in cache
+            cache.set(cache_key, email, timeout=cache_timeout)
+
+            # Build the secure registration completion link
+            site_domain = get_current_site(request).domain
+            registration_link = f"{request.scheme}://{site_domain}{reverse('register_complete')}?token={token}"
+
+            # Attempt to send the email
             try:
                 send_mail(
-                    'Complete Your Registration',
-                    f'Click the link to complete your registration: {link}',
-                    settings.DEFAULT_FROM_EMAIL,
-                    [email],
+                    subject="Complete Your Registration",
+                    message=(
+                        f"Click the link below to complete your registration:\n\n"
+                        f"{registration_link}\n\n"
+                        f"This link will expire in 1 hour."
+                    ),
+                    from_email=settings.DEFAULT_FROM_EMAIL,
+                    recipient_list=[email],
                     fail_silently=False,
                 )
-                return HttpResponse("A registration link has been sent to your email.")
+                logger.info(f"Registration email sent to {email}")
+                return render(request, 'users/email_sent.html')  # Redirect to a confirmation page
             except Exception as e:
-                return HttpResponse(f"An error occurred while sending the email: {e}")
+                logger.error(f"Failed to send registration email to {email}: {str(e)}")
+                return render(request, 'users/register.html', {
+                    'form': form,
+                    'error_message': "An error occurred while sending the email. Please try again later."
+                })
         else:
-            return HttpResponse("Invalid email address. Please try again.")
+            # Redisplay the form with validation errors
+            return render(request, 'users/register.html', {
+                'form': form,
+                'error_message': "Invalid email address. Please try again."
+            })
+
     else:
         form = EmailForm()
-    
+
     return render(request, 'users/register.html', {'form': form})
 
 from django.shortcuts import render, redirect
 from django.http import HttpResponse
-from .forms import RegistrationForm
+from django.core.exceptions import ObjectDoesNotExist
+from users.models import UserProfile
+from users.forms import RegistrationForm
+
+from django.core.cache import cache
+from django.http import HttpResponse, Http404
 from .models import UserProfile
-from django.contrib.auth.models import User
+from .forms import RegistrationForm
 
 def register_complete(request):
     """Complete the registration process."""
-    email = request.session.get('email')  # Retrieve email from session
+    token = request.GET.get('token')  # Retrieve the token from the query parameters
 
-    # Check if the email is missing or invalid
+    if not token:
+        return HttpResponse("Invalid or expired registration link. Please start the registration process again.")
+
+    # Retrieve email from the cache
+    cache_key = f"registration_token_{token}"
+    email = cache.get(cache_key)
+
     if not email:
-        return HttpResponse("Invalid or expired registration link.")
+        return HttpResponse("Invalid or expired registration link. Please start the registration process again.")
 
-    # Handle the registration form submission
     if request.method == 'POST':
         form = RegistrationForm(request.POST)
         if form.is_valid():
-            # Create a new user with the provided data
-            user = form.save(commit=False)
-            user.email = email  # Set email from session
-            user.save()
+            try:
+                # Create a new user with the provided data
+                user = form.save(commit=False)
+                user.email = email  # Set email retrieved from the cache
+                user.save()
 
-            # Create a user profile
-            UserProfile.objects.create(
-                user=user,  # Link the UserProfile to the User
-                phone_number=form.cleaned_data['phone_number']  # Only save phone_number here
-            )
-            
-            # Clear the email from the session after successful registration
-            del request.session['email']
-            
-            # Redirect or respond with a success message
-            return redirect('login')  # Replace with actual login URL if needed
+                # Check if a UserProfile already exists
+                user_profile, created = UserProfile.objects.get_or_create(
+                    user=user,
+                    defaults={'phone_number': form.cleaned_data['phone_number']}
+                )
+
+                if not created:
+                    # Update existing profile fields if needed
+                    user_profile.phone_number = form.cleaned_data['phone_number']
+                    user_profile.save()
+
+                # Clear the token from the cache after successful registration
+                cache.delete(cache_key)
+
+                # Redirect to the login page or a success page
+                return redirect('login')  # Replace 'login' with the actual login URL name
+
+            except Exception as e:
+                # Log the error for debugging and provide user feedback
+                print(f"Error during registration: {e}")
+                return HttpResponse("An unexpected error occurred. Please try again later.")
 
         else:
-            return HttpResponse("There were errors in the form. Please check your input.")
+            # Re-render the form with errors
+            return render(request, 'users/register2.html', {'form': form})
     else:
-        # Pre-fill the form with the email from the session
+        # Pre-fill the form with the email from the cache
         form = RegistrationForm(initial={'email': email})
 
     return render(request, 'users/register2.html', {'form': form})

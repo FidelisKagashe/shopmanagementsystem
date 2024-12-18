@@ -180,6 +180,12 @@ EMAIL_HOST_USER = 'fideliskagashe@gmail.com'  # Replace with actual email
 EMAIL_HOST_PASSWORD = 'kave ygaw mdzb vcbd'  # Replace with actual password or app-specific password
 SITE_URL = "http://localhost:8000"  # Update this to your site URL
 
+
+SESSION_ENGINE = 'django.contrib.sessions.backends.db'  # Use database-backed sessions
+SESSION_COOKIE_AGE = 3600  # Session expiry time in seconds
+SESSION_SAVE_EVERY_REQUEST = True  # Optional: Refresh expiry on each request
+
+
 # Ensure security by enforcing SSL (in production)
 SECURE_SSL_REDIRECT = False
 SESSION_COOKIE_SECURE = False
