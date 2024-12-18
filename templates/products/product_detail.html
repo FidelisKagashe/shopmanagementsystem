@@ -10,16 +10,16 @@ Fmk Shop - {{ product.name }} Details
 <div class="flex justify-center mt-6 bg-gray-100 p-6">
     <div class="max-w-2xl w-full bg-white rounded-lg shadow-lg p-6">
         <!-- Product Image -->
-        <img src="{{ product.image.url }}" alt="{{ product.name }}" class="w-full h-96 object-cover rounded-md shadow-md">
+        <img src="{{ product.image.url }}" alt="{{ product.name }}" class="max-w-full max-h-full object-contain rounded-md shadow-md">
 
         <!-- Product Name -->
-        <h1 class="text-4xl font-bold text-yellow-700 mt-6">{{ product.name }}</h1>
+        <h1 class="text-4xl font-bold text-yellow-600 mt-6">{{ product.name }}</h1>
 
         <!-- Product Description -->
-        <p class="text-lg text-gray-700 mt-4">{{ product.description }}</p>
+        <p class="text-lg text-gray-600 mt-4">{{ product.description }}</p>
 
         <!-- Product Price -->
-        <p class="text-2xl font-bold text-yellow-700 mt-6">Price: ${{ product.price }}</p>
+        <p class="text-2xl font-bold text-yellow-600 mt-6">Price: Tsh {{ product.price }}/=</p>
 
         <!-- Add to Cart Section -->
         <div class="mt-8">
@@ -29,7 +29,7 @@ Fmk Shop - {{ product.name }} Details
                 <input type="number" id="quantity" name="quantity" min="1" value="1"
                        class="border border-gray-300 rounded-md p-2 w-20 text-center mr-4 focus:outline-none focus:ring-2 focus:ring-yellow-700 focus:border-yellow-700">
                 <button type="submit"
-                        class="bg-yellow-700 text-white py-2 px-6 rounded-lg shadow hover:bg-yellow-800 transition">
+                        class="bg-yellow-600 text-white py-2 px-6 rounded-lg shadow hover:bg-yellow-500 transition">
                     Add to Cart
                 </button>
             </form>
@@ -37,7 +37,7 @@ Fmk Shop - {{ product.name }} Details
 
         <!-- Back to Products Link -->
         <div class="mt-6 text-right">
-            <a href="{% url 'product_list' %}" class="text-lg text-blue-500 hover:underline">
+            <a href="{% url 'product_list' %}" class="text-lg text-yellow-500 hover:underline">
                 Back to Products
             </a>
         </div>

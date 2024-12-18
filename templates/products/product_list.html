@@ -4,24 +4,48 @@
 {% load custom_filters %}
 
 {% block header %}
-Fmk Shop - {{ category_name }}
+Fmk Shop - {{ category_name }}{% if subcategory_name %} {{ subcategory_name }}{% endif %}
 {% endblock %}
 
 {% block main_block %}
 
-<!-- Category Heading -->
+<!-- Category & Subcategory Heading -->
 <div class="text-center bg-yellow-100 py-3 border-b-2 border-yellow-700">
-    <h1 class="text-2xl font-bold text-yellow-800">{{ category_name }}</h1>
+    <h1 class="text-2xl font-bold text-yellow-800">
+        {{ category_name }}
+        {% if subcategory_name %}
+             {{ subcategory_name }}
+        {% endif %}
+    </h1>
+</div>
+
+<!-- Subcategory Dropdown -->
+{% comment %} py-4 px-6 {% endcomment %}
+<div class="bg-white"> 
+    {% if subcategories %}
+        <h2 class="text-xl font-semibold text-yellow-700">Subcategories</h2>
+        <ul class="mt-2 space-y-2">
+            {% for subcategory in subcategories %}
+                <li>
+                    <a href="{% url 'products_by_subcategory' subcategory.name %}" class="text-yellow-700 hover:text-yellow-900 underline">
+                        {{ subcategory.name }}
+                    </a>
+                </li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        {% comment %} <p class="text-gray-500">No subcategories available for this category.</p> {% endcomment %}
+    {% endif %}
 </div>
 
 <!-- Product Listing -->
 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 p-4 bg-gray-100">
     {% for product in products %}
     <div class="bg-white rounded-lg shadow-lg overflow-hidden">
-        <img src="{{ product.image.url }}" alt="{{ product.name }}" class="w-full h-60 object-cover">
+        <img src="{{ product.image.url }}" alt="{{ product.name }}" class="max-w-full max-h-full object-contain">
         <div class="p-4">
             <h2 class="text-lg font-semibold text-yellow-700">{{ product.name }}</h2>
-            <p class="text-gray-600"><span class="font-bold">Price:</span> ${{ product.price }}</p>
+            <p class="text-gray-600"><span class="font-bold">Price:</span> Tsh {{ product.price }}/=</p>
             <div class="mt-4">
                 <a href="{% url 'product_detail' product.pk %}" class="text-yellow-700 hover:text-yellow-900 underline">See more</a>
             </div>
@@ -33,4 +57,5 @@ Fmk Shop - {{ category_name }}
     </p>
     {% endfor %}
 </div>
+
 {% endblock %}

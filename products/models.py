@@ -5,9 +5,20 @@ from django.core.exceptions import ValidationError
 
 class Category(models.Model):
     name = models.CharField(max_length=255)
+    parent = models.ForeignKey(
+        'self', 
+        on_delete=models.CASCADE, 
+        related_name='subcategories', 
+        blank=True, 
+        null=True
+    )  # Self-referential relationship for subcategories
 
     def __str__(self):
-        return self.name
+        return f"{self.parent.name} > {self.name}" if self.parent else self.name
+
+    class Meta:
+        verbose_name_plural = "Categories"  # Fix plural naming in admin
+        unique_together = ('name', 'parent')  # Prevent duplicate subcategories under the same parent
 
 class Product(models.Model):
     name = models.CharField(max_length=255)
@@ -63,3 +74,8 @@ class CartItem(models.Model):
 
     def __str__(self):
         return f"{self.quantity} of {self.product.name}"
+
+    @property
+    def total_price(self):
+        """Calculate total price for the item."""
+        return self.product.price * self.quantity

@@ -3,6 +3,7 @@
 {% block header %}
 Fmk Shop - Shop
 {% endblock %}
+
 {% block main_block %}
 <div class="py-6 px-4 md:px-12 bg-yellow-100">
     <!-- Header Section -->
@@ -11,22 +12,34 @@ Fmk Shop - Shop
         <p class="text-center text-lg mt-2">Explore our wide range of products and find what you need.</p>
     </header>
 
-    <!-- Featured Categories Section -->
+    <!-- Categories Section -->
     <section class="mb-8">
         <h2 class="text-2xl font-semibold mb-4">Shop by Category</h2>
         
         <div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-4">
             
             {% for category in categories %}
-                <a href="{% url 'products_by_category' category.name %}" class="block bg-white p-4 border rounded shadow hover:bg-yellow-50">
-                    <div class="grid grid-cols-2 gap-2">
-                        {% for product in category.products.all %}
-                            <img src="{{ product.image.url }}" alt="{{ product.name }}" class="w-full h-full object-cover rounded">
-                        {% endfor %}
-                    </div>
+                <div class="block bg-white p-4 border rounded shadow hover:bg-yellow-50">
                     <h3 class="text-center font-semibold mt-2">{{ category.name }}</h3>
-                </a>
+                    {% if category.subcategories.exists %}
+                        <div class="mt-2">
+                            {% for subcategory in category.subcategories.all %}
+                                <a href="{% url 'products_by_subcategory' subcategory.name %}" class="block bg-gray-100 p-2 mb-2 rounded hover:bg-yellow-100">
+                                    <h4 class="text-center">{{ subcategory.name }}</h4>
+                                    <div class="grid grid-cols-2 gap-2 mt-2">
+                                        {% for product in subcategory.products.all|slice:":2" %}
+                                            <img src="{{ product.image.url }}" alt="{{ product.name }}" class="w-full h-full object-cover rounded">
+                                        {% endfor %}
+                                    </div>
+                                </a>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <p class="text-center text-gray-500 mt-2">No subcategories available.</p>
+                    {% endif %}
+                </div>
             {% endfor %}
+
 
         </div>
     </section>
@@ -40,7 +53,7 @@ Fmk Shop - Shop
                 <img src="{{ product.image.url }}" alt="{{ product.name }}" class="w-full h-60 object-cover">
                 <div class="p-4">
                     <h2 class="text-lg font-semibold text-yellow-700">{{ product.name }}</h2>
-                    <p class="text-gray-600"><span class="font-bold">Price:</span> ${{ product.price }}</p>
+                    <p class="text-gray-600"><span class="font-bold">Price:</span> Tsh {{ product.price }}/=</p>
                     <div class="mt-4">
                         <a href="{% url 'product_detail' product.pk %}" class="text-yellow-700 hover:text-yellow-900 underline">See more</a>
                     </div>

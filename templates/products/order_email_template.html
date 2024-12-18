@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+<body>
+    <h2>Dear {{ user.username }},</h2>
+    <p>Thank you for placing your order. Here are your order details:</p>
+    
+    <table border="1" cellpadding="10" cellspacing="0" style="border-collapse: collapse; width: 100%; text-align: left;">
+        <thead>
+            <tr>
+                <th>Product Image</th>
+                <th>Product Name</th>
+                <th>Quantity</th>
+                <th>Unit Price (Tsh)</th>
+                <th>Total Price (Tsh)</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for item in calculated_items %}
+            <tr>
+                <td>
+                    <img src="cid:{{ item.image_name }}" alt="{{ item.product_name }}" style="width:150px; height:auto;">
+                </td>
+                <td>{{ item.product_name }}</td>
+                <td>{{ item.quantity }}</td>
+                <td>{{ item.unit_price|floatformat:2 }}/=</td>
+                <td>{{ item.total_price|floatformat:2 }}/=</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    
+    <p style="margin-top: 20px; font-weight: bold;">Grand Total: Tsh {{ grand_total|floatformat:2 }}/=</p>
+    <p>Thank you for shopping with us!</p>
+</body>
+</html>

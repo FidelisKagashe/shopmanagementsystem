@@ -25,8 +25,7 @@ SECRET_KEY = 'django-insecure-qvtjg8v8jqyd(w8d1u4u*k&^=f_ke86kv#-qp(g!2i6(e_xol)
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
-
+ALLOWED_HOSTS = ['192.168.137.1','127.0.0.1']
 
 # Application definition
 
@@ -172,6 +171,15 @@ LOGGING = {
     },
 }
 
+# settings.py
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER = 'fideliskagashe@gmail.com'  # Replace with actual email
+EMAIL_HOST_PASSWORD = 'kave ygaw mdzb vcbd'  # Replace with actual password or app-specific password
+SITE_URL = "http://localhost:8000"  # Update this to your site URL
+
 # Ensure security by enforcing SSL (in production)
 SECURE_SSL_REDIRECT = False
 SESSION_COOKIE_SECURE = False
@@ -192,7 +200,6 @@ SESSION_EXPIRE_AT_BROWSER_CLOSE = True
 # Limit session duration (optional)
 SESSION_COOKIE_AGE = 7200  # 2 hour
 
-# settings.py
 
 # Other settings...
 

@@ -1,0 +1,115 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register - Step 2</title>
+    <link rel="stylesheet" href="{% static 'css/tailwind.min.css' %}">
+</head>
+<body class="bg-gradient-to-l from-yellow-50 to-yellow-200 flex items-center justify-center min-h-screen">
+    <div class="bg-white p-8 rounded-lg m-3 shadow-lg w-full max-w-md">
+        <h2 class="text-2xl font-extrabold mb-6 text-center text-yellow-500">Complete Your Registration</h2>
+
+        <!-- Display form errors -->
+        {% if form.errors %}
+            <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-2 rounded mb-4">
+                <ul class="list-disc pl-5">
+                    {% for field in form %}
+                        {% for error in field.errors %}
+                            <li>{{ error }}</li>
+                        {% endfor %}
+                    {% endfor %}
+                    {% for error in form.non_field_errors %}
+                        <li>{{ error }}</li>
+                    {% endfor %}
+                </ul>
+            </div>
+        {% endif %}
+
+        <form method="post" class="space-y-4">
+            {% csrf_token %}
+
+            <!-- Email field (read-only) -->
+            <div>
+                <label for="id_email" class="block text-sm font-medium text-gray-700">Email Address</label>
+                <input type="email" name="email" id="id_email" value="{{ form.email.value|default_if_none:'' }}" readonly 
+                       class="mt-1 p-2 border border-gray-300 rounded w-full bg-gray-100 text-gray-500 focus:outline-none">
+            </div>
+
+            <!-- Phone Number -->
+            <div>
+                <label for="id_phone_number" class="block text-sm font-medium text-gray-700">Phone Number</label>
+                <input type="text" name="phone_number" id="id_phone_number" value="{{ form.phone_number.value|default_if_none:'' }}" required
+                       class="mt-1 p-2 border border-gray-300 rounded w-full focus:outline-none focus:border-yellow-500">
+                {% if form.phone_number.errors %}
+                    <div class="text-sm text-red-500">
+                        {% for error in form.phone_number.errors %}
+                            <p>{{ error }}</p>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            </div>
+
+            <!-- Username -->
+            <div>
+                <label for="id_username" class="block text-sm font-medium text-gray-700">Username</label>
+                <input type="text" name="username" id="id_username" maxlength="150" value="{{ form.username.value|default_if_none:'' }}" required
+                       class="mt-1 p-2 border border-gray-300 rounded w-full focus:outline-none focus:border-yellow-500">
+                {% if form.username.errors %}
+                    <div class="text-sm text-red-500">
+                        {% for error in form.username.errors %}
+                            <p>{{ error }}</p>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            </div>
+
+            <!-- Password -->
+            <div>
+                <label for="id_password1" class="block text-sm font-medium text-gray-700">Password</label>
+                <input type="password" name="password1" id="id_password1" autocomplete="new-password" required
+                       class="mt-1 p-2 border border-gray-300 rounded w-full focus:outline-none focus:border-yellow-500">
+                <span class="text-sm text-gray-500">
+                    <ul class="list-disc pl-5">
+                        <li>Your password must contain at least 8 characters.</li>
+                        <li>Your password must contain both letters and numbers.</li>
+                    </ul>
+                </span>
+                {% if form.password1.errors %}
+                    <div class="text-sm text-red-500">
+                        {% for error in form.password1.errors %}
+                            <p>{{ error }}</p>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            </div>
+
+            <!-- Password Confirmation -->
+            <div>
+                <label for="id_password2" class="block text-sm font-medium text-gray-700">Password Confirmation</label>
+                <input type="password" name="password2" id="id_password2" autocomplete="new-password" required
+                       class="mt-1 p-2 border border-gray-300 rounded w-full focus:outline-none focus:border-yellow-500">
+                <span class="text-sm text-gray-500">Enter the same password as before, for verification.</span>
+                {% if form.password2.errors %}
+                    <div class="text-sm text-red-500">
+                        {% for error in form.password2.errors %}
+                            <p>{{ error }}</p>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            </div>
+
+            <!-- Submit Button -->
+            <button type="submit" class="w-full bg-yellow-600 text-white py-2 rounded hover:bg-yellow-500 transition duration-200">
+                Complete Registration
+            </button>
+        </form>
+
+        <!-- Login Link -->
+        <div class="mt-4 text-center">
+            <a href="{% url 'login' %}" class="text-yellow-700 hover:underline">Already have an account? Login here</a>
+        </div>
+    </div>
+</body>
+</html>

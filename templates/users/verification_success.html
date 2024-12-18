@@ -1,0 +1,23 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Verification Success</title>
+    <link rel="stylesheet" href="{% static 'css/tailwind.min.css' %}">
+</head>
+<body class="bg-gradient-to-l from-yellow-50 to-yellow-200 flex items-center justify-center min-h-screen">
+    <div class="bg-white p-8 rounded-lg m-3 shadow-lg w-full max-w-md md:max-w-4xl">
+        <h2 class="text-2xl font-extrabold mb-6 text-center text-green-500">Email Verification Successful</h2>
+        
+        <div class="space-y-4">
+            <p class="text-gray-700">Congratulations! Your email address has been successfully verified.</p>
+
+            <p class="text-gray-700">You can now <a href="{% url 'login' %}" class="text-yellow-600 hover:underline">log in to your account</a> and enjoy full access.</p>
+            
+            <p class="text-gray-700">If you encounter any issues, feel free to contact support.</p>
+        </div>
+    </div>
+</body>
+</html>

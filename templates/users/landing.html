@@ -11,19 +11,19 @@ Fmk Shop - Home
         <!-- Slides -->
         <div id="carousel-slides" class="flex">
         <!-- Slide 1 -->
-        <div class="carousel-item flex-shrink-0 w-full h-64 bg-cover bg-center relative" style="background-image: url('{% static "pictures/shop1.jpg" %}');">
+        <div class="carousel-item flex-shrink-0 w-full h-64 bg-cover bg-center relative" style="background-image: url('{% static "pictures/DALL·E 2024-12-09 11.38.45 - A vibrant and cheerful collage of various small product images displayed on a gradient background transitioning through warm shades of yellow (yellow-.webp" %}');">
             <div class="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center">
             <h1 class="text-white text-center px-4 text-4xl font-bold">Big Word for Slide 1</h1>
             </div>
         </div>
         <!-- Slide 2 -->
-        <div class="carousel-item flex-shrink-0 w-full h-64 bg-cover bg-center relative" style="background-image: url('{% static "pictures/shop2.jpg" %}');">
+        <div class="carousel-item flex-shrink-0 w-full h-64 bg-cover bg-center relative" style="background-image: url('{% static "pictures/DALL·E 2024-12-09 11.52.13 - A visually cohesive and vibrant cover design with a yellow gradient background transitioning from light yellow (#FFD700) to deeper yellow shades (#FFC.webp" %}');">
             <div class="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center">
             <h1 class="text-white text-center px-4 text-4xl font-bold">Big Word for Slide 2</h1>
             </div>
         </div>
         <!-- Slide 3 -->
-        <div class="carousel-item flex-shrink-0 w-full h-64 bg-cover bg-center relative" style="background-image: url('{% static "pictures/shop3.jpeg" %}');">
+        <div class="carousel-item flex-shrink-0 w-full h-64 bg-cover bg-center relative" style="background-image: url('{% static "pictures/DALL·E 2024-12-09 11.39.02 - A visually appealing collage of various products on a gradient background transitioning through shades of yellow (yellow-500, yellow-600, yellow-700).webp" %}');">
             <div class="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center">
             <h1 class="text-white text-center px-4 text-4xl font-bold">Big Word for Slide 3</h1>
             </div>
@@ -49,15 +49,27 @@ Fmk Shop - Home
             <div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-4">
                 
                 {% for category in categories %}
-                    <a href="{% url 'products_by_category' category.name %}" class="block bg-white p-4 border rounded shadow hover:bg-yellow-50">
-                        <div class="grid grid-cols-2 gap-2">
-                            {% for product in category.products.all %}
-                                <img src="{{ product.image.url }}" alt="{{ product.name }}" class="w-full h-full object-cover rounded">
-                            {% endfor %}
-                        </div>
+                    <div class="block bg-white p-4 border rounded shadow hover:bg-yellow-50">
                         <h3 class="text-center font-semibold mt-2">{{ category.name }}</h3>
-                    </a>
+                        {% if category.subcategories.exists %}
+                            <div class="mt-2">
+                                {% for subcategory in category.subcategories.all %}
+                                    <a href="{% url 'products_by_subcategory' subcategory.name %}" class="block bg-gray-100 p-2 mb-2 rounded hover:bg-yellow-100">
+                                        <h4 class="text-center">{{ subcategory.name }}</h4>
+                                        <div class="grid grid-cols-2 gap-2 mt-2">
+                                            {% for product in subcategory.products.all|slice:":2" %}
+                                                <img src="{{ product.image.url }}" alt="{{ product.name }}" class="w-full h-full object-cover rounded">
+                                            {% endfor %}
+                                        </div>
+                                    </a>
+                                {% endfor %}
+                            </div>
+                        {% else %}
+                            <p class="text-center text-gray-500 mt-2">No subcategories available.</p>
+                        {% endif %}
+                    </div>
                 {% endfor %}
+
 
             </div>
         </section>
@@ -69,19 +81,19 @@ Fmk Shop - Home
                 <div class="bg-white p-4 border rounded shadow">
                     <img src="images (1).jpeg" alt="Product 1" class="w-full h-48 object-cover mb-4">
                     <h3 class="text-lg font-semibold">Product 1</h3>
-                    <p class="text-gray-600">$25.99</p>
+                    <p class="text-gray-600">Tsh 25.99</p>
                     <button class="mt-2 bg-yellow-700 text-white px-4 py-2 rounded hover:bg-yellow-600">Buy Now</button>
                 </div>
                 <div class="bg-white p-4 border rounded shadow">
                     <img src="images (1).jpeg" alt="Product 2" class="w-full h-48 object-cover mb-4">
                     <h3 class="text-lg font-semibold">Product 2</h3>
-                    <p class="text-gray-600">$45.99</p>
+                    <p class="text-gray-600">Tsh 45.99</p>
                     <button class="mt-2 bg-yellow-700 text-white px-4 py-2 rounded hover:bg-yellow-600">Buy Now</button>
                 </div>
                 <div class="bg-white p-4 border rounded shadow">
                     <img src="images (1).jpeg" alt="Product 3" class="w-full h-48 object-cover mb-4">
                     <h3 class="text-lg font-semibold">Product 3</h3>
-                    <p class="text-gray-600">$15.99</p>
+                    <p class="text-gray-600">Tsh 15.99</p>
                     <button class="mt-2 bg-yellow-700 text-white px-4 py-2 rounded hover:bg-yellow-600">Buy Now</button>
                 </div>
             </div>

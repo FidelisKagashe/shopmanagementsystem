@@ -1,11 +1,7 @@
 from django.shortcuts import render, redirect, get_object_or_404
-from django.http import HttpResponse
-from django.contrib.auth.models import User
-from django.contrib.auth.forms import PasswordResetForm, SetPasswordForm
 from django.contrib.auth import authenticate, login, logout, update_session_auth_hash
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
-from django.contrib.auth.views import PasswordResetView, PasswordResetConfirmView
 from django.core.mail import send_mail
 from django.urls import reverse, reverse_lazy
 from django.utils import timezone
@@ -14,15 +10,13 @@ from django.contrib.auth.views import LoginView
 from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from django.utils.encoding import force_bytes, force_str
 from reportlab.lib.pagesizes import A4, landscape
-from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
-from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, ListFlowable, ListItem
+from reportlab.lib.styles import getSampleStyleSheet
 from reportlab.lib.enums import TA_CENTER
 from reportlab.lib.units import inch
 from reportlab.lib import colors
 from django.contrib.auth.tokens import default_token_generator
 from django.template.loader import render_to_string
 from django.contrib.sites.shortcuts import get_current_site
-from .forms import CustomUserCreationForm
 from datetime import timedelta
 from io import BytesIO
 from django.conf import settings
@@ -50,19 +44,6 @@ def logout_view(request):
     request.session.flush()
     return redirect('home') 
 
-def register(request):
-    if request.user.is_authenticated:
-        return redirect('home')
-    if request.method == 'POST':
-        form = CustomUserCreationForm(request.POST)
-        if form.is_valid():
-            user = form.save()
-            login(request, user)
-            messages.success(request, "Registration successful.")
-            return redirect('home')
-    else:
-        form = CustomUserCreationForm()
-    return render(request, 'users/register.html', {'form': form})
 
 @method_decorator(never_cache, name='dispatch')
 class CustomLoginView(LoginView):
@@ -100,7 +81,7 @@ class CustomLoginView(LoginView):
         # Reset failed attempts on successful login
         cache.delete(f"{username}_lockout")
 
-        messages.success(self.request, f"Logged in successfully as {user.first_name} {user.last_name}")
+        messages.success(self.request, f"Logged in successfully as {user.username}")
         return super().form_valid(form)
 
     def form_invalid(self, form):
@@ -144,53 +125,154 @@ def get_cart_item_count(user):
     return 0
 
 def About(request):
-    categories = Category.objects.all()
+    """Displays the About page with top-level categories and their latest products."""
+    categories = Category.objects.filter(parent__isnull=True).prefetch_related('subcategories')
+    category_products = {}
+    for category in categories:
+        # Fetch latest 4 products for each category's subcategories
+        products = Product.objects.filter(category__in=category.subcategories.all()).order_by('-created_at')[:4]
+        category_products[category.id] = products
+
     cart_item_count = get_cart_item_count(request.user)
     context = {
-        'categories':categories,
-        'current_tab':'about',
-        'cart_item_count':cart_item_count,
-        }
+        'categories': categories,
+        'category_products': category_products,
+        'current_tab': 'about',
+        'cart_item_count': cart_item_count,
+    }
     return render(request, 'users/about.html', context)
 
+
 def Contact(request):
-    categories = Category.objects.all()
+    """Displays the Contact page with top-level categories and their latest products."""
+    categories = Category.objects.filter(parent__isnull=True).prefetch_related('subcategories')
+    category_products = {}
+    for category in categories:
+        # Fetch latest 4 products for each category's subcategories
+        products = Product.objects.filter(category__in=category.subcategories.all()).order_by('-created_at')[:4]
+        category_products[category.id] = products
+
     cart_item_count = get_cart_item_count(request.user)
     context = {
-        'categories':categories,
-        'current_tab':'contact',
-        'cart_item_count':cart_item_count,
-        }
+        'categories': categories,
+        'category_products': category_products,
+        'current_tab': 'contact',
+        'cart_item_count': cart_item_count,
+    }
     return render(request, 'users/contact.html', context)
 
+
 def Faq(request):
-    categories = Category.objects.all()
+    """Displays the FAQ page with top-level categories and their latest products."""
+    categories = Category.objects.filter(parent__isnull=True).prefetch_related('subcategories')
+    category_products = {}
+    for category in categories:
+        # Fetch latest 4 products for each category's subcategories
+        products = Product.objects.filter(category__in=category.subcategories.all()).order_by('-created_at')[:4]
+        category_products[category.id] = products
+
     cart_item_count = get_cart_item_count(request.user)
     context = {
-        'categories':categories,
-        'current_tab':'faq',
-        'cart_item_count':cart_item_count,
-        }
+        'categories': categories,
+        'category_products': category_products,
+        'current_tab': 'faq',
+        'cart_item_count': cart_item_count,
+    }
     return render(request, 'users/faq.html', context)
 
+
 def Shop(request):
-    categories = Category.objects.all()
-    products = Product.objects.all()
+    """Displays the Shop page with all products and categories."""
+    categories = Category.objects.filter(parent__isnull=True).prefetch_related('subcategories')
+    products = Product.objects.order_by('-created_at')[:20]  # Optionally fetch the latest 20 products
     cart_item_count = get_cart_item_count(request.user)
     context = {
-        'categories':categories,
-        'current_tab':'shop',
-        'products':products,
-        'cart_item_count':cart_item_count,
-        }
+        'categories': categories,
+        'products': products,
+        'current_tab': 'shop',
+        'cart_item_count': cart_item_count,
+    }
     return render(request, 'users/shop.html', context)
 
-# def Landing(request):
-#     categories = Category.objects.all()
-#     cart_item_count = get_cart_item_count(request.user)
-#     context = {
-#         'categories':categories,
-#         'current_tab':'landing',
-#         'cart_item_count':cart_item_count,
-#         }
-#     return render(request, 'users/landing.html', context)
+from django.shortcuts import render, redirect
+from django.urls import reverse
+from django.core.mail import send_mail
+from django.conf import settings
+from django.http import HttpResponse
+from .forms import EmailForm
+from django.contrib.sites.shortcuts import get_current_site
+
+def register_email(request):
+    """First step: Get email and send registration link."""
+    if request.method == 'POST':
+        form = EmailForm(request.POST)
+        if form.is_valid():
+            email = form.cleaned_data['email']
+            
+            # Store email in session with an expiry time of 1 hour
+            request.session['email'] = email
+            request.session.set_expiry(3600)  # Set session expiry to 1 hour
+
+            # Build registration completion link
+            link = request.build_absolute_uri(reverse('register_complete'))
+
+            try:
+                send_mail(
+                    'Complete Your Registration',
+                    f'Click the link to complete your registration: {link}',
+                    settings.DEFAULT_FROM_EMAIL,
+                    [email],
+                    fail_silently=False,
+                )
+                return HttpResponse("A registration link has been sent to your email.")
+            except Exception as e:
+                return HttpResponse(f"An error occurred while sending the email: {e}")
+        else:
+            return HttpResponse("Invalid email address. Please try again.")
+    else:
+        form = EmailForm()
+    
+    return render(request, 'users/register.html', {'form': form})
+
+from django.shortcuts import render, redirect
+from django.http import HttpResponse
+from .forms import RegistrationForm
+from .models import UserProfile
+from django.contrib.auth.models import User
+
+def register_complete(request):
+    """Complete the registration process."""
+    email = request.session.get('email')  # Retrieve email from session
+
+    # Check if the email is missing or invalid
+    if not email:
+        return HttpResponse("Invalid or expired registration link.")
+
+    # Handle the registration form submission
+    if request.method == 'POST':
+        form = RegistrationForm(request.POST)
+        if form.is_valid():
+            # Create a new user with the provided data
+            user = form.save(commit=False)
+            user.email = email  # Set email from session
+            user.save()
+
+            # Create a user profile
+            UserProfile.objects.create(
+                user=user,  # Link the UserProfile to the User
+                phone_number=form.cleaned_data['phone_number']  # Only save phone_number here
+            )
+            
+            # Clear the email from the session after successful registration
+            del request.session['email']
+            
+            # Redirect or respond with a success message
+            return redirect('login')  # Replace with actual login URL if needed
+
+        else:
+            return HttpResponse("There were errors in the form. Please check your input.")
+    else:
+        # Pre-fill the form with the email from the session
+        form = RegistrationForm(initial={'email': email})
+
+    return render(request, 'users/register2.html', {'form': form})
