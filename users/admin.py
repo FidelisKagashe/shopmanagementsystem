@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import UserProfile
+from .models import UserProfile, PasswordResetCode
 
 @admin.register(UserProfile)
 class UserProfileAdmin(admin.ModelAdmin):
@@ -30,3 +30,33 @@ class UserProfileAdmin(admin.ModelAdmin):
         return obj.user.username
 
     user_username.short_description = 'Username'  # Label for the 'user_username' field in the admin
+
+
+@admin.register(PasswordResetCode)
+class PasswordResetCodeAdmin(admin.ModelAdmin):
+    # Display all fields of the PasswordResetCode model
+    list_display = (
+        'user_email', 
+        'reset_code', 
+        'created_at', 
+        'uidb64', 
+        'token', 
+        'expires_at', 
+        'request_token'
+    )
+
+    # Search through User's email and reset code
+    search_fields = ('user__email', 'reset_code')
+
+    # Filter by username from the related User model
+    list_filter = ('user__username',)
+
+    # Prevent editing the email field from the related User model (readonly)
+    readonly_fields = ('user_email', 'reset_code', 'created_at', 'uidb64', 'token', 'expires_at', 'request_token')
+
+    # Custom method to retrieve user's email
+    def user_email(self, obj):
+        """Custom method to access the user's email from the related User model."""
+        return obj.user.email
+
+    user_email.short_description = 'Email'  # Label for the 'user_email' field in the admin

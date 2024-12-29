@@ -7,39 +7,44 @@ Fmk Shop - {{ product.name }} Details
 {% endblock %}
 
 {% block main_block %}
-<div class="flex justify-center mt-6 bg-gray-100 p-6">
-    <div class="max-w-2xl w-full bg-white rounded-lg shadow-lg p-6">
+<div class="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
         <!-- Product Image -->
-        <img src="{{ product.image.url }}" alt="{{ product.name }}" class="max-w-full max-h-full object-contain rounded-md shadow-md">
-
-        <!-- Product Name -->
-        <h1 class="text-4xl font-bold text-yellow-600 mt-6">{{ product.name }}</h1>
-
-        <!-- Product Description -->
-        <p class="text-lg text-gray-600 mt-4">{{ product.description }}</p>
-
-        <!-- Product Price -->
-        <p class="text-2xl font-bold text-yellow-600 mt-6">Price: Tsh {{ product.price }}/=</p>
-
-        <!-- Add to Cart Section -->
-        <div class="mt-8">
-            <form class="add-to-cart-form flex items-center" data-product-id="{{ product.id }}">
-                {% csrf_token %}
-                <label for="quantity" class="text-gray-600 mr-4">Quantity:</label>
-                <input type="number" id="quantity" name="quantity" min="1" value="1"
-                       class="border border-gray-300 rounded-md p-2 w-20 text-center mr-4 focus:outline-none focus:ring-2 focus:ring-yellow-700 focus:border-yellow-700">
-                <button type="submit"
-                        class="bg-yellow-600 text-white py-2 px-6 rounded-lg shadow hover:bg-yellow-500 transition">
-                    Add to Cart
-                </button>
-            </form>
+        <div class="flex justify-center">
+            <img src="{{ product.image.url }}" alt="{{ product.name }}" class="rounded-lg shadow-xl max-w-full h-auto object-cover">
         </div>
 
-        <!-- Back to Products Link -->
-        <div class="mt-6 text-right">
-            <a href="{% url 'shop' %}" class="text-lg text-yellow-500 hover:underline">
-                Back to Products
-            </a>
+        <!-- Product Information -->
+        <div class="flex flex-col justify-start">
+            <!-- Product Name -->
+            <h1 class="text-3xl sm:text-4xl font-extrabold text-yellow-600 mb-4">{{ product.name }}</h1>
+
+            <!-- Product Description -->
+            <p class="text-lg text-gray-700 leading-relaxed mb-6">{{ product.description }}</p>
+
+            <!-- Product Price -->
+            <p class="text-2xl font-semibold text-yellow-600 mb-6">Price: Tsh {{ product.price }}/=</p>
+
+            <!-- Add to Cart Section -->
+            <div class="flex items-center space-x-4 mb-6">
+                <form class="add-to-cart-form flex items-center w-full" data-product-id="{{ product.id }}">
+                    {% csrf_token %}
+                    <label for="quantity" class="text-lg text-gray-600">Quantity:</label>
+                    <input type="number" id="quantity" name="quantity" min="1" value="1"
+                           class="border border-gray-300 rounded-lg m-1 p-3 w-24 text-center focus:outline-none focus:ring-2 focus:ring-yellow-600 focus:border-yellow-600">
+                    <button type="submit"
+                            class="w-full sm:w-auto bg-yellow-600 text-white py-3 px-2 rounded-lg shadow-lg hover:bg-yellow-500 transition ease-in-out duration-200">
+                        Add to Cart
+                    </button>
+                </form>
+            </div>
+
+            <!-- Back to Products Link -->
+            <div class="mt-6 text-center">
+                <a href="{% url 'shop' %}" class="text-lg text-yellow-500 hover:text-yellow-600 font-semibold">
+                    Back to Products
+                </a>
+            </div>
         </div>
     </div>
 </div>

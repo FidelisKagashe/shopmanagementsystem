@@ -81,10 +81,10 @@
 <body class="flex flex-col min-h-screen">
 
     <!-- Navbar -->
-    <nav class="bg-yellow-700 text-white flex justify-between items-center px-4 py-2 fixed top-0 left-0 w-full z-50 shadow">
+    <nav class="bg-yellow-700 text-white flex justify-between items-center px-3 md:px-4 py-2 fixed top-0 left-0 w-full z-50 shadow">
         <div class="flex justify-between items-center">
             <button id="toggle-sidebar" class="text-white text-2xl mr-4">&#9776;</button>
-            <span class="text-xl font-bold">FMK Shop</span>
+            <span class="md:text-xl font-bold">FMK Shop</span>
         </div>
     
         <ul class="hidden md:flex space-x-6">
@@ -136,7 +136,7 @@
                         <a href="{% url 'password_change' %}" class="block px-4 py-2 hover:bg-gray-100 hover:text-yellow-400">Change password</a>
                     </li>
                     <li>
-                        <a href="{% url 'logout' %}" class="block px-4 py-2 hover:bg-gray-100 hover:text-yellow-400">Logout</a>
+                        <a href="{% url 'logout' %}" class="block px-4 py-2 hover:bg-gray-100 hover:text-yellow-400"><i class="bi bi-box-arrow-left"> </i>Logout</a>
                     </li>
                     {% if user.is_superuser %}
                     <li>
@@ -147,8 +147,8 @@
             </li>
             <li><span class="hidden md:block">Welcome, {{ user.username }}</span></li>
             {% else %}
-            <li><a href="{% url 'register_email' %}" class="hidden md:block hover:text-yellow-400"><i class="bi bi-door-closed"> </i>Register</a></li>
-            <li><a href="{% url 'login' %}" class="hidden md:block hover:text-yellow-400"><i class="bi bi-door-closed"> </i>Login</a></li>
+            <li><a href="{% url 'register_email' %}" class="hidden md:block hover:text-yellow-400"><i class="bi bi-pencil-square"> </i>Register</a></li>
+            <li><a href="{% url 'login' %}" class="hidden md:block hover:text-yellow-400"><i class="bi bi-box-arrow-in-right"> </i>Login</a></li>
             {% endif %}
             
             <!-- Dropdown Menu -->
@@ -170,10 +170,10 @@
                     </li>
                     {% else %}
                     <li>
-                        <a href="{% url 'login' %}" class="block px-4 py-2 hover:bg-gray-100 hover:text-yellow-400">Login</a>
+                        <a href="{% url 'login' %}" class="block px-4 py-2 hover:bg-gray-100 hover:text-yellow-400"><i class="bi bi-box-arrow-in-right"> </i>Login</a>
                     </li>
                     <li>
-                        <a href="{% url 'register_email' %}" class="block px-4 py-2 hover:bg-gray-100 hover:text-yellow-400">Register</a>
+                        <a href="{% url 'register_email' %}" class="block px-4 py-2 hover:bg-gray-100 hover:text-yellow-400"><i class="bi bi-pencil-square"> </i>Register</a>
                     </li>
                     {% endif %}
                 </ul>                
@@ -220,32 +220,37 @@
     </div>
 
     {% if messages %}
-    <div id="alert-container" class="fixed top-0 left-0 right-0 z-50 p-4 transition-transform transform -translate-y-full bg-yellow-100 text-yellow-800">
-        {% for message in messages %}
-        <div class="p-3 rounded {{ message.tags }}">
-            {{ message }}
+        <div id="alert-container" class="fixed top-0 left-0 right-0 z-50 p-2 transition-transform transform -translate-y-full bg-green-100 text-green-800">
+            <div>
+                {% for message in messages %}
+                    {% if forloop.last %}
+                        <div class="p-2 rounded text-center bg-green-200 text-yellow-800">
+                            {{ message }}
+                        </div>
+                    {% endif %}
+                {% endfor %}
+            </div>
         </div>
-        {% endfor %}
-    </div>
-    <script>
-        document.addEventListener("DOMContentLoaded", function () {
-            const alertContainer = document.getElementById("alert-container");
+        <script>
+            document.addEventListener("DOMContentLoaded", function () {
+                const alertContainer = document.getElementById("alert-container");
 
-            // Slide down animation
-            setTimeout(() => {
-                alertContainer.classList.remove("-translate-y-full");
-            }, 100); // Small delay for smooth effect
+                // Slide down animation
+                setTimeout(() => {
+                    alertContainer.classList.remove("-translate-y-full");
+                }, 100); // Small delay for smooth effect
 
-            // Slide up and remove after 5 seconds
-            setTimeout(() => {
-                alertContainer.classList.add("-translate-y-full");
-            }, 3000); // Alert will stay visible for 5 seconds
-        });
-    </script>
+                // Slide up and remove after 5 seconds
+                setTimeout(() => {
+                    alertContainer.classList.add("-translate-y-full");
+                }, 5000); // Alert will stay visible for 5 seconds
+            });
+        </script>
     {% endif %}
+
   
     <div class="flex mt-10 bg-yellow-600 text-white justify-center items-center">
-        <ul class="md:hidden pt-4 flex my-2 space-x-3">
+        <ul class="md:hidden pt-2 flex my-2 space-x-3">
 
             {% if current_tab == 'home' %}
             <li><a href="{% url 'home' %}" class="text-yellow-400">Home</a></li>

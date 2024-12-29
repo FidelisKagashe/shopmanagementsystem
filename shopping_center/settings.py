@@ -116,11 +116,12 @@ MESSAGE_TAGS = {
 
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'Africa/Dar_es_Salaam'  # Set the timezone to Tanzania's timezone
 
 USE_I18N = True
 
 USE_TZ = True
+
 
 
 # Static files (CSS, JavaScript, Images)
@@ -152,20 +153,38 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
+    'formatters': {
+        'verbose': {
+            'format': '{levelname} {asctime} {module} {message}',
+            'style': '{',
+        },
+        'simple': {
+            'format': '{levelname} {message}',
+            'style': '{',
+        },
+    },
     'handlers': {
         'console': {
             'class': 'logging.StreamHandler',
+            'formatter': 'verbose',  # Use the 'verbose' formatter
+        },
+        'file': {
+            'level': 'ERROR',  # Logs only ERROR and above
+            'class': 'logging.FileHandler',
+            'filename': 'error.log',  # File path for error logs
+            'formatter': 'verbose',  # Use the 'verbose' formatter
         },
     },
     'loggers': {
         'django': {
-            'handlers': ['console'],
-            'level': 'INFO',  # Change to 'DEBUG' for more detailed logs
-        },
-        'api': {  # Replace with your actual app name
-            'handlers': ['console'],
-            'level': 'DEBUG',
+            'handlers': ['console', 'file'],
+            'level': 'INFO',  # Change to 'DEBUG' for detailed logs
             'propagate': True,
+        },
+        'users': {  # Replace 'api' with your actual app name
+            'handlers': ['console', 'file'],
+            'level': 'DEBUG',  # Capture all logs from this app
+            'propagate': False,  # Avoid duplicate logging
         },
     },
 }

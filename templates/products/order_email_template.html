@@ -1,35 +1,140 @@
+{% load static %}
 <!DOCTYPE html>
-<html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Order Details</title>
+    <style>
+        body {
+            background-color: #FDE68A; /* Light yellow background */
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 0;
+            color: #B45309; /* Dark gray text color */
+            border: 2px solid #f3f4f6;
+        }
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background-color: #FDFD96;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            margin-top: 40px;
+            color: #B45309;
+            border: 2px solid #F59E0B;
+        }
+        .header {
+            text-align: center;
+            background-color: #F59E0B; /* Bold yellow */
+            color: white;
+            padding: 9px;
+            font-size: 22px;
+            font-weight: bold;
+        }
+        h2 {
+            text-align: center;
+            font-size: 24px;
+            margin-top: 20px;
+        }
+        p {
+            text-align: center;
+            font-size: 16px;
+            margin-top: 5px;
+            color: black;
+            color: #B45309;
+        }
+        table {
+            width: 100%;
+            margin-top: 10px;
+            border-collapse: collapse;
+        }
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border: 2px solid #F59E0B;
+        }
+        th {
+            background-color: #FDFD96; /* Bold yellow for header */
+            color: #B45309;
+            font-size: 16px;
+        }
+        td {
+            font-size: 14px;
+            color: #B45309;
+        }
+        tr:hover {
+            background-color: #F9FAFB;
+        }
+        .total {
+            font-size: 18px;
+            font-weight: bold;
+            color: #B45309;
+            text-align: right;
+            margin-top: 20px;
+            margin-right: 20px;
+        }
+        .footer {
+            text-align: center;
+            margin-top: 15px;
+            margin-bottom: 20px;
+            font-size: 14px;
+            color: #B45309; /* Lighter gray */
+        }
+        .footer p {
+            margin: 10px 0;
+            color: #B45309;
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
 <body>
-    <h2>Dear {{ user.username }},</h2>
-    <p>Thank you for placing your order. Here are your order details:</p>
-    
-    <table border="1" cellpadding="10" cellspacing="0" style="border-collapse: collapse; width: 100%; text-align: left;">
-        <thead>
-            <tr>
-                <th>Product Image</th>
-                <th>Product Name</th>
-                <th>Quantity</th>
-                <th>Unit Price (Tsh)</th>
-                <th>Total Price (Tsh)</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for item in calculated_items %}
-            <tr>
-                <td>
-                    <img src="cid:{{ item.image_name }}" alt="{{ item.product_name }}" style="width:150px; height:auto;">
-                </td>
-                <td>{{ item.product_name }}</td>
-                <td>{{ item.quantity }}</td>
-                <td>{{ item.unit_price|floatformat:2 }}/=</td>
-                <td>{{ item.total_price|floatformat:2 }}/=</td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
-    
-    <p style="margin-top: 20px; font-weight: bold;">Grand Total: Tsh {{ grand_total|floatformat:2 }}/=</p>
-    <p>Thank you for shopping with us!</p>
+
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            FMK SHOP
+        </div>
+
+        <h2>Dear {{ user.username }},</h2>
+        <p>Thank you for placing your order. Below are the details of your order:</p>
+
+        <!-- Order Details Table -->
+        <table>
+            <thead>
+                <tr>
+                    <th>Product Image</th>
+                    <th>Product Name</th>
+                    <th>Quantity</th>
+                    <th>Unit Price (Tsh)</th>
+                    <th>Total Price (Tsh)</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in calculated_items %}
+                <tr>
+                    <td>
+                        <img src="cid:{{ item.image_name }}" alt="{{ item.product_name }}" style="width: 80px; height: auto; border-radius: 8px;">
+                    </td>
+                    <td>{{ item.product_name }}</td>
+                    <td>{{ item.quantity }}</td>
+                    <td>{{ item.unit_price|floatformat:2 }}/=</td>
+                    <td>{{ item.total_price|floatformat:2 }}/=</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <!-- Grand Total -->
+        <p class="total">Grand Total: Tsh {{ grand_total|floatformat:2 }}/=</p>
+        
+        <p>Thank you for shopping with us!</p>
+
+        <!-- Footer -->
+        <div class="footer">
+            <p>FMK SHOP - Your Trusted Online Store</p>
+        </div>
+    </div>
+
 </body>
 </html>

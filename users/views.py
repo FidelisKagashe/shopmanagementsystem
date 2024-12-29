@@ -328,3 +328,242 @@ def register_complete(request):
         form = RegistrationForm(initial={'email': email})
 
     return render(request, 'users/register2.html', {'form': form})
+
+
+
+
+
+# import random
+# from django.core.mail import send_mail
+# from django.contrib.auth.tokens import default_token_generator
+# from django.contrib.auth.models import User
+# from django.contrib.sites.shortcuts import get_current_site
+# from django.urls import reverse
+# from django.shortcuts import render, redirect
+# from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
+# from django.template.loader import render_to_string
+# from django.http import HttpResponse
+# from django.contrib.auth.views import PasswordResetView, PasswordResetDoneView, PasswordResetConfirmView, PasswordResetCompleteView
+# from django.contrib.auth.forms import SetPasswordForm
+# from django.utils import timezone
+# from datetime import timedelta
+# from django.conf import settings
+# from django.contrib import messages
+
+# # Model to store the reset code with an expiration time
+# from .models import PasswordResetCode
+
+
+# class CustomPasswordResetView(PasswordResetView):
+#     """View to send password reset email with a 6-digit code."""
+#     template_name = 'users/password_reset_form.html'
+    
+#     def form_valid(self, form):
+#         email = form.cleaned_data['email']
+#         user = User.objects.filter(email=email).first()
+        
+#         if user:
+#             # Generate a six-digit code
+#             reset_code = str(random.randint(100000, 999999))
+#             # Store the reset code in the database with an expiration time (10 minutes)
+#             reset_code_entry = PasswordResetCode.objects.create(
+#                 user=user, 
+#                 reset_code=reset_code,
+#                 created_at=timezone.now()
+#             )
+
+#             # Send the reset code via email
+#             subject = 'Your Password Reset Code'
+#             message = f'Your password reset code is {reset_code}. This code is valid for 10 minutes.'
+#             send_mail(subject, message, settings.DEFAULT_FROM_EMAIL, [email])
+
+#             # Generate uidb64 and token for the password reset URL
+#             uidb64 = urlsafe_base64_encode(str(user.id).encode())
+#             token = default_token_generator.make_token(user)
+
+#             # Redirect to the password reset confirm page
+#             return redirect('password_reset_confirm', uidb64=uidb64, token=token)
+#         else:
+#             # Handle the case where no user is found with the provided email
+#             form.add_error('email', 'No user found with this email address.')
+#             return self.form_invalid(form)
+
+# class CustomPasswordResetDoneView(PasswordResetDoneView):
+#     """View to notify the user that the reset code has been sent."""
+#     template_name = 'users/password_reset_done.html'
+
+#     def get_context_data(self, *args, **kwargs):
+#         context = super().get_context_data(*args, **kwargs)
+
+#         # Retrieve the email from the form data (POST request)
+#         email = self.request.POST.get('email')  # This is where the email comes from
+#         user = User.objects.filter(email=email).first()  # Get the user based on email
+
+#         if user:
+#             # Generate uidb64 and token for the password reset URL
+#             uidb64 = urlsafe_base64_encode(str(user.id).encode())
+#             token = default_token_generator.make_token(user)
+
+#             context['uidb64'] = uidb64
+#             context['token'] = token
+        
+#         return context
+
+import logging
+import secrets
+from uuid import uuid4
+from datetime import timedelta
+from django.shortcuts import render, redirect
+from django.core.mail import send_mail
+from django.contrib.auth.tokens import default_token_generator
+from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
+from django.utils import timezone
+from django.conf import settings
+from .models import PasswordResetCode, User
+
+logger = logging.getLogger(__name__)
+
+# Utility function to generate a secure reset code
+def generate_reset_code():
+    return ''.join(secrets.choice('0123456789') for _ in range(6))
+
+# Utility function to send password reset email
+def send_reset_email(email, reset_code):
+    subject = "Your Password Reset Code"
+    message = f"Your password reset code is {reset_code}. This code is valid for 10 minutes."
+    send_mail(subject, message, settings.DEFAULT_FROM_EMAIL, [email])
+
+# Password reset request view
+def password_reset_request(request):
+    if request.method == 'POST':
+        email = request.POST.get('email')
+        user = User.objects.filter(email=email).first()
+
+        if user:
+            reset_code = generate_reset_code()
+            uidb64 = urlsafe_base64_encode(str(user.id).encode())
+            token = default_token_generator.make_token(user)
+            expiration_time = timezone.now() + timedelta(minutes=10)
+            request_token = uuid4()
+
+            # Save reset code and metadata to the database
+            PasswordResetCode.objects.create(
+                user=user,
+                reset_code=reset_code,
+                uidb64=uidb64,
+                token=token,
+                expires_at=expiration_time,
+                request_token=request_token
+            )
+
+            # Send the reset code via email
+            send_reset_email(email, reset_code)
+
+            return redirect('password_reset_confirm', uidb64=uidb64, token=token, request_token=request_token)
+
+        # If the user is not found, display an error message
+        messages.error(request, 'The email address is not registered.')
+        return redirect('password_reset')  # Redirect back to the reset form for better UX
+
+    return render(request, 'users/password_reset_form.html')
+
+# Password reset confirmation view
+def password_reset_confirm(request, uidb64, token, request_token):
+    try:
+        uid = urlsafe_base64_decode(uidb64).decode()
+        user = User.objects.get(id=uid)
+    except (TypeError, ValueError, OverflowError, User.DoesNotExist):
+        logger.error("Invalid user ID in reset link.")
+        return render(request, 'users/password_reset_confirm.html', {'error_message': 'Invalid reset link.'})
+
+    reset_code_entry = PasswordResetCode.objects.filter(user=user, request_token=request_token).last()
+
+    if not reset_code_entry or not default_token_generator.check_token(user, token):
+        return render(request, 'users/password_reset_confirm.html', {'error_message': 'Invalid or expired reset token.'})
+
+    if timezone.now() > reset_code_entry.expires_at:
+        return render(request, 'users/password_reset_confirm.html', {'error_message': 'The reset code has expired.'})
+    
+    # Check the number of failed attempts and the timestamp in the session
+    if 'failed_attempts' not in request.session or 'first_failed_at' not in request.session:
+        request.session['failed_attempts'] = 0
+        request.session['first_failed_at'] = timezone.now().timestamp()  # Store current time when first failed attempt occurs
+
+    # If 30 minutes (1800 seconds) have passed since the first failure, reset the attempts
+    if timezone.now().timestamp() - request.session['first_failed_at'] > 600:  # 300 seconds = 10 minutes
+        request.session['failed_attempts'] = 0
+        request.session['first_failed_at'] = timezone.now().timestamp()  # Reset the timer
+
+    # Redirect to home page after 5 failed attempts
+    if request.session['failed_attempts'] >= 5:
+        messages.error(request, 'You have entered incorrect reset codes 5 times. Please try again later.')
+        return redirect('home')  # Replace 'home' with your actual home page URL name
+
+    if request.method == 'POST':
+        reset_code = ''.join([request.POST.get(f'reset_code_{i}') for i in range(1, 7)])
+        if reset_code != reset_code_entry.reset_code:
+            # Increment failed attempts if the code is incorrect
+            request.session['failed_attempts'] += 1
+            return render(request, 'users/password_reset_confirm.html', {'error_message': 'Invalid reset code.'})
+
+        # Reset the failed attempts counter on successful code entry
+        request.session['failed_attempts'] = 0
+        return redirect('password_reset_form', uidb64=uidb64, token=token)
+
+    return render(request, 'users/password_reset_confirm.html', {
+        'uidb64': uidb64,
+        'token': token,
+        'request_token': request_token,
+        'user': user,
+    })
+
+# Resend reset code view
+def resend_reset_code(request):
+    if request.method == 'POST':
+        email = request.POST.get('email')
+        user = User.objects.filter(email=email).first()
+
+        if user:
+            reset_code = generate_reset_code()
+            PasswordResetCode.objects.update_or_create(
+                user=user,
+                defaults={'reset_code': reset_code, 'created_at': timezone.now()}
+            )
+            send_reset_email(email, reset_code)
+            return redirect('password_reset_request')
+
+        return render(request, 'users/password_reset_resend.html', {'error_message': 'No user found with this email address.'})
+
+    return render(request, 'users/password_reset_resend.html')
+
+from django.shortcuts import render, redirect, get_object_or_404
+from django.contrib.auth.models import User
+from django.contrib.auth.tokens import default_token_generator
+from django.utils.http import urlsafe_base64_decode
+from django.contrib.auth.forms import SetPasswordForm
+from django.contrib import messages
+
+def password_reset_form(request, uidb64, token):
+    try:
+        # Decode the user ID from the base64 string
+        uid = urlsafe_base64_decode(uidb64).decode()
+        user = User.objects.get(id=uid)
+    except (TypeError, ValueError, OverflowError, User.DoesNotExist):
+        user = None
+
+    if user is not None and default_token_generator.check_token(user, token):
+        if request.method == 'POST':
+            form = SetPasswordForm(user, request.POST)
+            if form.is_valid():
+                # Save the new password
+                form.save()
+                messages.success(request, "Your password has been reset successfully!")
+                return redirect('login')  # Redirect to login page after successful password reset
+            else:
+                messages.error(request, "Please correct the errors below.")
+        else:
+            form = SetPasswordForm(user)
+        return render(request, 'users/password_reset_form2.html', {'form': form})
+    else:
+        messages.error(request, "The password reset link is invalid or has expired.")
+        return redirect('password_reset')  # Redirect to the password reset request page

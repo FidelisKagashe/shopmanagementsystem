@@ -18,6 +18,14 @@ urlpatterns = [
     path('register/', views.register_email, name='register_email'),
     path('register/complete/', views.register_complete, name='register_complete'),
 
+    # Password Reset Request: Simple FBV
+    path('password_reset/', views.password_reset_request, name='password_reset'),
+    path('reset/<uidb64>/<token>/<request_token>/', views.password_reset_confirm, name='password_reset_confirm'),
+    path('reset/<uidb64>/<token>/', views.password_reset_form, name='password_reset_form'),
+    
+    # Resend Reset Code (optional)
+    path('resend_reset_code/', views.resend_reset_code, name='resend_reset_code'),  # Endpoint to resend the reset code
+    
     path('password_change/', auth_views.PasswordChangeView.as_view(template_name='users/password_change_form.html'), name='password_change'),
     path('password_change/done/', auth_views.PasswordChangeDoneView.as_view(template_name='users/password_change_done.html'), name='password_change_done'),
 

@@ -23,7 +23,7 @@ Order Confirmation
                     <p class="font-semibold">{{ item.product_name }}</p>
                     <p class="text-sm text-gray-600">Quantity: {{ item.quantity }}</p>
                 </div>
-                <p class="text-sm font-bold text-yellow-600">Tsh {{ item.total_price|floatformat:2 }}</p>
+                <p class="text-sm font-bold text-yellow-600">Tsh {{ item.total_price|floatformat:2 }}/=</p>
             </li>
             {% endfor %}
         </ul>
