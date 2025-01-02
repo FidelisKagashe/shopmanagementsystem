@@ -1,71 +1,151 @@
 {% load static %}
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>New Order Notification</title>
     <style>
+        /* Global Styles */
         body {
-            font-family: Arial, sans-serif;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             line-height: 1.6;
-            color: #333;
-            margin: 20px;
+            color: #3B3A36; /* Soft dark gray text */
+            margin: 30px;
+            background-color: #F9F6EE; /* Light neutral background */
         }
+
         h2 {
-            color: #444;
+            color: #F59E0B; /* Bold yellow for headings */
+            font-size: 26px;
+            text-align: center;
         }
+
+        p {
+            font-size: 16px;
+            color: #3B3A36;
+            margin-top: 5px;
+            text-align: center;
+        }
+
+        /* Table Styles */
         table {
             width: 100%;
+            margin-top: 30px;
             border-collapse: collapse;
-            margin-top: 20px;
         }
+
         th, td {
-            border: 1px solid #ddd;
-            padding: 8px;
+            padding: 12px;
             text-align: left;
+            border: 2px solid #F59E0B;
+            background-color: #FFF9D7;
         }
+
         th {
-            background-color: #f4f4f4;
+            background-color: #F59E0B;
+            color: #FFFFFF;
+            font-size: 18px;
             font-weight: bold;
         }
+
+        td {
+            font-size: 16px;
+            color: #3B3A36;
+        }
+
+        tr:nth-child(even) {
+            background-color: #FFFAE5; /* Subtle alternating row colors */
+        }
+
+        tr:hover {
+            background-color: #FFEB99; /* Row hover effect */
+        }
+
         .total {
             font-weight: bold;
             text-align: right;
+            font-size: 20px;
+            color: #3B3A36;
         }
+
         .highlight {
-            color: #d9534f;
+            color: #d9534f; /* Highlight Grand Total in red */
+            font-size: 20px;
+            font-weight: 600;
+        }
+
+        .product-image {
+            width: 80px;
+            height: auto;
+            border-radius: 8px;
+        }
+
+        /* Scrollable Table */
+        .table-wrapper {
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            body {
+                margin: 20px;
+            }
+            h2 {
+                font-size: 22px;
+            }
+            table {
+                font-size: 14px;
+            }
+            .total, .highlight {
+                font-size: 16px;
+            }
         }
     </style>
 </head>
 <body>
+
     <h2>New Order from {{ user.username }}</h2>
     <p><strong>Customer Email:</strong> {{ user.email }}</p>
+    <p><strong>Customer Phone Number:</strong> {{ customer_phone }}</p>
+    <p><strong>City:</strong> {{ city }}</p>
+    <p><strong>Address:</strong> {{ address }}</p>
     <p>A new order has been placed. Below are the details:</p>
 
-    <table>
-        <thead>
-            <tr>
-                <th>Product Name</th>
-                <th>Quantity</th>
-                <th>Unit Price (Tsh)</th>
-                <th>Total Price (Tsh)</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for item in calculated_items %}
-            <tr>
-                <td>{{ item.product_name }}</td>
-                <td>{{ item.quantity }}</td>
-                <td>{{ item.unit_price|floatformat:2 }}/=</td>
-                <td>{{ item.total_price|floatformat:2 }}/=</td>
-            </tr>
-            {% endfor %}
-            <tr>
-                <td colspan="3" class="total">Grand Total:</td>
-                <td class="highlight">{{ grand_total|floatformat:2 }}/=</td>
-            </tr>
-        </tbody>
-    </table>
+    <!-- Order Details Table -->
+    <div class="table-wrapper">
+        <table>
+            <thead>
+                <tr>
+                    <th>Product Image</th>
+                    <th>Product Name</th>
+                    <th>Quantity</th>
+                    <th>Unit Price (Tsh)</th>
+                    <th>Total Price (Tsh)</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in calculated_items %}
+                <tr>
+                    <td>
+                        <img src="{{ item.image_url }}" class="product-image" alt="{{ item.product_name }}">
+                    </td>
+                    <td>{{ item.product_name }}</td>
+                    <td>{{ item.quantity }}</td>
+                    <td>{{ item.unit_price|floatformat:2 }}/=</td>
+                    <td>{{ item.total_price|floatformat:2 }}/=</td>
+                </tr>
+                {% endfor %}
+                <tr>
+                    <td colspan="4" class="total">Grand Total:</td>
+                    <td class="highlight">{{ grand_total|floatformat:2 }}/=</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
 
     <p>Please log in to the admin panel for more details.</p>
+
 </body>
 </html>

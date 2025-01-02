@@ -397,3 +397,207 @@ Traceback (most recent call last):
     raise TemplateDoesNotExist(", ".join(template_name_list), chain=chain)
 django.template.exceptions.TemplateDoesNotExist: users/password_change_form.html
 ERROR 2024-12-29 23:47:33,457 basehttp "GET /users/password_change/ HTTP/1.1" 500 86490
+ERROR 2024-12-30 03:54:19,733 log Internal Server Error: /products/add-to-cart/1/
+Traceback (most recent call last):
+  File "E:\Web-2\Online shopping_django_only\venv\Lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "E:\Web-2\Online shopping_django_only\venv\Lib\site-packages\django\core\handlers\base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "E:\Web-2\Online shopping_django_only\venv\Lib\site-packages\django\contrib\auth\decorators.py", line 60, in _view_wrapper
+    return view_func(request, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "E:\Web-2\Online shopping_django_only\shopping_center\products\views.py", line 112, in add_to_cart
+    return HttpResponseRedirect(reverse('cart'))
+                                ^^^^^^^^^^^^^^^
+  File "E:\Web-2\Online shopping_django_only\venv\Lib\site-packages\django\urls\base.py", line 88, in reverse
+    return resolver._reverse_with_prefix(view, prefix, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "E:\Web-2\Online shopping_django_only\venv\Lib\site-packages\django\urls\resolvers.py", line 831, in _reverse_with_prefix
+    raise NoReverseMatch(msg)
+django.urls.exceptions.NoReverseMatch: Reverse for 'cart' not found. 'cart' is not a valid view function or pattern name.
+ERROR 2024-12-30 03:54:19,805 log Internal Server Error: /products/add-to-cart/1/
+Traceback (most recent call last):
+  File "E:\Web-2\Online shopping_django_only\venv\Lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "E:\Web-2\Online shopping_django_only\venv\Lib\site-packages\django\core\handlers\base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "E:\Web-2\Online shopping_django_only\venv\Lib\site-packages\django\contrib\auth\decorators.py", line 60, in _view_wrapper
+    return view_func(request, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "E:\Web-2\Online shopping_django_only\shopping_center\products\views.py", line 112, in add_to_cart
+    return HttpResponseRedirect(reverse('cart'))
+                                ^^^^^^^^^^^^^^^
+  File "E:\Web-2\Online shopping_django_only\venv\Lib\site-packages\django\urls\base.py", line 88, in reverse
+    return resolver._reverse_with_prefix(view, prefix, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "E:\Web-2\Online shopping_django_only\venv\Lib\site-packages\django\urls\resolvers.py", line 831, in _reverse_with_prefix
+    raise NoReverseMatch(msg)
+django.urls.exceptions.NoReverseMatch: Reverse for 'cart' not found. 'cart' is not a valid view function or pattern name.
+ERROR 2024-12-30 03:54:19,821 log Internal Server Error: /products/add-to-cart/1/
+Traceback (most recent call last):
+  File "E:\Web-2\Online shopping_django_only\venv\Lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "E:\Web-2\Online shopping_django_only\venv\Lib\site-packages\django\core\handlers\base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "E:\Web-2\Online shopping_django_only\venv\Lib\site-packages\django\contrib\auth\decorators.py", line 60, in _view_wrapper
+    return view_func(request, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "E:\Web-2\Online shopping_django_only\shopping_center\products\views.py", line 112, in add_to_cart
+    return HttpResponseRedirect(reverse('cart'))
+                                ^^^^^^^^^^^^^^^
+  File "E:\Web-2\Online shopping_django_only\venv\Lib\site-packages\django\urls\base.py", line 88, in reverse
+    return resolver._reverse_with_prefix(view, prefix, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "E:\Web-2\Online shopping_django_only\venv\Lib\site-packages\django\urls\resolvers.py", line 831, in _reverse_with_prefix
+    raise NoReverseMatch(msg)
+django.urls.exceptions.NoReverseMatch: Reverse for 'cart' not found. 'cart' is not a valid view function or pattern name.
+ERROR 2024-12-30 03:54:19,861 log Internal Server Error: /products/add-to-cart/1/
+Traceback (most recent call last):
+  File "E:\Web-2\Online shopping_django_only\venv\Lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "E:\Web-2\Online shopping_django_only\venv\Lib\site-packages\django\core\handlers\base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "E:\Web-2\Online shopping_django_only\venv\Lib\site-packages\django\contrib\auth\decorators.py", line 60, in _view_wrapper
+    return view_func(request, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "E:\Web-2\Online shopping_django_only\shopping_center\products\views.py", line 112, in add_to_cart
+    return HttpResponseRedirect(reverse('cart'))
+                                ^^^^^^^^^^^^^^^
+  File "E:\Web-2\Online shopping_django_only\venv\Lib\site-packages\django\urls\base.py", line 88, in reverse
+    return resolver._reverse_with_prefix(view, prefix, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "E:\Web-2\Online shopping_django_only\venv\Lib\site-packages\django\urls\resolvers.py", line 831, in _reverse_with_prefix
+    raise NoReverseMatch(msg)
+django.urls.exceptions.NoReverseMatch: Reverse for 'cart' not found. 'cart' is not a valid view function or pattern name.
+ERROR 2024-12-30 03:54:19,877 log Internal Server Error: /products/add-to-cart/1/
+Traceback (most recent call last):
+  File "E:\Web-2\Online shopping_django_only\venv\Lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "E:\Web-2\Online shopping_django_only\venv\Lib\site-packages\django\core\handlers\base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "E:\Web-2\Online shopping_django_only\venv\Lib\site-packages\django\contrib\auth\decorators.py", line 60, in _view_wrapper
+    return view_func(request, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "E:\Web-2\Online shopping_django_only\shopping_center\products\views.py", line 112, in add_to_cart
+    return HttpResponseRedirect(reverse('cart'))
+                                ^^^^^^^^^^^^^^^
+  File "E:\Web-2\Online shopping_django_only\venv\Lib\site-packages\django\urls\base.py", line 88, in reverse
+    return resolver._reverse_with_prefix(view, prefix, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "E:\Web-2\Online shopping_django_only\venv\Lib\site-packages\django\urls\resolvers.py", line 831, in _reverse_with_prefix
+    raise NoReverseMatch(msg)
+django.urls.exceptions.NoReverseMatch: Reverse for 'cart' not found. 'cart' is not a valid view function or pattern name.
+ERROR 2024-12-30 03:54:20,013 basehttp "POST /products/add-to-cart/1/ HTTP/1.1" 500 89358
+ERROR 2024-12-30 03:54:20,037 basehttp "POST /products/add-to-cart/1/ HTTP/1.1" 500 89358
+ERROR 2024-12-30 03:54:20,133 basehttp "POST /products/add-to-cart/1/ HTTP/1.1" 500 89358
+ERROR 2024-12-30 03:54:20,149 basehttp "POST /products/add-to-cart/1/ HTTP/1.1" 500 89358
+ERROR 2024-12-30 03:54:20,213 basehttp "POST /products/add-to-cart/1/ HTTP/1.1" 500 89358
+ERROR 2024-12-30 03:54:39,524 log Internal Server Error: /products/add-to-cart/2/
+Traceback (most recent call last):
+  File "E:\Web-2\Online shopping_django_only\venv\Lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "E:\Web-2\Online shopping_django_only\venv\Lib\site-packages\django\core\handlers\base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "E:\Web-2\Online shopping_django_only\venv\Lib\site-packages\django\contrib\auth\decorators.py", line 60, in _view_wrapper
+    return view_func(request, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "E:\Web-2\Online shopping_django_only\shopping_center\products\views.py", line 112, in add_to_cart
+    return HttpResponseRedirect(reverse('cart'))
+                                ^^^^^^^^^^^^^^^
+  File "E:\Web-2\Online shopping_django_only\venv\Lib\site-packages\django\urls\base.py", line 88, in reverse
+    return resolver._reverse_with_prefix(view, prefix, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "E:\Web-2\Online shopping_django_only\venv\Lib\site-packages\django\urls\resolvers.py", line 831, in _reverse_with_prefix
+    raise NoReverseMatch(msg)
+django.urls.exceptions.NoReverseMatch: Reverse for 'cart' not found. 'cart' is not a valid view function or pattern name.
+ERROR 2024-12-30 03:54:39,571 basehttp "POST /products/add-to-cart/2/ HTTP/1.1" 500 89363
+ERROR 2024-12-30 04:03:06,430 log Internal Server Error: /products/add-to-cart/2/
+Traceback (most recent call last):
+  File "E:\Web-2\Online shopping_django_only\venv\Lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "E:\Web-2\Online shopping_django_only\venv\Lib\site-packages\django\core\handlers\base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "E:\Web-2\Online shopping_django_only\venv\Lib\site-packages\django\contrib\auth\decorators.py", line 60, in _view_wrapper
+    return view_func(request, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "E:\Web-2\Online shopping_django_only\shopping_center\products\views.py", line 112, in add_to_cart
+    return HttpResponseRedirect(reverse('cart'))
+                                ^^^^^^^^^^^^^^^
+  File "E:\Web-2\Online shopping_django_only\venv\Lib\site-packages\django\urls\base.py", line 88, in reverse
+    return resolver._reverse_with_prefix(view, prefix, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "E:\Web-2\Online shopping_django_only\venv\Lib\site-packages\django\urls\resolvers.py", line 831, in _reverse_with_prefix
+    raise NoReverseMatch(msg)
+django.urls.exceptions.NoReverseMatch: Reverse for 'cart' not found. 'cart' is not a valid view function or pattern name.
+ERROR 2024-12-30 04:03:06,472 basehttp "POST /products/add-to-cart/2/ HTTP/1.1" 500 89363
+ERROR 2024-12-30 05:09:30,098 log Internal Server Error: /products/place_order/
+Traceback (most recent call last):
+  File "E:\Web-2\Online shopping_django_only\venv\Lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "E:\Web-2\Online shopping_django_only\venv\Lib\site-packages\django\core\handlers\base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "E:\Web-2\Online shopping_django_only\venv\Lib\site-packages\django\contrib\auth\decorators.py", line 60, in _view_wrapper
+    return view_func(request, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "E:\Web-2\Online shopping_django_only\shopping_center\products\views.py", line 224, in place_order
+    "customer_phone": customer_phone,
+                      ^^^^^^^^^^^^^^
+UnboundLocalError: cannot access local variable 'customer_phone' where it is not associated with a value
+ERROR 2024-12-30 05:09:30,122 basehttp "POST /products/place_order/ HTTP/1.1" 500 81140
+ERROR 2025-01-01 22:53:59,134 log Internal Server Error: /users/password_reset/
+Traceback (most recent call last):
+  File "E:\Web-2\Online shopping_django_only\venv\Lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "E:\Web-2\Online shopping_django_only\venv\Lib\site-packages\django\core\handlers\base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "E:\Web-2\Online shopping_django_only\shopping_center\users\views.py", line 460, in password_reset_request
+    send_reset_email(email, reset_code)
+  File "E:\Web-2\Online shopping_django_only\shopping_center\users\views.py", line 434, in send_reset_email
+    send_mail(subject, message, settings.DEFAULT_FROM_EMAIL, [email])
+  File "E:\Web-2\Online shopping_django_only\venv\Lib\site-packages\django\core\mail\__init__.py", line 88, in send_mail
+    return mail.send()
+           ^^^^^^^^^^^
+  File "E:\Web-2\Online shopping_django_only\venv\Lib\site-packages\django\core\mail\message.py", line 301, in send
+    return self.get_connection(fail_silently).send_messages([self])
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "E:\Web-2\Online shopping_django_only\venv\Lib\site-packages\django\core\mail\backends\smtp.py", line 128, in send_messages
+    new_conn_created = self.open()
+                       ^^^^^^^^^^^
+  File "E:\Web-2\Online shopping_django_only\venv\Lib\site-packages\django\core\mail\backends\smtp.py", line 86, in open
+    self.connection = self.connection_class(
+                      ^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\fidel\AppData\Local\Programs\Python\Python311\Lib\smtplib.py", line 255, in __init__
+    (code, msg) = self.connect(host, port)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\fidel\AppData\Local\Programs\Python\Python311\Lib\smtplib.py", line 341, in connect
+    self.sock = self._get_socket(host, port, self.timeout)
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\fidel\AppData\Local\Programs\Python\Python311\Lib\smtplib.py", line 312, in _get_socket
+    return socket.create_connection((host, port), timeout,
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\fidel\AppData\Local\Programs\Python\Python311\Lib\socket.py", line 827, in create_connection
+    for res in getaddrinfo(host, port, 0, SOCK_STREAM):
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\fidel\AppData\Local\Programs\Python\Python311\Lib\socket.py", line 962, in getaddrinfo
+    for res in _socket.getaddrinfo(host, port, family, type, proto, flags):
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+socket.gaierror: [Errno 11001] getaddrinfo failed
+ERROR 2025-01-01 22:53:59,447 basehttp "POST /users/password_reset/ HTTP/1.1" 500 118885

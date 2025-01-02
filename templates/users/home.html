@@ -5,10 +5,44 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>{% block header %}Fmk Shop{% endblock %}</title>  <!-- Default Title -->
+    <title>{% block header %}Fmk Link{% endblock %}</title>  <!-- Default Title -->
 
     <link rel="stylesheet" href="{% static 'css/tailwind.min.css' %}">
     <link rel="stylesheet" href="{% static 'bootstrap-icons/font/bootstrap-icons.css' %}">
+    <style>
+        /* Styling for the cart item count */
+        #cart-item-count {
+            background-color: #fbbf24; /* Yellow background */
+            color: white;
+            font-size: 12px;
+            padding: 2px 6px;
+            border-radius: 9999px; /* Round shape */
+            position: absolute;
+            top: 0;
+            right: 0;
+        }
+    
+        /* Shine animation effect */
+        .shine-animation #cart-item-count {
+            animation: shine 1s ease-in-out;
+        }
+    
+        @keyframes shine {
+            0% {
+                transform: scale(1);
+                opacity: 1;
+            }
+            50% {
+                transform: scale(1.2);
+                opacity: 0.7;
+            }
+            100% {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+    </style>
+    
     <style>
         body {
           overflow-x: hidden;
@@ -16,6 +50,7 @@
         .carousel-item {
             transition: transform 0.5s ease-in-out;
         }
+        
     </style>
     <style>
         .animate-shine {
@@ -84,7 +119,7 @@
     <nav class="bg-yellow-700 text-white flex justify-between items-center px-3 md:px-4 py-2 fixed top-0 left-0 w-full z-50 shadow">
         <div class="flex justify-between items-center">
             <button id="toggle-sidebar" class="text-white text-2xl mr-4">&#9776;</button>
-            <span class="md:text-xl font-bold">FMK Shop</span>
+            <span class="md:text-xl font-bold">FMK Link</span>
         </div>
     
         <ul class="hidden md:flex space-x-6">
@@ -122,64 +157,45 @@
         <ul class="flex space-x-3 md:space-x-6">
             {% if user.is_authenticated %}
             <li class="relative">
-                <a href="#" class="flex items-center hidden md:block hover:text-yellow-400" id="accountButton" onclick="toggleDropdown(event)">
+                <a href="#" id="accountButtonDesktop" data-dropdown-button="dropdownMenuDesktop" class="flex items-center hidden md:block hover:text-yellow-400" onclick="toggleDropdown('dropdownMenuDesktop', 'accountButtonDesktop'); event.preventDefault();">
                     Account
-                    <span class="dropdown-icon ml-1 transition-transform duration-200">
-                        ▼
-                    </span>
+                    <span class="dropdown-icon ml-1 transition-transform duration-200">▼</span>
                 </a>
-                <ul id="dropdownMenu" class="absolute right-0 mt-2 w-40 bg-white text-black border rounded border-gray-200 shadow-md hidden">
-                    <li>
-                        <a href="" class="block px-4 py-2 hover:bg-gray-100 hover:text-yellow-400">My Account</a>
-                    </li>
-                    <li>
-                        <a href="{% url 'password_change' %}" class="block px-4 py-2 hover:bg-gray-100 hover:text-yellow-400">Change password</a>
-                    </li>
-                    <li>
-                        <a href="{% url 'logout' %}" class="block px-4 py-2 hover:bg-gray-100 hover:text-yellow-400"><i class="bi bi-box-arrow-left"> </i>Logout</a>
-                    </li>
+                <ul id="dropdownMenuDesktop" class="absolute right-0 mt-2 w-40 bg-white text-black border rounded border-gray-200 shadow-md hidden">
+                    <li><a href="" class="block px-4 py-2 hover:bg-gray-100 hover:text-yellow-400">My Account</a></li>
+                    <li><a href="{% url 'password_change' %}" class="block px-4 py-2 hover:bg-gray-100 hover:text-yellow-400">Change password</a></li>
+                    <li><a href="{% url 'logout' %}" class="block px-4 py-2 hover:bg-gray-100 hover:text-yellow-400">Logout</a></li>
                     {% if user.is_superuser %}
-                    <li>
-                        <a href="admin/" class="block px-4 py-2 hover:bg-gray-100 hover:text-yellow-400">Main Admin Page</a>
-                    </li>
+                    <li><a href="admin/" class="block px-4 py-2 hover:bg-gray-100 hover:text-yellow-400">Main Admin Page</a></li>
                     {% endif %}
-                </ul>                
+                </ul>
             </li>
             <li><span class="hidden md:block">Welcome, {{ user.username }}</span></li>
             {% else %}
-            <li><a href="{% url 'register_email' %}" class="hidden md:block hover:text-yellow-400"><i class="bi bi-pencil-square"> </i>Register</a></li>
-            <li><a href="{% url 'login' %}" class="hidden md:block hover:text-yellow-400"><i class="bi bi-box-arrow-in-right"> </i>Login</a></li>
+            <li><a href="{% url 'register_email' %}" class="hidden md:block hover:text-yellow-400"><i class="bi bi-pencil-square"></i> Register</a></li>
+            <li><a href="{% url 'login' %}" class="hidden md:block hover:text-yellow-400"><i class="bi bi-box-arrow-in-right"></i> Login</a></li>
             {% endif %}
-            
-            <!-- Dropdown Menu -->
+        
+            <!-- Dropdown for mobile -->
             <li class="relative">
-                <a href="#" class="flex items-center md:hidden hover:text-yellow-400" id="accountButton" onclick="toggleDropdown(event)">
+                <a href="#" id="accountButtonMobile" data-dropdown-button="dropdownMenuMobile" class="flex items-center md:hidden hover:text-yellow-400" onclick="toggleDropdown('dropdownMenuMobile', 'accountButtonMobile'); event.preventDefault();">
                     Account
-                    <span class="dropdown-icon ml-1 transition-transform duration-200">
-                        ▼
-                    </span>
+                    <span class="dropdown-icon ml-1 transition-transform duration-200">▼</span>
                 </a>
-                <ul id="dropdownMenu" class="absolute rounded right-0 mt-2 w-40 bg-white text-black border border-gray-200 shadow-md hidden">
+                <ul id="dropdownMenuMobile" class="absolute right-0 mt-2 w-40 rounded bg-white text-black border border-gray-200 shadow-md hidden">
                     {% if user.is_authenticated %}
-                    <li><span class="block px-4 py-2 hover:bg-gray-100 hover:text-yellow-400">Welcome, {{ user.username }}</span></li>
-                    <li>
-                        <a href="{% url 'logout' %}" class="block px-4 py-2 hover:bg-gray-100 hover:text-yellow-400">Logout</a>
-                    </li>
-                    <li>
-                        <a href="" class="block px-4 py-2 hover:bg-gray-100 hover:text-yellow-400">My Account</a>
-                    </li>
+                    <li><span class="block px-4 py-2 bg-yellow-700 text-white">Welcome, {{ user.username }}</span></li>
+                    <li><a href="" class="block px-4 py-2 hover:bg-gray-100 hover:text-yellow-400">My Account</a></li>
+                    <li><a href="{% url 'password_change' %}" class="block px-4 py-2 hover:bg-gray-100 hover:text-yellow-400">Change password</a></li>
+                    <li><a href="{% url 'logout' %}" class="block px-4 py-2 hover:bg-gray-100 hover:text-yellow-400">Logout</a></li>
                     {% else %}
-                    <li>
-                        <a href="{% url 'login' %}" class="block px-4 py-2 hover:bg-gray-100 hover:text-yellow-400"><i class="bi bi-box-arrow-in-right"> </i>Login</a>
-                    </li>
-                    <li>
-                        <a href="{% url 'register_email' %}" class="block px-4 py-2 hover:bg-gray-100 hover:text-yellow-400"><i class="bi bi-pencil-square"> </i>Register</a>
-                    </li>
+                    <li><a href="{% url 'login' %}" class="block px-4 py-2 hover:bg-gray-100 hover:text-yellow-400"><i class="bi bi-box-arrow-in-right"></i> Login</a></li>
+                    <li><a href="{% url 'register_email' %}" class="block px-4 py-2 hover:bg-gray-100 hover:text-yellow-400"><i class="bi bi-pencil-square"></i> Register</a></li>
                     {% endif %}
-                </ul>                
+                </ul>
             </li>
-            {% comment %} {% url 'my_account' %} {% endcomment %}
-            
+        
+            <!-- Cart -->
             <li>
                 <a href="{% url 'view_cart' %}" class="{% if current_tab == 'cart' %} text-yellow-400 relative p-2 {% else %} relative p-2 hover:text-yellow-400 {% endif %}" aria-label="View cart">
                     Cart
@@ -190,17 +206,24 @@
                 </a>
             </li>
         </ul>
+        
     </nav>
     
     <!-- Sidebar -->
-    <div id="sidebar" class="fixed mt-6 pt-6 pb-12 w-full md:w-64 inset-y-0 left-0 bg-yellow-600 text-white z-40 overflow-y-auto transform -translate-x-full transition-transform duration-300 h-screen">
+    <div id="sidebar" class="fixed inset-y-0 left-0 mt-6 pt-6 pb-12 w-full md:w-64 bg-yellow-600 text-white z-40 overflow-y-auto transform -translate-x-full transition-transform duration-300 h-screen">
         <ul class="space-y-6 mb-3 pt-6 pl-6 pb-6">
             {% for category in categories %}
             <li>
-                <button onclick="toggleDropdown2('dropdown-{{ forloop.counter }}')" class="flex justify-between items-center w-full text-left hover:text-yellow-400 focus:outline-none">
+                <button
+                    onclick="toggleSidebarMenu('dropdown-{{ forloop.counter }}', 'icon-{{ forloop.counter }}')"
+                    class="flex justify-between items-center w-full text-left hover:text-yellow-400 focus:outline-none"
+                >
                     <span><i class="bi bi-three-dots-vertical"></i> {{ category.name }}</span>
                     {% if category.subcategories.exists %}
-                    <i class="bi bi-chevron-down transition-transform mr-3" id="icon-{{ forloop.counter }}"></i>
+                    <i
+                        class="bi bi-chevron-down transition-transform mr-3"
+                        id="icon-{{ forloop.counter }}"
+                    ></i>
                     {% endif %}
                 </button>
                 {% if category.subcategories.exists %}
@@ -220,11 +243,11 @@
     </div>
 
     {% if messages %}
-        <div id="alert-container" class="fixed top-0 left-0 right-0 z-50 p-2 transition-transform transform -translate-y-full bg-green-100 text-green-800">
+        <div id="alert-container" class="fixed top-0 left-0 right-0 z-50 p-2 transition-transform transform -translate-y-full bg-yellow-100 text-yellow-800">
             <div>
                 {% for message in messages %}
                     {% if forloop.last %}
-                        <div class="p-2 rounded text-center bg-green-200 text-yellow-800">
+                        <div class="p-2 rounded text-center bg-yellow-200 text-yellow-800">
                             {{ message }}
                         </div>
                     {% endif %}
@@ -243,7 +266,7 @@
                 // Slide up and remove after 5 seconds
                 setTimeout(() => {
                     alertContainer.classList.add("-translate-y-full");
-                }, 5000); // Alert will stay visible for 5 seconds
+                }, 4000); // Alert will stay visible for 5 seconds
             });
         </script>
     {% endif %}
@@ -319,95 +342,120 @@
                     <a href="{% url 'faq' %}" class="hover:underline text-yellow-300 hover:text-white transition duration-300">FAQ</a>
                     {% endif %}
 
-                    <a href="/privacy-policy" class="hover:underline text-yellow-300 hover:text-white transition duration-300">Privacy Policy</a>
-                    <a href="/terms-of-service" class="hover:underline text-yellow-300 hover:text-white transition duration-300">Terms of Service</a>
                 </div>
                 <!-- Social Media Links -->
                 <div class="flex justify-center gap-4 mb-4 md:mb-0">
-                    <a href="https://www.facebook.com" target="_blank" class="text-yellow-300 hover:text-white transition duration-300">Facebook</a>
-                    <a href="https://www.instagram.com" target="_blank" class="text-yellow-300 hover:text-white transition duration-300">Instagram</a>
-                    <a href="https://www.twitter.com" target="_blank" class="text-yellow-300 hover:text-white transition duration-300">Twitter</a>
+                    <a href="" target="_blank" class="text-yellow-300 hover:text-white transition duration-300">Facebook</a>
+                    <a href="" target="_blank" class="text-yellow-300 hover:text-white transition duration-300">Instagram</a>
+                    <a href="" target="_blank" class="text-yellow-300 hover:text-white transition duration-300">Twitter</a>
                 </div>
           </div>
           <!-- Copyright Section -->
           <div class="text-center mt-4">
-              <p>&copy; 2024 FMK Shop. All rights reserved.</p>
+              <p>&copy; 2025 FMK Link. All rights reserved.</p>
           </div>
       </div>
     </footer>
-  
+
     <script>
-                // Sidebar toggle functionality
+        // Sidebar toggle functionality
         const sidebarToggle = document.getElementById('toggle-sidebar');
         const sidebar = document.getElementById('sidebar');
 
         sidebarToggle.addEventListener('click', () => {
-            if (sidebar.classList.contains('-translate-x-full')) {
-                sidebar.classList.remove('-translate-x-full');
-                document.body.style.overflowY = 'hidden'; // Disable scrolling when sidebar is open
-            } else {
-                sidebar.classList.add('-translate-x-full');
-                document.body.style.overflowY = 'auto'; // Re-enable scrolling when sidebar is closed
-            }
+            const isHidden = sidebar.classList.contains('-translate-x-full');
+
+            sidebar.classList.toggle('-translate-x-full', !isHidden);
+            document.body.style.overflowY = isHidden ? 'hidden' : 'auto'; // Manage body scrolling
         });
 
-        // Carousel functionality (not related to dropdowns but kept intact)
+        // Sidebar dropdown toggle functionality
+        function toggleSidebarMenu(dropdownId, iconId) {
+            const dropdown = document.getElementById(dropdownId);
+            const icon = document.getElementById(iconId);
+
+            if (!dropdown) return;
+
+            // Close all other dropdowns
+            const allDropdowns = document.querySelectorAll('[id^="dropdown-"]');
+            const allIcons = document.querySelectorAll('[id^="icon-"]');
+
+            allDropdowns.forEach((dropdownItem) => {
+                if (dropdownItem !== dropdown) {
+                    dropdownItem.classList.add('hidden');
+                }
+            });
+
+            allIcons.forEach((iconItem) => {
+                if (iconItem !== icon) {
+                    iconItem.style.transform = 'rotate(0deg)';
+                }
+            });
+
+            // Toggle the selected dropdown
+            dropdown.classList.toggle('hidden');
+            if (icon) {
+                icon.style.transform = dropdown.classList.contains('hidden') ? 'rotate(0deg)' : 'rotate(180deg)';
+            }
+        }
+
+        // Close all dropdowns when clicking outside
+        document.addEventListener('click', (event) => {
+            const sidebar = document.getElementById('sidebar');
+
+            // Ignore clicks inside the sidebar
+            if (sidebar.contains(event.target)) return;
+
+            const allDropdowns = document.querySelectorAll('[id^="dropdown-"]');
+            const allIcons = document.querySelectorAll('[id^="icon-"]');
+
+            allDropdowns.forEach((dropdown) => {
+                dropdown.classList.add('hidden');
+            });
+
+            allIcons.forEach((icon) => {
+                icon.style.transform = 'rotate(0deg)';
+            });
+        });
+    </script>
+
+    
+    <script>
+    
+        // Carousel functionality
         const slides = document.getElementById('carousel-slides');
         const prev = document.getElementById('prev');
         const next = document.getElementById('next');
         const totalSlides = slides.children.length;
-
+    
         let currentIndex = 0;
-
+    
         function showSlide(index) {
             slides.style.transform = `translateX(-${index * 100}%)`;
         }
-
+    
         prev.addEventListener('click', () => {
             currentIndex = (currentIndex - 1 + totalSlides) % totalSlides;
             showSlide(currentIndex);
         });
-
+    
         next.addEventListener('click', () => {
             currentIndex = (currentIndex + 1) % totalSlides;
             showSlide(currentIndex);
         });
-
+    
         // Auto-slide (optional)
         setInterval(() => {
             currentIndex = (currentIndex + 1) % totalSlides;
             showSlide(currentIndex);
         }, 5000);
-
+    
         // Dropdown toggle functionality
-        function toggleDropdown2(id) {
-            // Close all dropdowns and reset their icons
-            document.querySelectorAll('[id^="dropdown-"]').forEach(dropdown => {
-                const icon = document.querySelector(`#icon-${dropdown.id.split('-')[1]}`);
-                dropdown.classList.add('hidden');
-                if (icon) icon.style.transform = 'rotate(0deg)';
-            });
-
-            // Toggle the clicked dropdown
-            const dropdown = document.getElementById(id);
-            const icon = document.querySelector(`#icon-${id.split('-')[1]}`);
-
-            if (dropdown.classList.contains('hidden')) {
-                dropdown.classList.remove('hidden');
-                if (icon) icon.style.transform = 'rotate(180deg)';
-            } else {
-                dropdown.classList.add('hidden');
-                if (icon) icon.style.transform = 'rotate(0deg)';
-            }
-        }
-
-        function toggleDropdown(event) {
-            event.preventDefault();
-
-            const dropdown = document.getElementById('dropdownMenu');
-            const button = document.getElementById('accountButton');
+        function toggleDropdown(dropdownId, buttonId) {
+            const dropdown = document.getElementById(dropdownId);
+            const button = document.getElementById(buttonId);
             const icon = button.querySelector('.dropdown-icon');
-
+    
             dropdown.classList.toggle('hidden');
             if (!dropdown.classList.contains('hidden')) {
                 icon.style.transform = 'rotate(180deg)'; // Rotate the icon when dropdown is shown
@@ -415,20 +463,22 @@
                 icon.style.transform = 'rotate(0deg)'; // Reset rotation when dropdown is hidden
             }
         }
-
-        // Close the dropdown if clicked outside
+    
+        // Close all dropdowns if clicked outside
         document.addEventListener('click', (event) => {
-            const dropdown = document.getElementById('dropdownMenu');
-            const button = document.getElementById('accountButton');
-            const icon = button.querySelector('.dropdown-icon');
-
-            if (dropdown && !dropdown.contains(event.target) && !button.contains(event.target)) {
-                dropdown.classList.add('hidden');
-                icon.style.transform = 'rotate(0deg)'; // Reset rotation when clicked outside
-            }
+            const dropdowns = document.querySelectorAll('[id^="dropdownMenu"]');
+            dropdowns.forEach((dropdown) => {
+                const button = document.querySelector(`[data-dropdown-button="${dropdown.id}"]`);
+                const icon = button.querySelector('.dropdown-icon');
+    
+                if (dropdown && !dropdown.contains(event.target) && !button.contains(event.target)) {
+                    dropdown.classList.add('hidden');
+                    icon.style.transform = 'rotate(0deg)';
+                }
+            });
         });
-
-            
     </script>
+    
+
 </body>
 </html>

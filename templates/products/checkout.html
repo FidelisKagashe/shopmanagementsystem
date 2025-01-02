@@ -9,7 +9,7 @@ Your Shopping Cart
 {% block main_block %}
 <div class="text-center bg-yellow-100 py-3 border-b-2 border-yellow-700">
     <h1 class="text-2xl font-bold text-yellow-800">
-        Checkout
+        Place Order
     </h1>
 </div>
 <div class="bg-white m-6 p-6 rounded-lg shadow-md w-full max-w-lg mx-auto">
@@ -35,24 +35,52 @@ Your Shopping Cart
 
     <!-- Total Price Display -->
     {% if cart_items %}
-    <div class="font-bold text-lg mt-4 text-right">
+    <div class="font-bold border-b border-gray-400 pb-3 text-lg mt-4 text-right">
         Total: Tsh {{ total_sum|floatformat:2 }}/=
     </div>
     {% endif %}
 
-    <!-- Checkout Form -->
+    <!-- Location Form -->
     {% if cart_items %}
-    <div class="mt-6 text-center">
-        <form method="POST" action="{% url 'place_order' %}">
+    <div class="mt-6">
+        <h2 class="text-xl text-center font-semibold text-yellow-800 mb-4">Enter Your Location</h2>
+    
+        <form method="POST" action="{% url 'place_order' %}" class="space-y-4">
             {% csrf_token %}
-            <button type="submit" class="bg-yellow-600 text-white py-2 px-4 rounded hover:bg-yellow-500">
+            {% if error_message %}
+            <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-2 rounded mb-4">
+                {{ error_message }}
+            </div>
+            {% endif %}
+
+            <!-- City Field -->
+            <div>
+                <label for="city" class="block text-sm font-medium text-gray-700">Region:</label>
+                <input type="text" id="city" name="city" class="mt-1 p-2 border border-gray-300 rounded w-full focus:outline-none focus:border-yellow-500" placeholder="Example, Dodoma" required>
+                {% if form.city.errors %}
+                    <p class="text-red-600 text-sm mt-1">{{ form.city.errors.0 }}</p>
+                {% endif %}
+            </div>
+    
+            <!-- Address Field -->
+            <div>
+                <label for="address" class="block text-sm font-medium text-gray-700">Address:</label>
+                <input type="text" id="address" name="address" class="mt-1 p-2 border border-gray-300 rounded w-full focus:outline-none focus:border-yellow-500" placeholder="Example, UDOM, CIVE, 1A-S39" required>
+                {% if form.address.errors %}
+                    <p class="text-red-600 text-sm mt-1">{{ form.address.errors.0 }}</p>
+                {% endif %}
+            </div>
+    
+            <!-- Submit Button -->
+            <button type="submit" class="w-full bg-yellow-600 text-white py-2 rounded hover:bg-yellow-500 transition duration-200">
                 Place Order
             </button>
         </form>
     </div>
+    
     {% else %}
     <div class="mt-6 text-center">
-        <a href="{% url 'home' %}" class="bg-yellow-300 text-gray-800 py-2 px-4 rounded hover:bg-gray-400">
+        <a href="{% url 'home' %}" class="bg-yellow-600 text-white py-2 px-4 rounded hover:bg-yellow-500">
             Continue Shopping
         </a>
     </div>

@@ -36,9 +36,10 @@ class Product(models.Model):
 
     def update_stock(self, quantity):
         """ Method to update stock after purchase """
-        self.stock -= quantity
-        if self.stock < 0:
-            raise ValidationError(f"Not enough stock for {self.name}. Only {self.stock + quantity} available.")
+        new_stock = self.stock - quantity
+        if new_stock < 0:
+            raise ValidationError(f"Not enough stock for {self.name}. Only {self.stock} available.")
+        self.stock = new_stock
         self.save()
 
 class Cart(models.Model):
@@ -48,7 +49,8 @@ class Cart(models.Model):
 
     def total_price(self):
         # Using annotate for better performance instead of Python sum()
-        return self.items.aggregate(total=Sum(F('quantity') * F('product__price'), output_field=DecimalField()))['total'] or 0
+        total = self.items.aggregate(total=Sum(F('quantity') * F('product__price'), output_field=DecimalField()))['total']
+        return total if total is not None else 0
 
     def __str__(self):
         return f"Cart for {self.user.username}"
@@ -64,7 +66,7 @@ class CartItem(models.Model):
     quantity = models.PositiveIntegerField(default=0)
 
     def clean(self):
-        # Validate quantity against stock
+        """Validate quantity against available stock before saving the CartItem."""
         if self.quantity > self.product.stock:
             raise ValidationError(f"Cannot add more than {self.product.stock} of {self.product.name} to the cart.")
 
@@ -77,5 +79,5 @@ class CartItem(models.Model):
 
     @property
     def total_price(self):
-        """Calculate total price for the item."""
+        """Calculate total price for this CartItem (product price * quantity)."""
         return self.product.price * self.quantity

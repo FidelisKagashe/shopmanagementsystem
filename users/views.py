@@ -495,8 +495,8 @@ def password_reset_confirm(request, uidb64, token, request_token):
         request.session['first_failed_at'] = timezone.now().timestamp()  # Reset the timer
 
     # Redirect to home page after 5 failed attempts
-    if request.session['failed_attempts'] >= 5:
-        messages.error(request, 'You have entered incorrect reset codes 5 times. Please try again later.')
+    if request.session['failed_attempts'] >= 3:
+        messages.error(request, 'You have entered incorrect reset codes 3 times. Please try again later.')
         return redirect('home')  # Replace 'home' with your actual home page URL name
 
     if request.method == 'POST':
