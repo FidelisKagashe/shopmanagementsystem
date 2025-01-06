@@ -157,16 +157,16 @@
         <ul class="flex space-x-3 md:space-x-6">
             {% if user.is_authenticated %}
             <li class="relative">
-                <a href="#" id="accountButtonDesktop" data-dropdown-button="dropdownMenuDesktop" class="flex items-center hidden md:block hover:text-yellow-400" onclick="toggleDropdown('dropdownMenuDesktop', 'accountButtonDesktop'); event.preventDefault();">
+                <a href="#" id="accountButtonDesktop" data-dropdown-button="dropdownMenuDesktop" class=" {% if current_tab == 'account' %} flex items-center hidden md:block text-yellow-400 {% else %} flex items-center hidden md:block hover:text-yellow-400 {% endif %}" onclick="toggleDropdown('dropdownMenuDesktop', 'accountButtonDesktop'); event.preventDefault();">
                     Account
                     <span class="dropdown-icon ml-1 transition-transform duration-200">▼</span>
                 </a>
                 <ul id="dropdownMenuDesktop" class="absolute right-0 mt-2 w-40 bg-white text-black border rounded border-gray-200 shadow-md hidden">
-                    <li><a href="" class="block px-4 py-2 hover:bg-gray-100 hover:text-yellow-400">My Account</a></li>
+                    <li><a href="{% url 'myAccount' %}" class="{% if current_tab2 == 'account2' %} block px-4 py-2 bg-yellow-500 hover:bg-yellow-400 text-white {% else %} block px-4 py-2 hover:bg-gray-100 hover:text-yellow-400 {% endif %}">My Account</a></li>
                     <li><a href="{% url 'password_change' %}" class="block px-4 py-2 hover:bg-gray-100 hover:text-yellow-400">Change password</a></li>
                     <li><a href="{% url 'logout' %}" class="block px-4 py-2 hover:bg-gray-100 hover:text-yellow-400">Logout</a></li>
                     {% if user.is_superuser %}
-                    <li><a href="admin/" class="block px-4 py-2 hover:bg-gray-100 hover:text-yellow-400">Main Admin Page</a></li>
+                    <li><a href='fmkmyadmin/' class="block px-4 py-2 hover:bg-gray-100 hover:text-yellow-400">Main Admin Page</a></li>
                     {% endif %}
                 </ul>
             </li>
@@ -178,14 +178,14 @@
         
             <!-- Dropdown for mobile -->
             <li class="relative">
-                <a href="#" id="accountButtonMobile" data-dropdown-button="dropdownMenuMobile" class="flex items-center md:hidden hover:text-yellow-400" onclick="toggleDropdown('dropdownMenuMobile', 'accountButtonMobile'); event.preventDefault();">
+                <a href="#" id="accountButtonMobile" data-dropdown-button="dropdownMenuMobile" class="{% if current_tab == 'account' %} flex items-center md:hidden text-yellow-400 {% else %} flex items-center md:hidden hover:text-yellow-400 {% endif %}" onclick="toggleDropdown('dropdownMenuMobile', 'accountButtonMobile'); event.preventDefault();">
                     Account
                     <span class="dropdown-icon ml-1 transition-transform duration-200">▼</span>
                 </a>
                 <ul id="dropdownMenuMobile" class="absolute right-0 mt-2 w-40 rounded bg-white text-black border border-gray-200 shadow-md hidden">
                     {% if user.is_authenticated %}
                     <li><span class="block px-4 py-2 bg-yellow-700 text-white">Welcome, {{ user.username }}</span></li>
-                    <li><a href="" class="block px-4 py-2 hover:bg-gray-100 hover:text-yellow-400">My Account</a></li>
+                    <li><a href="{% url 'myAccount' %}" class=" {% if current_tab == 'account' %} block px-4 py-2 bg-yellow-500 text-white hover:bg-yellow-400 hover:text-yellow-400 {% else %}block px-4 py-2 hover:bg-gray-100 hover:text-yellow-400{% endif %}">My Account</a></li>
                     <li><a href="{% url 'password_change' %}" class="block px-4 py-2 hover:bg-gray-100 hover:text-yellow-400">Change password</a></li>
                     <li><a href="{% url 'logout' %}" class="block px-4 py-2 hover:bg-gray-100 hover:text-yellow-400">Logout</a></li>
                     {% else %}

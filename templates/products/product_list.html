@@ -41,9 +41,12 @@ Fmk Shop - {{ category_name }}{% if subcategory_name %} {{ subcategory_name }}{%
 <!-- Product Listing -->
 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 p-4 bg-gray-100">
     {% for product in products %}
-    <div class="bg-white rounded-lg shadow-lg overflow-hidden">
-        <img src="{{ product.image.url }}" alt="{{ product.name }}" class="max-w-full max-h-full object-contain">
-        <div class="p-4">
+    <div class="bg-white rounded-lg shadow-lg overflow-hidden flex flex-col h-full">
+        <!-- Image Section -->
+        <img src="{{ product.image.url }}" alt="{{ product.name }}" class="max-w-full object-contain flex-grow">
+        
+        <!-- Content Section at the Bottom -->
+        <div class="p-4 mt-auto">
             <h2 class="text-lg font-semibold text-yellow-700">{{ product.name }}</h2>
             <p class="text-gray-600"><span class="font-bold">Price:</span> Tsh {{ product.price }}/=</p>
             <div class="mt-4 text-center">

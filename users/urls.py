@@ -12,6 +12,7 @@ urlpatterns = [
     path('about/', views.About, name='about'),
     path('shop/', views.Shop, name='shop'),
     path('faq/', views.Faq, name='faq'),
+    path('myAccount/', views.MyAccount, name='myAccount'),
     # path('landing/', views.Landing, name='landing'),
     path('contact/', views.Contact, name='contact'),
 

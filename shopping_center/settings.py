@@ -216,7 +216,7 @@ SECURE_CONTENT_TYPE_NOSNIFF = True
 LOGIN_REDIRECT_URL = 'home'
 
 # Redirects here if a user tries to access a protected page and is not logged in
-LOGIN_URL = 'register_email'
+LOGIN_URL = 'home'
 
 # Ensure that the session expires at the end of the browser session
 SESSION_EXPIRE_AT_BROWSER_CLOSE = True

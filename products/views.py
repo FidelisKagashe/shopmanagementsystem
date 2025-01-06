@@ -26,7 +26,7 @@ def Home(request):
 
     category_products = {}
     for category in categories:
-        products = Product.objects.filter(category__in=category.subcategories.all()).order_by('-created_at')[:4]
+        products = Product.objects.filter(category__in=category.subcategories.all()).order_by('-created_at')
         category_products[category.id] = products
 
     context = {
@@ -137,8 +137,12 @@ from django.contrib.auth.decorators import login_required
 from django.db.models import Sum
 from .models import Cart, CartItem, Category
 
-@login_required
+
 def view_cart(request):
+     # Check if the user is authenticated
+    if not request.user.is_authenticated:
+        return redirect('register_email')  # Redirect to the register_email page if not authenticated
+    
     """Displays the cart with all items and total sum."""
     # Get or create the cart for the current user
     cart, created = Cart.objects.get_or_create(user=request.user)
@@ -234,7 +238,7 @@ def place_order(request):
     
     category_products = {}
     for category in categories:
-        products = Product.objects.filter(category__in=category.subcategories.all()).order_by('-created_at')[:4]
+        products = Product.objects.filter(category__in=category.subcategories.all()).order_by('-created_at')
         category_products[category.id] = products
         
     if not cart_items.exists():

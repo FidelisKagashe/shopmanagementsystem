@@ -7,10 +7,9 @@
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
     <meta http-equiv="Pragma" content="no-cache">
     <meta http-equiv="Expires" content="0">
-    <title>Login</title>
+    <title>Fmk Link - Login</title>
     <link rel="stylesheet" href="{% static 'css/tailwind.min.css' %}">
     <link rel="stylesheet" href="{% static 'bootstrap-icons/font/bootstrap-icons.css' %}">
-    
 </head>
 <body class="bg-gradient-to-l from-yellow-50 to-yellow-200 flex items-center justify-center min-h-screen">
     <div class="bg-white p-8 rounded-lg m-3 shadow-lg w-full max-w-md">
@@ -24,7 +23,7 @@
             </div>
         {% endif %}
 
-        <form method="post" class="space-y-4">
+        <form method="post" class="space-y-4" autocomplete="off">
             {% csrf_token %}
             <div>
                 <label for="id_username" class="block text-sm font-medium text-gray-700">Username:</label>
@@ -35,20 +34,30 @@
                     required 
                     id="id_username" 
                     placeholder="Enter your username" 
-                    class="mt-1 p-2 border border-gray-300 rounded w-full focus:outline-none focus:border-yellow-500"
+                    class="mt-1 p-2 border border-gray-300 rounded w-full focus:outline-none focus:border-yellow-500" 
+                    autocomplete="off" 
                 >
             </div>
-            <div>
+            <div class="relative">
                 <label for="id_password" class="block text-sm font-medium text-gray-700">Password:</label>
-                <input 
+                <div class="relative flex items-center">
+                    <input 
                     type="password" 
                     name="password" 
                     required 
                     id="id_password" 
                     placeholder="Enter your password" 
-                    class="mt-1 p-2 border border-gray-300 rounded w-full focus:outline-none focus:border-yellow-500"
-                >
+                    class="mt-1 p-2 border border-gray-300 rounded w-full focus:outline-none focus:border-yellow-500" 
+                    autocomplete="new-password"
+                    >
+                    <span class="absolute inset-y-0 right-3 flex items-center justify-center cursor-pointer" onclick="togglePasswordVisibility()">
+                        <!-- Bootstrap Icons eye icon -->
+                        <i id="togglePasswordIcon" class="bi bi-eye-slash text-gray-500"></i>
+                    </span>
+                </div>
             </div>
+                       
+            
             <button 
                 type="submit" 
                 class="w-full bg-yellow-600 text-white py-2 rounded hover:bg-yellow-500 transition duration-200"
@@ -75,5 +84,22 @@
         </div>
 
     </div>
+
+    <script>
+        function togglePasswordVisibility() {
+            const passwordField = document.getElementById('id_password');
+            const toggleIcon = document.getElementById('togglePasswordIcon');
+            
+            if (passwordField.type === 'password') {
+                passwordField.type = 'text';
+                toggleIcon.classList.remove('bi-eye-slash');
+                toggleIcon.classList.add('bi-eye'); // Change to "eye" icon when password is visible
+            } else {
+                passwordField.type = 'password';
+                toggleIcon.classList.remove('bi-eye');
+                toggleIcon.classList.add('bi-eye-slash'); // Change to "eye-slash" icon when password is hidden
+            }
+        }
+    </script>
 </body>
 </html>

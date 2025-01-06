@@ -8,24 +8,14 @@ from django.utils import timezone
 from django.core.cache import cache
 from django.contrib.auth.views import LoginView
 from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
-from django.utils.encoding import force_bytes, force_str
-from reportlab.lib.pagesizes import A4, landscape
-from reportlab.lib.styles import getSampleStyleSheet
 from reportlab.lib.enums import TA_CENTER
 from reportlab.lib.units import inch
 from reportlab.lib import colors
 from django.contrib.auth.tokens import default_token_generator
-from django.template.loader import render_to_string
 from django.contrib.sites.shortcuts import get_current_site
 from datetime import timedelta
-from io import BytesIO
 from django.conf import settings
-from django.contrib.auth.models import Group
-from django.db import IntegrityError, transaction
 from .models import *  # Import the Profile model
-from django.contrib.auth.forms import PasswordChangeForm
-from django.core.mail import EmailMessage
-from reportlab.platypus import SimpleDocTemplate, Paragraph, Table, TableStyle, Spacer, ListItem, ListFlowable
 
 #Start matangazo printing process
 from reportlab.lib.pagesizes import A4
@@ -36,7 +26,10 @@ from django.views.decorators.cache import never_cache
 from django.utils.decorators import method_decorator
 
 from products.models import *
-
+from django.core.mail import send_mail
+from django.conf import settings
+from django.contrib import messages
+from django.shortcuts import render, redirect
 
 @never_cache
 def logout_view(request):
@@ -130,10 +123,11 @@ def About(request):
     category_products = {}
     for category in categories:
         # Fetch latest 4 products for each category's subcategories
-        products = Product.objects.filter(category__in=category.subcategories.all()).order_by('-created_at')[:4]
+        products = Product.objects.filter(category__in=category.subcategories.all()).order_by('-created_at')
         category_products[category.id] = products
 
     cart_item_count = get_cart_item_count(request.user)
+
     context = {
         'categories': categories,
         'category_products': category_products,
@@ -144,21 +138,72 @@ def About(request):
 
 
 def Contact(request):
-    """Displays the Contact page with top-level categories and their latest products."""
+    """Displays the Contact page with top-level categories, their latest products, and sends a message to the superuser."""
+    
+    # Fetch categories and their subcategories along with products
     categories = Category.objects.filter(parent__isnull=True).prefetch_related('subcategories')
     category_products = {}
     for category in categories:
         # Fetch latest 4 products for each category's subcategories
-        products = Product.objects.filter(category__in=category.subcategories.all()).order_by('-created_at')[:4]
+        products = Product.objects.filter(category__in=category.subcategories.all()).order_by('-created_at')
         category_products[category.id] = products
 
+    # Get the cart item count for the user
     cart_item_count = get_cart_item_count(request.user)
+    
+    if request.method == "POST":
+        # Get the username and message from the form
+        username = request.POST.get('username')
+        message = request.POST.get('message')
+
+        # Get the user's first name and last name, or use empty strings if not provided
+        first_name = request.user.first_name if request.user.first_name else ""
+        last_name = request.user.last_name if request.user.last_name else ""
+
+        # Get the user's email
+        email = request.user.email
+
+        # Compose the email content
+        subject = f"New Message from {username}"
+        message_content = f"""
+        Username: {username}
+        First Name: {first_name}
+        Last Name: {last_name}
+        Email: {email}
+        
+        Message:
+        {message}
+        """
+
+        # Get the superuser's email dynamically
+        # Get the superuser's email dynamically
+        superuser = User.objects.filter(is_superuser=True).first()  # Change request.user to User
+        if superuser:
+            superuser_email = superuser.email
+            # Send the email to the superuser's email
+            send_mail(
+                subject,
+                message_content,
+                settings.DEFAULT_FROM_EMAIL,  # The sender's email (could be your Gmail)
+                [superuser_email],  # The superuser's email (dynamically fetched)
+            )
+
+            # Show a success message
+            messages.success(request, "Your message has been sent successfully!")
+        else:
+            messages.error(request, "There was an issue sending your message. Please try again later.")
+
+        # Redirect the user back to the contact page
+        return redirect('contact')  # Adjust this URL as necessary
+
+    # Prepare the context for rendering the page
     context = {
         'categories': categories,
         'category_products': category_products,
         'current_tab': 'contact',
         'cart_item_count': cart_item_count,
     }
+
     return render(request, 'users/contact.html', context)
 
 
@@ -168,7 +213,7 @@ def Faq(request):
     category_products = {}
     for category in categories:
         # Fetch latest 4 products for each category's subcategories
-        products = Product.objects.filter(category__in=category.subcategories.all()).order_by('-created_at')[:4]
+        products = Product.objects.filter(category__in=category.subcategories.all()).order_by('-created_at')
         category_products[category.id] = products
 
     cart_item_count = get_cart_item_count(request.user)
@@ -193,6 +238,53 @@ def Shop(request):
         'cart_item_count': cart_item_count,
     }
     return render(request, 'users/shop.html', context)
+
+
+from django.shortcuts import render, redirect
+from django.contrib.auth.decorators import login_required
+from .forms import UserForm, UserProfileForm
+
+@login_required
+def MyAccount(request):
+
+    categories = Category.objects.filter(parent__isnull=True).prefetch_related('subcategories')
+    category_products = {}
+    for category in categories:
+        # Fetch latest 4 products for each category's subcategories
+        products = Product.objects.filter(category__in=category.subcategories.all()).order_by('-created_at')
+        category_products[category.id] = products
+
+    cart_item_count = get_cart_item_count(request.user)
+
+    user = request.user
+    # Fetch the associated UserProfile
+    user_profile = user.userprofile
+
+    if request.method == 'POST':
+        # Create form instances with POST data and pre-filled instances
+        user_form = UserForm(request.POST, instance=user)
+        user_profile_form = UserProfileForm(request.POST, instance=user_profile)
+        
+        if user_form.is_valid() and user_profile_form.is_valid():
+            # Save both the User and UserProfile
+            user_form.save()
+            user_profile_form.save()
+            return redirect('myAccount')  # Redirect to avoid resubmission
+    else:
+        # Create form instances with the current user and user profile for pre-filling
+        user_form = UserForm(instance=user)
+        user_profile_form = UserProfileForm(instance=user_profile)
+
+    return render(request, 'users/my_account.html', {
+        'user_form': user_form,
+        'user_profile_form': user_profile_form,
+        'categories': categories,
+        'products': products,
+        'current_tab': 'account',
+        'current_tab2': 'account2',
+        'cart_item_count': cart_item_count,
+    })
+
 
 from django.shortcuts import render
 from django.core.mail import send_mail
@@ -328,86 +420,6 @@ def register_complete(request):
         form = RegistrationForm(initial={'email': email})
 
     return render(request, 'users/register2.html', {'form': form})
-
-
-
-
-
-# import random
-# from django.core.mail import send_mail
-# from django.contrib.auth.tokens import default_token_generator
-# from django.contrib.auth.models import User
-# from django.contrib.sites.shortcuts import get_current_site
-# from django.urls import reverse
-# from django.shortcuts import render, redirect
-# from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
-# from django.template.loader import render_to_string
-# from django.http import HttpResponse
-# from django.contrib.auth.views import PasswordResetView, PasswordResetDoneView, PasswordResetConfirmView, PasswordResetCompleteView
-# from django.contrib.auth.forms import SetPasswordForm
-# from django.utils import timezone
-# from datetime import timedelta
-# from django.conf import settings
-# from django.contrib import messages
-
-# # Model to store the reset code with an expiration time
-# from .models import PasswordResetCode
-
-
-# class CustomPasswordResetView(PasswordResetView):
-#     """View to send password reset email with a 6-digit code."""
-#     template_name = 'users/password_reset_form.html'
-    
-#     def form_valid(self, form):
-#         email = form.cleaned_data['email']
-#         user = User.objects.filter(email=email).first()
-        
-#         if user:
-#             # Generate a six-digit code
-#             reset_code = str(random.randint(100000, 999999))
-#             # Store the reset code in the database with an expiration time (10 minutes)
-#             reset_code_entry = PasswordResetCode.objects.create(
-#                 user=user, 
-#                 reset_code=reset_code,
-#                 created_at=timezone.now()
-#             )
-
-#             # Send the reset code via email
-#             subject = 'Your Password Reset Code'
-#             message = f'Your password reset code is {reset_code}. This code is valid for 10 minutes.'
-#             send_mail(subject, message, settings.DEFAULT_FROM_EMAIL, [email])
-
-#             # Generate uidb64 and token for the password reset URL
-#             uidb64 = urlsafe_base64_encode(str(user.id).encode())
-#             token = default_token_generator.make_token(user)
-
-#             # Redirect to the password reset confirm page
-#             return redirect('password_reset_confirm', uidb64=uidb64, token=token)
-#         else:
-#             # Handle the case where no user is found with the provided email
-#             form.add_error('email', 'No user found with this email address.')
-#             return self.form_invalid(form)
-
-# class CustomPasswordResetDoneView(PasswordResetDoneView):
-#     """View to notify the user that the reset code has been sent."""
-#     template_name = 'users/password_reset_done.html'
-
-#     def get_context_data(self, *args, **kwargs):
-#         context = super().get_context_data(*args, **kwargs)
-
-#         # Retrieve the email from the form data (POST request)
-#         email = self.request.POST.get('email')  # This is where the email comes from
-#         user = User.objects.filter(email=email).first()  # Get the user based on email
-
-#         if user:
-#             # Generate uidb64 and token for the password reset URL
-#             uidb64 = urlsafe_base64_encode(str(user.id).encode())
-#             token = default_token_generator.make_token(user)
-
-#             context['uidb64'] = uidb64
-#             context['token'] = token
-        
-#         return context
 
 import logging
 import secrets

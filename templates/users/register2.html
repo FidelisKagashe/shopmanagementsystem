@@ -37,11 +37,14 @@
                        class="mt-1 p-2 border border-gray-300 rounded w-full bg-gray-100 text-gray-500 focus:outline-none">
             </div>
 
-            <!-- Phone Number -->
             <div>
                 <label for="id_phone_number" class="block text-sm font-medium text-gray-700">Phone Number</label>
-                <input type="text" name="phone_number" id="id_phone_number" value="{{ form.phone_number.value|default_if_none:'' }}" required
-                       class="mt-1 p-2 border border-gray-300 rounded w-full focus:outline-none focus:border-yellow-500">
+                <input type="text" name="phone_number" id="id_phone_number" value="{{ form.phone_number.value|default_if_none:'' }}" 
+                       required 
+                       maxlength="13" 
+                       placeholder="+2557XXXXXXXXX" 
+                       class="mt-1 p-2 border border-gray-300 rounded w-full focus:outline-none focus:border-yellow-500"
+                       oninput="validatePhoneNumber(event)">
                 {% if form.phone_number.errors %}
                     <div class="text-sm text-red-500">
                         {% for error in form.phone_number.errors %}
@@ -49,7 +52,7 @@
                         {% endfor %}
                     </div>
                 {% endif %}
-            </div>
+            </div>                                
 
             <!-- Username -->
             <div>
@@ -66,14 +69,27 @@
             </div>
 
             <!-- Password -->
-            <div>
+            <div class="relative">
                 <label for="id_password1" class="block text-sm font-medium text-gray-700">Password</label>
-                <input type="password" name="password1" id="id_password1" autocomplete="new-password" required
-                       class="mt-1 p-2 border border-gray-300 rounded w-full focus:outline-none focus:border-yellow-500">
+                <div class="relative">
+                    <input type="password" name="password1" id="id_password1" autocomplete="new-password" required
+                        class="mt-1 p-2 pr-10 border border-gray-300 rounded w-full focus:outline-none focus:border-yellow-500">
+                    <span class="absolute inset-y-0 right-2 flex items-center cursor-pointer" onclick="togglePasswordVisibility('id_password1', 'togglePassword1Icon')">
+                        <svg id="togglePassword1Icon" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7-11-7-11-7z"></path>
+                            <circle cx="12" cy="12" r="3"></circle>
+                        </svg>
+                    </span>
+                </div>
                 <span class="text-sm text-gray-500">
                     <ul class="list-disc pl-5">
                         <li>Your password must contain at least 8 characters.</li>
                         <li>Your password must contain both letters and numbers.</li>
+                        <li>Your password must contain at least one uppercase letter.</li>
+                        <li>Your password must contain at least one lowercase letter.</li>
+                        <li>Your password must contain at least one special character (e.g., @, #, $, etc.).</li>
+                        <li>Your password cannot be entirely numeric.</li>
+                        <li>Your password cannot be too similar to your personal information (e.g., name, email).</li>
                     </ul>
                 </span>
                 {% if form.password1.errors %}
@@ -86,10 +102,18 @@
             </div>
 
             <!-- Password Confirmation -->
-            <div>
+            <div class="relative">
                 <label for="id_password2" class="block text-sm font-medium text-gray-700">Password Confirmation</label>
-                <input type="password" name="password2" id="id_password2" autocomplete="new-password" required
-                       class="mt-1 p-2 border border-gray-300 rounded w-full focus:outline-none focus:border-yellow-500">
+                <div class="relative">
+                    <input type="password" name="password2" id="id_password2" autocomplete="new-password" required
+                        class="mt-1 p-2 pr-10 border border-gray-300 rounded w-full focus:outline-none focus:border-yellow-500">
+                    <span class="absolute inset-y-0 right-2 flex items-center cursor-pointer" onclick="togglePasswordVisibility('id_password2', 'togglePassword2Icon')">
+                        <svg id="togglePassword2Icon" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7-11-7-11-7z"></path>
+                            <line x1="1" y1="1" x2="23" y2="23"></line>
+                        </svg>
+                    </span>
+                </div>
                 <span class="text-sm text-gray-500">Enter the same password as before, for verification.</span>
                 {% if form.password2.errors %}
                     <div class="text-sm text-red-500">
@@ -99,6 +123,7 @@
                     </div>
                 {% endif %}
             </div>
+
 
             <!-- Submit Button -->
             <button type="submit" class="w-full bg-yellow-600 text-white py-2 rounded hover:bg-yellow-500 transition duration-200">
@@ -111,5 +136,79 @@
             <a href="{% url 'login' %}" class="text-yellow-700 hover:underline">Already have an account? Login here</a>
         </div>
     </div>
+    <script>
+        function validatePhoneNumber(event) {
+            const inputField = event.target;
+            let phoneNumber = inputField.value.trim();
+    
+            // Remove any invalid characters (letters or symbols except '+')
+            phoneNumber = phoneNumber.replace(/[^0-9+]/g, '');
+    
+            // Automatically add '+255' and remove leading '0' if the number starts with '07' or '06'
+            if (phoneNumber.startsWith('07') || phoneNumber.startsWith('06')) {
+                phoneNumber = '+255' + phoneNumber.slice(1); // Remove leading '0' and prepend '+255'
+            }
+    
+            // Update the input field value
+            inputField.value = phoneNumber;
+    
+            // Enforce exact 13-digit length starting with '+255'
+            if (!phoneNumber.startsWith('+255') || phoneNumber.length !== 13) {
+                inputField.classList.add('border-red-500'); // Highlight field with red border
+            } else {
+                inputField.classList.remove('border-red-500'); // Remove red border if valid
+            }
+        }
+    
+        document.getElementById('editProfileForm').addEventListener('submit', function (event) {
+            const phoneNumberField = document.getElementById('id_phone_number');
+            const phoneNumber = phoneNumberField.value.trim();
+            let isValid = true;
+    
+            // Validate phone number format on form submission
+            if (!phoneNumber.startsWith('+255')) {
+                isValid = false;
+                phoneNumberField.classList.add('border-red-500');
+                alert('Phone number must start with +255.');
+            } else if (phoneNumber.length !== 13) {
+                isValid = false;
+                phoneNumberField.classList.add('border-red-500');
+                alert('Phone number must be exactly 13 digits long.');
+            } else if (/[^0-9+]/.test(phoneNumber)) {
+                isValid = false;
+                phoneNumberField.classList.add('border-red-500');
+                alert('Phone number must only contain digits and the "+" sign.');
+            } else {
+                phoneNumberField.classList.remove('border-red-500');
+            }
+    
+            // Prevent form submission if validation fails
+            if (!isValid) {
+                event.preventDefault();
+                alert('Please ensure the phone number is formatted correctly.');
+            }
+        });
+    </script>
+    
+    
+    <script>
+        function togglePasswordVisibility(inputId, iconId) {
+            const inputField = document.getElementById(inputId);
+            const icon = document.getElementById(iconId);
+
+            if (inputField.type === 'password') {
+                inputField.type = 'text';
+                icon.innerHTML = `
+                    <path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7-11-7-11-7z"></path>
+                    <line x1="1" y1="1" x2="23" y2="23"></line>`;
+            } else {
+                inputField.type = 'password';
+                icon.innerHTML = `
+                    <path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7-11-7-11-7z"></path>
+                    <circle cx="12" cy="12" r="3"></circle>`;
+            }
+        }
+    </script>
+    
 </body>
 </html>
