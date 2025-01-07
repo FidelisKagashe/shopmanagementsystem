@@ -1,34 +1,33 @@
 {% extends 'users/home.html' %}
 {% load static %}
 {% block header %}
+{% load custom_filters %}
 Fmk Shop - Shop
 {% endblock %}
 
 {% block main_block %}
-<div class="py-6 px-4 md:px-12 bg-yellow-100">
+<div class="py-8 px-6 md:px-12 bg-yellow-50">
     <!-- Header Section -->
-    <header class="mb-6 mt-2 pb-4 border-b-2 border-yellow-300">
-        <h1 class="text-3xl font-bold text-center">Shop <span class="text-yellow-700">Now</span></h1>
-        <p class="text-center text-lg mt-2">Explore our wide range of products and find what you need.</p>
+    <header class="mb-8 mt-4 pb-6 border-b-4 border-yellow-500">
+        <h1 class="text-4xl font-extrabold text-center text-yellow-800">Shop <span class="text-yellow-600">Now</span></h1>
+        <p class="text-center text-lg mt-3 text-gray-700">Explore our wide range of products and find what you need.</p>
     </header>
 
     <!-- Categories Section -->
-    <section class="mb-8">
-        <h2 class="text-2xl font-semibold mb-4">Shop by Category</h2>
-        
-        <div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-4">
-            
+    <section class="py-8 bg-white">
+        <h2 class="text-2xl font-semibold mb-4 text-center text-yellow-700">Shop by Category</h2>
+        <div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-4 px-6">
             {% for category in categories %}
                 <div class="block bg-white p-4 border rounded shadow hover:bg-yellow-50">
-                    <h3 class="text-center font-semibold mt-2">{{ category.name }}</h3>
+                    <h3 class="text-center font-semibold mt-2 text-yellow-700">{{ category.name }}</h3>
                     {% if category.subcategories.exists %}
                         <div class="mt-2">
                             {% for subcategory in category.subcategories.all %}
                                 <a href="{% url 'products_by_subcategory' subcategory.name %}" class="block bg-gray-100 p-2 mb-2 rounded hover:bg-yellow-100">
-                                    <h4 class="text-center">{{ subcategory.name }}</h4>
+                                    <h4 class="text-center text-yellow-600">{{ subcategory.name }}</h4>
                                     <div class="grid grid-cols-2 gap-2 mt-2">
                                         {% for product in subcategory.products.all|slice:":2" %}
-                                            <img src="{{ product.image.url }}" alt="{{ product.name }}" class="w-full h-full object-cover rounded">
+                                            <img src="{{ product.image.url }}" alt="{{ product.name }}" class="w-full h-24 object-cover rounded">
                                         {% endfor %}
                                     </div>
                                 </a>
@@ -39,30 +38,38 @@ Fmk Shop - Shop
                     {% endif %}
                 </div>
             {% endfor %}
-
-
         </div>
     </section>
 
     <!-- Featured Products Section -->
-    <section class="mb-8">
-        <h2 class="text-2xl font-semibold mb-4">Featured Products</h2>
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 p-4 bg-gray-100">
+    <section class="mb-10">
+        <h2 class="text-3xl font-semibold mb-6 text-center text-yellow-700">Featured Products</h2>
+        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8 p-3 bg-gray-50 rounded-lg">
             {% for product in products %}
-            <div class="bg-white rounded-lg shadow-lg overflow-hidden">
+            <div class="bg-white rounded-lg shadow-lg overflow-hidden border hover:shadow-xl transition transform hover:scale-105 duration-300 flex flex-col">
                 <img src="{{ product.image.url }}" alt="{{ product.name }}" class="w-full h-60 object-cover">
-                <div class="p-4">
-                    <h2 class="text-lg font-semibold text-yellow-700">{{ product.name }}</h2>
-                    <p class="text-gray-600"><span class="font-bold">Price:</span> Tsh {{ product.price }}/=</p>
+                <div class="p-4 flex-1 flex flex-col justify-between">
+                    <!-- Product Name -->
+                    <h3 class="text-lg font-semibold text-yellow-700 border-b-2 border-yellow-500 pb-2">{{ product.name }}</h3>
+                    
+                    <!-- Product Price -->
+                    <p class="text-gray-600 pt-2"><span class="font-bold">Price:</span> {{ product.price|format_currency }}</p>
+                    
+                    <!-- Divider -->
+                    <div class="border-b-2 border-gray-300 my-4"></div>
+                    
+                    <!-- See More Button -->
                     <div class="mt-4">
-                        <a href="{% url 'product_detail' product.pk %}" class="text-yellow-700 hover:text-yellow-900 underline">See more</a>
+                        <a href="{% url 'product_detail' product.pk %}" class="inline-block bg-yellow-700 text-white py-2 px-4 rounded-full hover:bg-yellow-600 transition duration-300 text-center">
+                            See more
+                        </a>
                     </div>
                 </div>
             </div>
             {% empty %}
-            <p class="text-gray-500 text-center col-span-full">No products available. 
-                <a href="{% url 'home' %}" class="text-yellow-700 hover:underline">Browse other categories</a>
-            </p>
+                <p class="text-gray-500 text-center col-span-full">No products available. 
+                    <a href="{% url 'home' %}" class="text-yellow-700 hover:underline">Browse other categories</a>
+                </p>
             {% endfor %}
         </div>
     </section>

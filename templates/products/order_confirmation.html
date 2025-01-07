@@ -1,6 +1,6 @@
 {% extends "users/home.html" %}
 {% load static %}
-
+{% load custom_filters %}
 {% block header %}
 Order Confirmation
 {% endblock %}
@@ -23,7 +23,7 @@ Order Confirmation
                     <p class="font-semibold">{{ item.product_name }}</p>
                     <p class="text-sm text-gray-600">Quantity: {{ item.quantity }}</p>
                 </div>
-                <p class="text-sm font-bold text-yellow-600">Tsh {{ item.total_price|floatformat:2 }}/=</p>
+                <p class="text-sm font-bold text-yellow-600">{{ item.total_price|format_currency}}</p>
             </li>
             {% endfor %}
         </ul>
@@ -31,7 +31,7 @@ Order Confirmation
 
     <div class="mt-4">
         <h4 class="text-gray-800 font-semibold">Grand Total:</h4>
-        <p class="text-lg font-bold text-yellow-800">Tsh {{ grand_total|floatformat:2 }}/=</p>
+        <p class="text-lg font-bold text-yellow-800">{{ grand_total|format_currency }}</p>
     </div>
 
     <div class="mt-4">

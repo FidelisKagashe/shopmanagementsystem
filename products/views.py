@@ -67,12 +67,48 @@ def product_detail(request, pk):
     })
 
 def products_by_subcategory(request, subcategory_name):
-    """Displays products filtered by a subcategory."""
+    """Displays products filtered by a subcategory, with additional search and price range filters."""
+    # Get the subcategory based on its name
     subcategory = get_object_or_404(Category, name=subcategory_name)
     products = Product.objects.filter(category=subcategory)
+    
+    # Apply product name filter
+    product_name = request.GET.get('product_name', '')
+    if product_name:
+        products = products.filter(name__icontains=product_name)
+
+    # Apply price range filter
+    price_range = request.GET.get('price_range', '')
+    if price_range == "1":
+        products = products.filter(price__lte=1000)
+    elif price_range == "2":
+        products = products.filter(price__gt=1000, price__lte=5000)
+    elif price_range == "3":
+        products = products.filter(price__gt=5000, price__lte=10000)
+    elif price_range == "4":
+        products = products.filter(price__gt=10000, price__lte=20000)
+    elif price_range == "5":
+        products = products.filter(price__gt=20000, price__lte=50000)
+    elif price_range == "6":
+        products = products.filter(price__gt=50000, price__lte=100000)
+    elif price_range == "7":
+        products = products.filter(price__gt=100000, price__lte=200000)
+    elif price_range == "8":
+        products = products.filter(price__gt=200000, price__lte=500000)
+    elif price_range == "9":
+        products = products.filter(price__gt=500000, price__lte=700000)
+    elif price_range == "10":
+        products = products.filter(price__gt=700000, price__lte=1000000)
+    elif price_range == "11":
+        products = products.filter(price__gt=1000000)
+
+    # Fetch all categories for the navigation
     categories = Category.objects.filter(parent__isnull=True).prefetch_related('subcategories')
+
+    # Get cart item count (assuming you have a utility function)
     cart_item_count = get_cart_item_count(request.user)
 
+    # Pass all necessary data to the template
     return render(request, 'products/product_list.html', {
         'products': products,
         'current_tab': 'shop',

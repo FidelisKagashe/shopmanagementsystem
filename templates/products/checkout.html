@@ -1,5 +1,6 @@
 {% extends "users/home.html" %}
 {% load custom_filters %}
+
 {% load static %}
 
 {% block header %}
@@ -22,8 +23,8 @@ Your Shopping Cart
                     <div>
                         <p>{{ item.product.name }}</p>
                         <p class="text-sm text-gray-600">
-                            Tsh {{ item.product.price|floatformat:2 }}/= x {{ item.quantity }} = 
-                            <strong>Tsh {{ item.total_price|floatformat:2 }}/=</strong>
+                            {{ item.product.price|format_currency }} x {{ item.quantity }} = 
+                            <strong>Tsh {{ item.total_price|format_currency }}</strong>
                         </p>
                     </div>
                 </span>
@@ -36,7 +37,7 @@ Your Shopping Cart
     <!-- Total Price Display -->
     {% if cart_items %}
     <div class="font-bold border-b border-gray-400 pb-3 text-lg mt-4 text-right">
-        Total: Tsh {{ total_sum|floatformat:2 }}/=
+        Total: {{ total_sum|format_currency }}
     </div>
     {% endif %}
 

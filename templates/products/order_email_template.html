@@ -1,3 +1,4 @@
+{% load custom_filters %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -167,8 +168,8 @@
                         </td>
                         <td>{{ item.product_name }}</td>
                         <td>{{ item.quantity }}</td>
-                        <td>{{ item.unit_price|floatformat:2 }}/=</td>
-                        <td>{{ item.total_price|floatformat:2 }}/=</td>
+                        <td>{{ item.unit_price|format_currency }}</td>
+                        <td>{{ item.total_price|format_currency }}</td>
                     </tr>
                     {% endfor %}
                 </tbody>
@@ -176,7 +177,7 @@
         </div>
 
         <!-- Grand Total -->
-        <p class="total">Grand Total: Tsh {{ grand_total|floatformat:2 }}/=</p>
+        <p class="total">Grand Total: Tsh {{ grand_total|format_currency }}</p>
 
         <p><strong>Your phone number:</strong> {{ customer_phone }}</p>
         <p>We will contact you via this number.</p>
