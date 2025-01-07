@@ -16,14 +16,19 @@ Fmk Shop - Shop
     <!-- Categories Section -->
     <section class="py-8 bg-white">
         <h2 class="text-2xl font-semibold mb-4 text-center text-yellow-700">Shop by Category</h2>
-        <div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-4 px-6">
+        <div class="m-4 text-center">
+            <span class="inline-block bg-white text-yellow-700 py-2 px-3 rounded-full ring-2 ring-yellow-500 transition duration-300 text-center">
+                Select a subcategory from the options below.
+            </span>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-4 px-2">
             {% for category in categories %}
                 <div class="block bg-white p-4 border rounded shadow hover:bg-yellow-50">
                     <h3 class="text-center font-semibold mt-2 text-yellow-700">{{ category.name }}</h3>
                     {% if category.subcategories.exists %}
                         <div class="mt-2">
                             {% for subcategory in category.subcategories.all %}
-                                <a href="{% url 'products_by_subcategory' subcategory.name %}" class="block bg-gray-100 p-2 mb-2 rounded hover:bg-yellow-100">
+                                <a href="{% url 'products_by_subcategory' subcategory.name %}" class="shadow block bg-gray-100 p-2 mb-2 rounded hover:bg-yellow-100">
                                     <h4 class="text-center text-yellow-600">{{ subcategory.name }}</h4>
                                     <div class="grid grid-cols-2 gap-2 mt-2">
                                         {% for product in subcategory.products.all|slice:":2" %}
