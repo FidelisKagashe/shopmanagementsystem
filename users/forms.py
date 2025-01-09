@@ -33,7 +33,7 @@ class CustomAuthenticationForm(forms.Form):
         if user is None:
             # Return a generic error message for both wrong email and password
             raise forms.ValidationError("Invalid email or password.")
-        
+
         self.cleaned_data['username'] = user.username
 
         return self.cleaned_data
@@ -59,10 +59,10 @@ class RegistrationForm(UserCreationForm):
         # Check if the phone number starts with '+255' and is 13 characters long
         if not phone_number.startswith('+255'):
             raise ValidationError("Phone number must start with +255.")
-        
+
         if len(phone_number) != 13:
             raise ValidationError("Phone number must be exactly 13 digits long.")
-        
+
         # Check if the phone number contains only digits and the '+' sign
         if not all(c.isdigit() or c == '+' for c in phone_number):
             raise ValidationError("Phone number must only contain digits and the '+' sign.")
@@ -72,8 +72,8 @@ class RegistrationForm(UserCreationForm):
             raise ValidationError("This phone number is already associated with another account.")
 
         return phone_number
-    
-    
+
+
 from django import forms
 from django.core.exceptions import ValidationError
 from django.contrib.auth.models import User

@@ -7,6 +7,11 @@ from django.urls import reverse, reverse_lazy
 from django.utils import timezone
 from django.core.cache import cache
 from django.contrib.auth.views import LoginView
+from users.models import UserProfile
+from users.forms import RegistrationForm
+
+
+from django.contrib.auth import login
 from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from reportlab.lib.enums import TA_CENTER
 from reportlab.lib.units import inch
@@ -33,11 +38,12 @@ from django.shortcuts import render, redirect
 from .forms import CustomAuthenticationForm
 from django.views.generic import FormView
 
+
 @never_cache
 def logout_view(request):
     logout(request)
     request.session.flush()
-    return redirect('home') 
+    return redirect('home')
 
 
 @method_decorator(never_cache, name='dispatch')
@@ -115,9 +121,10 @@ class CustomLoginView(FormView):
         return super().form_invalid(form)
 
 
+
 def lockout_view(request):
     return render(request, 'users/lockout.html', context={
-        'message': "You have been temporarily locked out due to too many failed login attempts. However, you can still browse the website as a guest. Please wait 5 minutes before trying to log in again. Thank you for your patience!"
+        'message': "You have been temporarily locked out due to too many failed login attempts. However, you can still browse the website as a guest. Please wait 15 minutes before trying to log in again. Thank you for your patience!"
     })
 
 def get_cart_item_count(user):
@@ -150,7 +157,7 @@ def About(request):
 
 def Contact(request):
     """Displays the Contact page with top-level categories, their latest products, and sends a message to the superuser."""
-    
+
     # Fetch categories and their subcategories along with products
     categories = Category.objects.filter(parent__isnull=True).prefetch_related('subcategories')
     category_products = {}
@@ -161,7 +168,7 @@ def Contact(request):
 
     # Get the cart item count for the user
     cart_item_count = get_cart_item_count(request.user)
-    
+
     if request.method == "POST":
         # Get the username and message from the form
         username = request.POST.get('username')
@@ -181,7 +188,7 @@ def Contact(request):
         First Name: {first_name}
         Last Name: {last_name}
         Email: {email}
-        
+
         Message:
         {message}
         """
@@ -275,7 +282,7 @@ def MyAccount(request):
         # Create form instances with POST data and pre-filled instances
         user_form = UserForm(request.POST, instance=user)
         user_profile_form = UserProfileForm(request.POST, instance=user_profile)
-        
+
         if user_form.is_valid() and user_profile_form.is_valid():
             # Save both the User and UserProfile
             user_form.save()
@@ -303,6 +310,7 @@ from django.core.cache import cache
 from django.urls import reverse
 from django.contrib.sites.shortcuts import get_current_site
 from django.conf import settings
+
 from django.utils.crypto import get_random_string
 import logging
 from .forms import EmailForm
@@ -316,12 +324,12 @@ def register_email(request):
         form = EmailForm(request.POST)
         if form.is_valid():
             email = form.cleaned_data['email']
-            
+
             if User.objects.filter(email=email).exists():
                 return render(request, 'users/email_taken.html', {
                     'error_message': "This email address is already registered. Please try another one or log in."
                 })
-            
+
             # Generate a secure token for the registration link
             token = get_random_string(32)
             cache_key = f"registration_token_{token}"
@@ -366,6 +374,11 @@ def register_email(request):
         form = EmailForm()
 
     return render(request, 'users/register.html', {'form': form})
+
+
+from django.shortcuts import render, redirect
+from django.http import HttpResponse
+from django.core.exceptions import ObjectDoesNotExist
 
 from django.shortcuts import render, redirect
 from django.contrib import messages
@@ -454,6 +467,7 @@ def register_complete(request):
     return render(request, 'users/register2.html', {'form': form})
 
 
+
 import logging
 import secrets
 from uuid import uuid4
@@ -528,7 +542,7 @@ def password_reset_confirm(request, uidb64, token, request_token):
 
     if timezone.now() > reset_code_entry.expires_at:
         return render(request, 'users/password_reset_confirm.html', {'error_message': 'The reset code has expired.'})
-    
+
     # Check the number of failed attempts and the timestamp in the session
     if 'failed_attempts' not in request.session or 'first_failed_at' not in request.session:
         request.session['failed_attempts'] = 0
