@@ -50,39 +50,44 @@
             color: #3B3A36;
         }
 
-        /* Table Styling */
-        table {
-            width: 100%;
-            margin-top: 20px;
-            border-collapse: collapse;
+        /* Order Details List */
+        .order-list {
+            list-style: none;
+            padding: 0;
         }
 
-        th, td {
-            padding: 20px;
-            text-align: left;
-            border: 2px solid #F59E0B;
+        .order-list li {
             background-color: #FFF9D7;
+            margin: 10px 0;
+            padding: 15px;
+            border-radius: 8px;
+            border: 1px solid #F59E0B;
         }
 
-        th {
-            color: #F59E0B;
-            font-size: 18px;
+        .order-list img {
+            width: 80px;
+            height: auto;
+            border-radius: 8px;
+            margin-right: 15px;
         }
 
-        td {
+        .order-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .order-item p {
+            margin: 0;
             font-size: 16px;
             color: #3B3A36;
         }
 
-        tr:nth-child(even) {
-            background-color: #FFFAE5; /* Subtle alternating row color */
+        .order-item span {
+            color: #F59E0B;
+            font-weight: bold;
         }
 
-        tr:hover {
-            background-color: #FFEB99; /* Highlight row on hover */
-        }
-
-        /* Grand Total */
         .total {
             font-size: 24px;
             font-weight: 700;
@@ -110,12 +115,6 @@
             margin: 0;
         }
 
-        /* Scrollable Table */
-        .table-wrapper {
-            overflow-x: auto;
-            -webkit-overflow-scrolling: touch;
-        }
-
         /* Responsive Design */
         @media (max-width: 768px) {
             .container {
@@ -124,10 +123,6 @@
 
             .header {
                 font-size: 24px;
-            }
-
-            table {
-                font-size: 14px;
             }
 
             .total {
@@ -148,33 +143,22 @@
         <p>Thank you for placing your order. Below are the details of your purchase:</p>
         <p>We will contact you for any further information.</p>
 
-        <!-- Order Details Table with scrollable wrapper -->
-        <div class="table-wrapper">
-            <table>
-                <thead>
-                    <tr>
-                        <th>Product Image</th>
-                        <th>Product Name</th>
-                        <th>Quantity</th>
-                        <th>Unit Price (Tsh)</th>
-                        <th>Total Price (Tsh)</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for item in calculated_items %}
-                    <tr>
-                        <td>
-                            <img src="cid:{{ item.image_name }}" alt="{{ item.product_name }}" style="width: 80px; height: auto; border-radius: 8px;">
-                        </td>
-                        <td>{{ item.product_name }}</td>
-                        <td>{{ item.quantity }}</td>
-                        <td>{{ item.unit_price|format_currency }}</td>
-                        <td>{{ item.total_price|format_currency }}</td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-        </div>
+        <!-- Order Details List -->
+        <ul class="order-list">
+            {% for item in calculated_items %}
+            <li>
+                <div class="order-item">
+                    <img src="cid:{{ item.image_name }}" alt="{{ item.product_name }}">
+                    <div>
+                        <p><strong>Product Name:</strong> {{ item.product_name }}</p>
+                        <p><strong>Quantity:</strong> {{ item.quantity }}</p>
+                        <p><strong>Unit Price:</strong> {{ item.unit_price|format_currency }}</p>
+                        <p><strong>Total Price:</strong> {{ item.total_price|format_currency }}</p>
+                    </div>
+                </div>
+            </li>
+            {% endfor %}
+        </ul>
 
         <!-- Grand Total -->
         <p class="total">Grand Total: Tsh {{ grand_total|format_currency }}</p>

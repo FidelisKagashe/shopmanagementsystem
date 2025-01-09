@@ -4,6 +4,44 @@ from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
 
+#Added
+from django.contrib.auth.forms import AuthenticationForm
+from django.contrib.auth import authenticate
+
+#Added
+class CustomAuthenticationForm(forms.Form):
+    email = forms.EmailField(label='Email')
+    password = forms.CharField(widget=forms.PasswordInput, label='Password')
+
+    def clean(self):
+        email = self.cleaned_data.get('email')
+        password = self.cleaned_data.get('password')
+
+        # Avoid user enumeration: don't reveal whether the email is correct
+        users = User.objects.filter(email=email)
+
+        # If multiple users are found, choose the first one (or handle as needed)
+        if users.count() == 1:
+            user = users.first()
+        else:
+            user = None
+
+        if user:
+            # Authenticate using the email and password
+            user = authenticate(username=user.username, password=password)
+
+        if user is None:
+            # Return a generic error message for both wrong email and password
+            raise forms.ValidationError("Invalid email or password.")
+        
+        self.cleaned_data['username'] = user.username
+
+        return self.cleaned_data
+
+
+#End
+
+
 class EmailForm(forms.Form):
     email = forms.EmailField(label="Email", required=True)
 
@@ -29,33 +67,13 @@ class RegistrationForm(UserCreationForm):
         if not all(c.isdigit() or c == '+' for c in phone_number):
             raise ValidationError("Phone number must only contain digits and the '+' sign.")
 
+        # Ensure phone number is unique
+        if UserProfile.objects.filter(phone_number=phone_number).exists():
+            raise ValidationError("This phone number is already associated with another account.")
+
         return phone_number
-
-    def save(self, commit=True):
-        # Create the User object without saving yet
-        user = super().save(commit=False)
-
-        # Set the email from the form
-        user.email = self.cleaned_data['email']
-
-        if commit:
-            # Save the user object to the database
-            user.save()
-
-            # Check if the user already has a UserProfile
-            user_profile, created = UserProfile.objects.get_or_create(
-                user=user,  # Link the UserProfile to the User
-                defaults={'phone_number': self.cleaned_data['phone_number']}  # Set phone number only if profile doesn't exist
-            )
-
-            # If the profile already exists, update the phone number
-            if not created:
-                user_profile.phone_number = self.cleaned_data['phone_number']
-                user_profile.save()
-
-        return user
-
-        
+    
+    
 from django import forms
 from django.core.exceptions import ValidationError
 from django.contrib.auth.models import User

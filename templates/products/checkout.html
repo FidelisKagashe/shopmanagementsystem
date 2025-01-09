@@ -24,7 +24,7 @@ Your Shopping Cart
                         <p>{{ item.product.name }}</p>
                         <p class="text-sm text-gray-600">
                             {{ item.product.price|format_currency }} x {{ item.quantity }} = 
-                            <strong>Tsh {{ item.total_price|format_currency }}</strong>
+                            <strong>{{ item.total_price|format_currency }}</strong>
                         </p>
                     </div>
                 </span>

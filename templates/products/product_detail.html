@@ -15,7 +15,7 @@ Fmk Shop - {{ product.name }} Details
         </div>
 
         <!-- Product Information -->
-        <div class="flex flex-col justify-start">
+        <div class="flex flex-col mx-3 justify-start">
             <!-- Product Name -->
             <h1 class="text-3xl sm:text-4xl font-extrabold text-yellow-600 mb-4">{{ product.name }}</h1>
 
@@ -23,20 +23,22 @@ Fmk Shop - {{ product.name }} Details
             <p class="text-lg text-gray-700 leading-relaxed mb-6">{{ product.description }}</p>
 
             <!-- Product Price -->
-            <p class="text-2xl font-semibold text-yellow-600 mb-6">Price: Tsh {{ product.price }}/=</p>
+            <p class="text-2xl font-semibold text-yellow-600 mb-6">Price: {{ product.price|format_currency }}</p>
 
             <!-- Add to Cart Section -->
-            <div class="flex items-center space-x-4 mb-6">
-                <form class="add-to-cart-form flex items-center w-full" data-product-id="{{ product.id }}">
+            <div class="flex flex-col sm:flex-row sm:space-x-4 mb-6">
+                <form class="add-to-cart-form flex items-center w-full sm:w-auto" data-product-id="{{ product.id }}">
                     {% csrf_token %}
-                    <label for="quantity" class="text-lg text-gray-600">Quantity:</label>
-                    <input type="number" id="quantity" name="quantity" min="1" value="1" class="border border-gray-300 rounded-lg m-1 p-3 w-24 text-center focus:outline-none focus:ring-2 focus:ring-yellow-600 focus:border-yellow-600">
+                    <div class="flex items-center mb-4 sm:mb-0">
+                        <label for="quantity" class="text-lg text-gray-600 mr-3">Quantity:</label>
+                        <input type="number" id="quantity" name="quantity" min="1" value="1" class="border border-gray-300 rounded-lg p-3 w-24 text-center focus:outline-none focus:ring-2 focus:ring-yellow-600 focus:border-yellow-600">
+                    </div>
                     {% if user.is_authenticated %}
-                        <button type="submit" class="w-full sm:w-auto bg-yellow-600 text-white py-3 px-2 rounded-lg shadow-lg hover:bg-yellow-500 transition ease-in-out duration-200">
+                        <button type="submit" class="w-full sm:w-auto bg-yellow-600 text-white py-3 px-4 rounded-lg shadow-lg hover:bg-yellow-500 transition ease-in-out duration-200">
                             Add to Cart
                         </button>
                     {% else %}
-                        <a href="{% url 'register_email' %}" class="w-full sm:w-auto bg-yellow-600 text-white py-3 px-2 rounded-lg shadow-lg hover:bg-yellow-500 transition ease-in-out duration-200 text-center block">
+                        <a href="{% url 'register_email' %}" class="w-full sm:w-auto bg-yellow-600 text-white py-3 px-4 rounded-lg shadow-lg hover:bg-yellow-500 transition ease-in-out duration-200 text-center block">
                             Register to Add to Cart
                         </a>
                     {% endif %}
@@ -52,6 +54,7 @@ Fmk Shop - {{ product.name }} Details
         </div>
     </div>
 </div>
+
 
 <!-- JavaScript to Handle Add to Cart -->
 <script>

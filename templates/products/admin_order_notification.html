@@ -29,44 +29,32 @@
             text-align: center;
         }
 
-        /* Table Styles */
-        table {
-            width: 100%;
+        /* Product List Styles */
+        .product-list {
             margin-top: 30px;
-            border-collapse: collapse;
-        }
-
-        th, td {
-            padding: 12px;
-            text-align: left;
-            border: 2px solid #F59E0B;
+            padding: 10px;
             background-color: #FFF9D7;
+            border-radius: 8px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
         }
 
-        th {
-            background-color: #F59E0B;
-            color: #FFFFFF;
-            font-size: 18px;
-            font-weight: bold;
+        .product-item {
+            margin-bottom: 15px;
+            padding: 10px;
+            background-color: #FFFAE5;
+            border: 1px solid #F59E0B;
+            border-radius: 8px;
         }
 
-        td {
+        .product-item img {
+            width: 80px;
+            height: auto;
+            border-radius: 8px;
+        }
+
+        .product-item p {
+            margin: 5px 0;
             font-size: 16px;
-            color: #3B3A36;
-        }
-
-        tr:nth-child(even) {
-            background-color: #FFFAE5; /* Subtle alternating row colors */
-        }
-
-        tr:hover {
-            background-color: #FFEB99; /* Row hover effect */
-        }
-
-        .total {
-            font-weight: bold;
-            text-align: right;
-            font-size: 20px;
             color: #3B3A36;
         }
 
@@ -74,18 +62,6 @@
             color: #d9534f; /* Highlight Grand Total in red */
             font-size: 20px;
             font-weight: 600;
-        }
-
-        .product-image {
-            width: 80px;
-            height: auto;
-            border-radius: 8px;
-        }
-
-        /* Scrollable Table */
-        .table-wrapper {
-            overflow-x: auto;
-            -webkit-overflow-scrolling: touch;
         }
 
         /* Responsive Design */
@@ -96,10 +72,10 @@
             h2 {
                 font-size: 22px;
             }
-            table {
+            .product-item {
                 font-size: 14px;
             }
-            .total, .highlight {
+            .highlight {
                 font-size: 16px;
             }
         }
@@ -114,36 +90,20 @@
     <p><strong>Address:</strong> {{ address }}</p>
     <p>A new order has been placed. Below are the details:</p>
 
-    <!-- Order Details Table -->
-    <div class="table-wrapper">
-        <table>
-            <thead>
-                <tr>
-                    <th>Product Image</th>
-                    <th>Product Name</th>
-                    <th>Quantity</th>
-                    <th>Unit Price (Tsh)</th>
-                    <th>Total Price (Tsh)</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for item in calculated_items %}
-                <tr>
-                    <td>
-                        <img src="{{ item.image_url }}" class="product-image" alt="{{ item.product_name }}">
-                    </td>
-                    <td>{{ item.product_name }}</td>
-                    <td>{{ item.quantity }}</td>
-                    <td>{{ item.unit_price|format_currency }}/=</td>
-                    <td>{{ item.total_price|format_currency }}/=</td>
-                </tr>
-                {% endfor %}
-                <tr>
-                    <td colspan="4" class="total">Grand Total:</td>
-                    <td class="highlight">{{ grand_total|format_currency }}/=</td>
-                </tr>
-            </tbody>
-        </table>
+    <!-- Order Details List -->
+    <div class="product-list">
+        {% for item in calculated_items %}
+        <div class="product-item">
+            <p><strong>Product Image:</strong></p>
+            <img src="{{ item.image_url }}" alt="{{ item.product_name }}">
+            <p><strong>Product Name:</strong> {{ item.product_name }}</p>
+            <p><strong>Quantity:</strong> {{ item.quantity }}</p>
+            <p><strong>Unit Price (Tsh):</strong> {{ item.unit_price|format_currency }}</p>
+            <p><strong>Total Price (Tsh):</strong> {{ item.total_price|format_currency }}</p>
+        </div>
+        {% endfor %}
+        
+        <p class="highlight"><strong>Grand Total:</strong> {{ grand_total|format_currency }}</p>
     </div>
 
     <p>Please log in to the admin panel for more details.</p>

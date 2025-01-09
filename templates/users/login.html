@@ -17,25 +17,28 @@
 
         <div class="mt-4 border-t-2 border-yellow-400"></div>
 
-        {% if form.errors %}
-            <div class="mb-4 p-4 rounded bg-red-100 text-red-800 text-center" role="alert">
-                Invalid username or password. Please try again.
-            </div>
+        {% if messages %}
+            {% for message in messages %}
+                <div class="mb-4 p-4 rounded bg-red-100 text-red-800 text-center" role="alert">
+                    {{ message }}
+                </div>
+            {% endfor %}
         {% endif %}
 
         <form method="post" class="space-y-4" autocomplete="off">
             {% csrf_token %}
             <div>
-                <label for="id_username" class="block text-sm font-medium text-gray-700">Username:</label>
+                <label for="id_email" class="block text-sm font-medium text-gray-700">Email:</label>
                 <input 
-                    type="text" 
-                    name="username" 
-                    maxlength="150" 
+                    type="email" 
+                    name="email" 
+                    maxlength="254" 
                     required 
-                    id="id_username" 
-                    placeholder="Enter your username" 
+                    id="id_email" 
+                    placeholder="Enter your email" 
                     class="mt-1 p-2 border border-gray-300 rounded w-full focus:outline-none focus:border-yellow-500" 
                     autocomplete="off" 
+                    aria-label="Email"
                 >
             </div>
             <div class="relative">
@@ -49,6 +52,7 @@
                     placeholder="Enter your password" 
                     class="mt-1 p-2 border border-gray-300 rounded w-full focus:outline-none focus:border-yellow-500" 
                     autocomplete="new-password"
+                    aria-label="Password"
                     >
                     <span class="absolute inset-y-0 right-3 flex items-center justify-center cursor-pointer" onclick="togglePasswordVisibility()">
                         <!-- Bootstrap Icons eye icon -->
@@ -56,8 +60,7 @@
                     </span>
                 </div>
             </div>
-                       
-            
+
             <button 
                 type="submit" 
                 class="w-full bg-yellow-600 text-white py-2 rounded hover:bg-yellow-500 transition duration-200"

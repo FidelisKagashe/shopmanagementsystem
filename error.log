@@ -2389,3 +2389,141 @@ Traceback (most recent call last):
     raise TemplateSyntaxError("Invalid filter: '%s'" % filter_name)
 django.template.exceptions.TemplateSyntaxError: Invalid filter: 'format_currency'
 ERROR 2025-01-07 05:22:39,267 basehttp "GET /users/shop/ HTTP/1.1" 500 222685
+ERROR 2025-01-08 17:35:34,794 log Internal Server Error: /users/login/
+Traceback (most recent call last):
+  File "E:\Web-2\Online shopping_django_only\venv\Lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "E:\Web-2\Online shopping_django_only\venv\Lib\site-packages\django\core\handlers\base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "E:\Web-2\Online shopping_django_only\venv\Lib\site-packages\django\views\generic\base.py", line 104, in view
+    return self.dispatch(request, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "E:\Web-2\Online shopping_django_only\venv\Lib\site-packages\django\utils\decorators.py", line 48, in _wrapper
+    return bound_method(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "E:\Web-2\Online shopping_django_only\venv\Lib\site-packages\django\views\decorators\cache.py", line 80, in _view_wrapper
+    response = view_func(request, *args, **kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "E:\Web-2\Online shopping_django_only\shopping_center\users\views.py", line 58, in dispatch
+    return super().dispatch(request, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "E:\Web-2\Online shopping_django_only\venv\Lib\site-packages\django\views\generic\base.py", line 143, in dispatch
+    return handler(request, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "E:\Web-2\Online shopping_django_only\venv\Lib\site-packages\django\views\generic\edit.py", line 150, in post
+    if form.is_valid():
+       ^^^^^^^^^^^^^^^
+  File "E:\Web-2\Online shopping_django_only\venv\Lib\site-packages\django\forms\forms.py", line 197, in is_valid
+    return self.is_bound and not self.errors
+                                 ^^^^^^^^^^^
+  File "E:\Web-2\Online shopping_django_only\venv\Lib\site-packages\django\forms\forms.py", line 192, in errors
+    self.full_clean()
+  File "E:\Web-2\Online shopping_django_only\venv\Lib\site-packages\django\forms\forms.py", line 326, in full_clean
+    self._clean_form()
+  File "E:\Web-2\Online shopping_django_only\venv\Lib\site-packages\django\forms\forms.py", line 342, in _clean_form
+    cleaned_data = self.clean()
+                   ^^^^^^^^^^^^
+  File "E:\Web-2\Online shopping_django_only\shopping_center\users\forms.py", line 21, in clean
+    user = User.objects.get(email=email)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "E:\Web-2\Online shopping_django_only\venv\Lib\site-packages\django\db\models\manager.py", line 87, in manager_method
+    return getattr(self.get_queryset(), name)(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "E:\Web-2\Online shopping_django_only\venv\Lib\site-packages\django\db\models\query.py", line 652, in get
+    raise self.model.MultipleObjectsReturned(
+django.contrib.auth.models.User.MultipleObjectsReturned: get() returned more than one User -- it returned 2!
+ERROR 2025-01-08 17:35:34,918 basehttp "POST /users/login/ HTTP/1.1" 500 124426
+ERROR 2025-01-08 17:40:17,876 log Internal Server Error: /users/login/
+Traceback (most recent call last):
+  File "E:\Web-2\Online shopping_django_only\venv\Lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "E:\Web-2\Online shopping_django_only\venv\Lib\site-packages\django\core\handlers\base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "E:\Web-2\Online shopping_django_only\venv\Lib\site-packages\django\views\generic\base.py", line 104, in view
+    return self.dispatch(request, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "E:\Web-2\Online shopping_django_only\venv\Lib\site-packages\django\utils\decorators.py", line 48, in _wrapper
+    return bound_method(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "E:\Web-2\Online shopping_django_only\venv\Lib\site-packages\django\views\decorators\cache.py", line 80, in _view_wrapper
+    response = view_func(request, *args, **kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "E:\Web-2\Online shopping_django_only\shopping_center\users\views.py", line 58, in dispatch
+    return super().dispatch(request, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "E:\Web-2\Online shopping_django_only\venv\Lib\site-packages\django\views\generic\base.py", line 143, in dispatch
+    return handler(request, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "E:\Web-2\Online shopping_django_only\venv\Lib\site-packages\django\views\generic\edit.py", line 151, in post
+    return self.form_valid(form)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "E:\Web-2\Online shopping_django_only\shopping_center\users\views.py", line 74, in form_valid
+    user = form.get_user()
+           ^^^^^^^^^^^^^
+AttributeError: 'CustomAuthenticationForm' object has no attribute 'get_user'
+ERROR 2025-01-08 17:40:17,900 basehttp "POST /users/login/ HTTP/1.1" 500 101304
+ERROR 2025-01-08 17:42:20,399 log Internal Server Error: /users/login/
+Traceback (most recent call last):
+  File "E:\Web-2\Online shopping_django_only\venv\Lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "E:\Web-2\Online shopping_django_only\venv\Lib\site-packages\django\core\handlers\base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "E:\Web-2\Online shopping_django_only\venv\Lib\site-packages\django\views\generic\base.py", line 104, in view
+    return self.dispatch(request, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "E:\Web-2\Online shopping_django_only\venv\Lib\site-packages\django\utils\decorators.py", line 48, in _wrapper
+    return bound_method(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "E:\Web-2\Online shopping_django_only\venv\Lib\site-packages\django\views\decorators\cache.py", line 80, in _view_wrapper
+    response = view_func(request, *args, **kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "E:\Web-2\Online shopping_django_only\shopping_center\users\views.py", line 58, in dispatch
+    return super().dispatch(request, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "E:\Web-2\Online shopping_django_only\venv\Lib\site-packages\django\views\generic\base.py", line 143, in dispatch
+    return handler(request, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "E:\Web-2\Online shopping_django_only\venv\Lib\site-packages\django\views\generic\edit.py", line 151, in post
+    return self.form_valid(form)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "E:\Web-2\Online shopping_django_only\shopping_center\users\views.py", line 75, in form_valid
+    login(self.request, user)
+  File "E:\Web-2\Online shopping_django_only\venv\Lib\site-packages\django\contrib\auth\__init__.py", line 146, in login
+    request.session[SESSION_KEY] = user._meta.pk.value_to_string(user)
+                                   ^^^^^^^^^^
+AttributeError: 'str' object has no attribute '_meta'
+ERROR 2025-01-08 17:42:20,430 basehttp "POST /users/login/ HTTP/1.1" 500 106384
+ERROR 2025-01-08 17:54:08,706 log Internal Server Error: /products/add-to-cart/4/
+Traceback (most recent call last):
+  File "E:\Web-2\Online shopping_django_only\venv\Lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "E:\Web-2\Online shopping_django_only\venv\Lib\site-packages\django\core\handlers\base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "E:\Web-2\Online shopping_django_only\venv\Lib\site-packages\django\contrib\auth\decorators.py", line 60, in _view_wrapper
+    return view_func(request, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "E:\Web-2\Online shopping_django_only\shopping_center\products\views.py", line 147, in add_to_cart
+    cart_item, created = CartItem.objects.get_or_create(cart=cart, product=product)
+                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "E:\Web-2\Online shopping_django_only\venv\Lib\site-packages\django\db\models\manager.py", line 87, in manager_method
+    return getattr(self.get_queryset(), name)(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "E:\Web-2\Online shopping_django_only\venv\Lib\site-packages\django\db\models\query.py", line 948, in get_or_create
+    return self.get(**kwargs), False
+           ^^^^^^^^^^^^^^^^^^
+  File "E:\Web-2\Online shopping_django_only\venv\Lib\site-packages\django\db\models\query.py", line 652, in get
+    raise self.model.MultipleObjectsReturned(
+products.models.CartItem.MultipleObjectsReturned: get() returned more than one CartItem -- it returned 2!
+ERROR 2025-01-08 17:54:08,931 basehttp "POST /products/add-to-cart/4/ HTTP/1.1" 500 92211
+ERROR 2025-01-09 00:41:42,441 views Failed to send registration email to pilielia27@gmail.com: [Errno 2] No such file or directory
+ERROR 2025-01-09 00:41:50,851 views Failed to send registration email to pilielia27@gmail.com: [Errno 2] No such file or directory
+ERROR 2025-01-09 00:42:04,729 views Failed to send registration email to pilielia27@gmail.com: [Errno 2] No such file or directory
+ERROR 2025-01-09 01:14:28,937 views Failed to send registration email to pilielia27@gmail.com: [Errno 2] No such file or directory

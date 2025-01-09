@@ -30,6 +30,8 @@ from django.core.mail import send_mail
 from django.conf import settings
 from django.contrib import messages
 from django.shortcuts import render, redirect
+from .forms import CustomAuthenticationForm
+from django.views.generic import FormView
 
 @never_cache
 def logout_view(request):
@@ -39,14 +41,15 @@ def logout_view(request):
 
 
 @method_decorator(never_cache, name='dispatch')
-class CustomLoginView(LoginView):
+class CustomLoginView(FormView):
     template_name = 'users/login.html'
     redirect_authenticated_user = True
     success_url = reverse_lazy('home')
-    
+    form_class = CustomAuthenticationForm
+
     # Define maximum failed attempts and lockout time
     MAX_FAILED_ATTEMPTS = 5
-    LOCKOUT_TIME = 900  # 15 minutes (in seconds)
+    LOCKOUT_TIME = 300  # 5 minutes (in seconds)
 
     def dispatch(self, request, *args, **kwargs):
         # Redirect authenticated users to the home page
@@ -55,8 +58,8 @@ class CustomLoginView(LoginView):
         return super().dispatch(request, *args, **kwargs)
 
     def form_valid(self, form):
-        username = form.cleaned_data.get('username')
-        lockout_info = cache.get(f"{username}_lockout")
+        email = form.cleaned_data.get('email')
+        lockout_info = cache.get(f"{email}_lockout")
 
         # Check if the user is still locked out
         if lockout_info:
@@ -68,18 +71,25 @@ class CustomLoginView(LoginView):
                 return self.form_invalid(form)  # Show the lockout message without allowing login
 
         # Proceed with login if not locked out
-        user = form.get_user()
-        login(self.request, user)
+        username = form.cleaned_data.get('username')  # The username stored in cleaned_data
+        password = form.cleaned_data.get('password')
 
-        # Reset failed attempts on successful login
-        cache.delete(f"{username}_lockout")
+        # Authenticate the user
+        user = authenticate(username=username, password=password)
 
-        messages.success(self.request, f"Logged in successfully as {user.username}")
-        return super().form_valid(form)
+        if user is not None:
+            login(self.request, user)
+            # Reset failed attempts on successful login
+            cache.delete(f"{email}_lockout")
+            messages.success(self.request, f"Logged in successfully as {user.username}")
+            return super().form_valid(form)
+        else:
+            messages.error(self.request, "Invalid email or password.")
+            return self.form_invalid(form)
 
     def form_invalid(self, form):
-        username = form.cleaned_data.get('username')
-        lockout_info = cache.get(f"{username}_lockout")
+        email = form.cleaned_data.get('email')
+        lockout_info = cache.get(f"{email}_lockout")
 
         # Check if lockout is already active
         if lockout_info:
@@ -91,22 +101,23 @@ class CustomLoginView(LoginView):
                 return self.render_to_response(self.get_context_data(form=form))  # Deny login attempt
 
         # Increment failed attempts count
-        failed_attempts = cache.get(f"{username}_attempts", 0) + 1
-        cache.set(f"{username}_attempts", failed_attempts, timeout=self.LOCKOUT_TIME)
+        failed_attempts = cache.get(f"{email}_attempts", 0) + 1
+        cache.set(f"{email}_attempts", failed_attempts, timeout=self.LOCKOUT_TIME)
 
         if failed_attempts >= self.MAX_FAILED_ATTEMPTS:
             # Lock the account by setting a lockout time in the cache
             lockout_time = timezone.now() + timedelta(seconds=self.LOCKOUT_TIME)
-            cache.set(f"{username}_lockout", (lockout_time, failed_attempts), timeout=self.LOCKOUT_TIME)
-            messages.error(self.request, f"Too many failed attempts. Your account is locked for 15 minutes.")
+            cache.set(f"{email}_lockout", (lockout_time, failed_attempts), timeout=self.LOCKOUT_TIME)
+            messages.error(self.request, f"Too many failed attempts. Your account is locked for 5 minutes.")
             return redirect('lockout')
 
-        messages.error(self.request, "Invalid username or password.")
+        messages.error(self.request, "Invalid email or password.")
         return super().form_invalid(form)
+
 
 def lockout_view(request):
     return render(request, 'users/lockout.html', context={
-        'message': "You have been temporarily locked out due to too many failed login attempts. However, you can still browse the website as a guest. Please wait 15 minutes before trying to log in again. Thank you for your patience!"
+        'message': "You have been temporarily locked out due to too many failed login attempts. However, you can still browse the website as a guest. Please wait 5 minutes before trying to log in again. Thank you for your patience!"
     })
 
 def get_cart_item_count(user):
@@ -357,69 +368,91 @@ def register_email(request):
     return render(request, 'users/register.html', {'form': form})
 
 from django.shortcuts import render, redirect
-from django.http import HttpResponse
-from django.core.exceptions import ObjectDoesNotExist
-from users.models import UserProfile
-from users.forms import RegistrationForm
-
+from django.contrib import messages
+from django.db import IntegrityError, DatabaseError, transaction
+from django.contrib.auth import login
 from django.core.cache import cache
-from django.http import HttpResponse, Http404
-from .models import UserProfile
+from django.core.exceptions import ValidationError
+from django.utils import timezone
+import logging
 from .forms import RegistrationForm
+from users.models import UserProfile
+from django.contrib.auth.models import User
+
+# Configure logging
+logger = logging.getLogger(__name__)
 
 def register_complete(request):
     """Complete the registration process."""
     token = request.GET.get('token')  # Retrieve the token from the query parameters
 
     if not token:
-        return HttpResponse("Invalid or expired registration link. Please start the registration process again.")
+        messages.error(request, "Invalid or expired registration link. Please start the registration process again.")
+        return redirect('registration_start')
 
     # Retrieve email from the cache
     cache_key = f"registration_token_{token}"
     email = cache.get(cache_key)
 
     if not email:
-        return HttpResponse("Invalid or expired registration link. Please start the registration process again.")
+        messages.error(request, "Invalid or expired registration link. Please start the registration process again.")
+        return redirect('registration_start')
 
     if request.method == 'POST':
         form = RegistrationForm(request.POST)
+
         if form.is_valid():
             try:
-                # Create a new user with the provided data
-                user = form.save(commit=False)
-                user.email = email  # Set email retrieved from the cache
-                user.save()
+                # Use atomic transaction to ensure data consistency
+                with transaction.atomic():
+                    # Check if the email already exists
+                    if User.objects.filter(email=email).exists():
+                        messages.error(request, "A user with this email already exists. Please log in or use a different email.")
+                        return render(request, 'users/register2.html', {'form': form})
 
-                # Check if a UserProfile already exists
-                user_profile, created = UserProfile.objects.get_or_create(
-                    user=user,
-                    defaults={'phone_number': form.cleaned_data['phone_number']}
-                )
+                    phone_number = form.cleaned_data['phone_number']
 
-                if not created:
-                    # Update existing profile fields if needed
-                    user_profile.phone_number = form.cleaned_data['phone_number']
-                    user_profile.save()
+                    # Ensure no duplicate phone number exists within the transaction
+                    if UserProfile.objects.filter(phone_number=phone_number).exists():
+                        messages.error(request, "This phone number is already registered. Please use a different one.")
+                        return render(request, 'users/register2.html', {'form': form})
 
-                # Clear the token from the cache after successful registration
-                cache.delete(cache_key)
+                    # Create and save the user
+                    user = form.save(commit=False)
+                    user.email = email  # Set email retrieved from the cache
+                    user.save()
 
-                # Redirect to the login page or a success page
-                return redirect('login')  # Replace 'login' with the actual login URL name
+                    # Create the UserProfile
+                    UserProfile.objects.create(user=user, phone_number=phone_number)
 
+                    # Clear the token from the cache after successful registration
+                    cache.delete(cache_key)
+
+                    # Log the user in
+                    login(request, user)
+
+                    # Redirect to the homepage
+                    return redirect('home')
+
+            except IntegrityError as e:
+                logger.error(f"Integrity error during registration: {e}")
+                messages.error(request, "A database error occurred. Please try again later.")
+            except DatabaseError as e:
+                logger.error(f"Database error during registration: {e}")
+                messages.error(request, "A critical error occurred. Please contact support.")
             except Exception as e:
-                # Log the error for debugging and provide user feedback
-                print(f"Error during registration: {e}")
-                return HttpResponse("An unexpected error occurred. Please try again later.")
-
+                logger.error(f"Unexpected error during registration: {e}", exc_info=True)
+                messages.error(request, "An unexpected error occurred. Please try again later.")
         else:
-            # Re-render the form with errors
+            messages.error(request, "Please correct the errors below.")
             return render(request, 'users/register2.html', {'form': form})
+
     else:
-        # Pre-fill the form with the email from the cache
+        # Initialize the form with the email obtained from the cache
         form = RegistrationForm(initial={'email': email})
 
     return render(request, 'users/register2.html', {'form': form})
+
 
 import logging
 import secrets
