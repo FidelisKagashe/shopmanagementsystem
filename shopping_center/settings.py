@@ -38,7 +38,6 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'csp',
     'users',
-    'products',
 ]
 
 MIDDLEWARE = [
@@ -194,8 +193,8 @@ EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
-EMAIL_HOST_USER = 'fideliskagashe@gmail.com'  # Replace with actual email
-EMAIL_HOST_PASSWORD = 'kave ygaw mdzb vcbd'  # Replace with actual password or app-specific password
+EMAIL_HOST_USER = 'fmklinkcompany@gmail.com'  # Replace with actual email
+EMAIL_HOST_PASSWORD = 'jkxb wwru lodv qier'  # Replace with actual password or app-specific password
 SITE_URL = "http://localhost:8000"  # Update this to your site URL
 
 

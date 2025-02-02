@@ -1,36 +1,34 @@
 from django.urls import path
 from . import views
-from .views import *
-from django.contrib.auth.views import LogoutView
-from django.contrib.auth import views as auth_views
-
 
 urlpatterns = [
-    path('login/', CustomLoginView.as_view(), name='login'),
-    path('lockout/', lockout_view, name='lockout'),
-    path('logout/', views.logout_view, name='logout'),
-    path('about/', views.About, name='about'),
-    path('shop/', views.Shop, name='shop'),
-    path('faq/', views.Faq, name='faq'),
-    path('myAccount/', views.MyAccount, name='myAccount'),
-    # path('landing/', views.Landing, name='landing'),
-    path('contact/', views.Contact, name='contact'),
+    # Dynamic route for disease pages
+    path('ugonjwa/upungufu_wa_nguvu_za_kiume/', views.upungufu_wa_nguvu_za_kiume, name='upungufu_wa_nguvu_za_kiume'),
+    path('ugonjwa/kisukari/', views.kisukari, name='kisukari'),
+    path('ugonjwa/presha/', views.presha, name='presha'),
+    path('ugonjwa/michirizi/', views.michirizi, name='michirizi'),
+    path('ugonjwa/pid/', views.pid, name='pid'),
+    path('ugonjwa/uti_sugu/', views.uti_sugu, name='uti_sugu'),
+    path('ugonjwa/tezi_dume/', views.tezi_dume, name='tezi_dume'),
+    path('ugonjwa/magonjwa_ya_ngozi/', views.magonjwa_ya_ngozi, name='magonjwa_ya_ngozi'),
+    path('ugonjwa/bawasiri/', views.bawasiri, name='bawasiri'),
+    path('ugonjwa/vidonda_vya_tumbo/', views.vidonda_vya_tumbo, name='vidonda_vya_tumbo'),
+    path('ugonjwa/gas_tumboni/', views.gas_tumboni, name='gas_tumboni'),
+    path('ugonjwa/stroke/', views.stroke, name='stroke'),
+    path('ugonjwa/pumu/', views.pumu, name='pumu'),
+    path('ugonjwa/ngiri/', views.ngiri, name='ngiri'),
+    path('ugonjwa/mimba_kuharibika/', views.mimba_kuharibika, name='mimba_kuharibika'),
+    path('ugonjwa/kutokushika_ujauzito/', views.kutokushika_ujauzito, name='kutokushika_ujauzito'),
+    path('ugonjwa/kupunguza_uzito/', views.kupunguza_uzito, name='kupunguza_uzito'),
 
-    path('register/', views.register_email, name='register_email'),
-    path('register/complete/', views.register_complete, name='register_complete'),
-
-    # Password Reset Request: Simple FBV
-    path('password_reset/', views.password_reset_request, name='password_reset'),
-    path('reset/<uidb64>/<token>/<request_token>/', views.password_reset_confirm, name='password_reset_confirm'),
-    path('reset/<uidb64>/<token>/', views.password_reset_form, name='password_reset_form'),
+    # Other routes
+    path('kuhusu-sisi/', views.kuhusu, name='kuhusu'),
+    path('ajira/', views.ajira, name='ajira'),
+    path('wasiliana-nasi/', views.mawasiliano, name='mawasiliano'),
+    path('tiba-ya-magonjwa/', views.tiba, name='tiba'),
     
-    # Resend Reset Code (optional)
-    path('resend_reset_code/', views.resend_reset_code, name='resend_reset_code'),  # Endpoint to resend the reset code
-    
-    path('password_change/', auth_views.PasswordChangeView.as_view(template_name='users/password_change_form.html'), name='password_change'),
-    path('password_change/done/', auth_views.PasswordChangeDoneView.as_view(template_name='users/password_change_done.html'), name='password_change_done'),
+    # Home page
+    path('', views.home, name='home'),  # Example for the home page
 
+    path('weka_oda/', views.weka_oda, name='weka_oda'),
 ]
-
-
-

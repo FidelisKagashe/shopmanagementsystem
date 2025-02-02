@@ -1,0 +1,138 @@
+{% extends 'diseases/base.html' %}
+
+{% block title %}Michirizi ya Ngozi{% endblock %}
+
+{% block content %}
+<!-- Sidebar Section -->
+<div class="bg-blue-100 shadow-inner py-4">
+    <div class="mx-4 md:mx-8">
+        <h2 class="text-xl font-semibold text-blue-700">Chunguza Magonjwa</h2>
+        <ul class="flex gap-1 bg-blue-50 rounded p-2 mt-3 overflow-x-auto whitespace-nowrap">
+            <li>
+                <a href="{% url 'kisukari' %}" 
+                   class="inline-block text-sm font-medium px-4 py-2 rounded transition
+                   {% if request.resolver_match.url_name == 'kisukari' %}bg-blue-700 text-white{% else %}bg-blue-500 text-white hover:bg-blue-700{% endif %}">
+                   Kisukari
+                </a>
+            </li>
+            <li>
+                <a href="{% url 'presha' %}" 
+                   class="inline-block text-sm font-medium px-4 py-2 rounded transition
+                   {% if request.resolver_match.url_name == 'presha' %}bg-blue-700 text-white{% else %}bg-blue-500 text-white hover:bg-blue-700{% endif %}">
+                   Presha
+                </a>
+            </li>
+            <li>
+                <a href="{% url 'michirizi' %}" 
+                   class="inline-block text-sm font-medium px-4 py-2 rounded transition
+                   {% if request.resolver_match.url_name == 'michirizi' %}bg-blue-700 text-white{% else %}bg-blue-500 text-white hover:bg-blue-700{% endif %}">
+                   Michirizi ya ngozi
+                </a>
+            </li>
+            <li>
+                <a href="{% url 'upungufu_wa_nguvu_za_kiume' %}" 
+                   class="inline-block text-sm font-medium px-4 py-2 rounded transition
+                   {% if request.resolver_match.url_name == 'upungufu_wa_nguvu_za_kiume' %}bg-blue-700 text-white{% else %}bg-blue-500 text-white hover:bg-blue-700{% endif %}">
+                   Upungufu wa nguvu za kiume
+                </a>
+            </li>
+            <li>
+                <a href="{% url 'pid' %}" 
+                   class="inline-block text-sm font-medium px-4 py-2 rounded transition
+                   {% if request.resolver_match.url_name == 'pid' %}bg-blue-700 text-white{% else %}bg-blue-500 text-white hover:bg-blue-700{% endif %}">
+                   PID
+                </a>
+            </li>
+            <li>
+                <a href="{% url 'uti_sugu' %}" 
+                   class="inline-block text-sm font-medium px-4 py-2 rounded transition
+                   {% if request.resolver_match.url_name == 'uti_sugu' %}bg-blue-700 text-white{% else %}bg-blue-500 text-white hover:bg-blue-700{% endif %}">
+                   UTI Sugu
+                </a>
+            </li>
+            <li>
+                <a href="{% url 'tezi_dume' %}" 
+                   class="inline-block text-sm font-medium px-4 py-2 rounded transition
+                   {% if request.resolver_match.url_name == 'tezi_dume' %}bg-blue-700 text-white{% else %}bg-blue-500 text-white hover:bg-blue-700{% endif %}">
+                   Tezi Dume
+                </a>
+            </li>
+            <li>
+                <a href="{% url 'magonjwa_ya_ngozi' %}" 
+                   class="inline-block text-sm font-medium px-4 py-2 rounded transition
+                   {% if request.resolver_match.url_name == 'magonjwa_ya_ngozi' %}bg-blue-700 text-white{% else %}bg-blue-500 text-white hover:bg-blue-700{% endif %}">
+                   Magonjwa ya Ngozi
+                </a>
+            </li>
+            <li>
+                <a href="{% url 'bawasiri' %}" 
+                   class="inline-block text-sm font-medium px-4 py-2 rounded transition
+                   {% if request.resolver_match.url_name == 'bawasiri' %}bg-blue-700 text-white{% else %}bg-blue-500 text-white hover:bg-blue-700{% endif %}">
+                   Bawasiri
+                </a>
+            </li>
+            <li>
+                <a href="{% url 'vidonda_vya_tumbo' %}" 
+                   class="inline-block text-sm font-medium px-4 py-2 rounded transition
+                   {% if request.resolver_match.url_name == 'vidonda_vya_tumbo' %}bg-blue-700 text-white{% else %}bg-blue-500 text-white hover:bg-blue-700{% endif %}">
+                   Vidonda vya Tumbo
+                </a>
+            </li>
+            <li>
+                <a href="{% url 'gas_tumboni' %}" 
+                   class="inline-block text-sm font-medium px-4 py-2 rounded transition
+                   {% if request.resolver_match.url_name == 'gas_tumboni' %}bg-blue-700 text-white{% else %}bg-blue-500 text-white hover:bg-blue-700{% endif %}">
+                   Gas Tumboni
+                </a>
+            </li>
+            <li>
+                <a href="{% url 'stroke' %}" 
+                   class="inline-block text-sm font-medium px-4 py-2 rounded transition
+                   {% if request.resolver_match.url_name == 'stroke' %}bg-blue-700 text-white{% else %}bg-blue-500 text-white hover:bg-blue-700{% endif %}">
+                   Stroke
+                </a>
+            </li>
+            <li>
+                <a href="{% url 'pumu' %}" 
+                   class="inline-block text-sm font-medium px-4 py-2 rounded transition
+                   {% if request.resolver_match.url_name == 'pumu' %}bg-blue-700 text-white{% else %}bg-blue-500 text-white hover:bg-blue-700{% endif %}">
+                   Pumu
+                </a>
+            </li>
+            <li>
+                <a href="{% url 'ngiri' %}" 
+                   class="inline-block text-sm font-medium px-4 py-2 rounded transition
+                   {% if request.resolver_match.url_name == 'ngiri' %}bg-blue-700 text-white{% else %}bg-blue-500 text-white hover:bg-blue-700{% endif %}">
+                   Ngiri
+                </a>
+            </li>
+            <li>
+                <a href="{% url 'mimba_kuharibika' %}" 
+                   class="inline-block text-sm font-medium px-4 py-2 rounded transition
+                   {% if request.resolver_match.url_name == 'mimba_kuharibika' %}bg-blue-700 text-white{% else %}bg-blue-500 text-white hover:bg-blue-700{% endif %}">
+                   Mimba Kuharibika
+                </a>
+            </li>
+            <li>
+                <a href="{% url 'kutokushika_ujauzito' %}" 
+                   class="inline-block text-sm font-medium px-4 py-2 rounded transition
+                   {% if request.resolver_match.url_name == 'kutokushika_ujauzito' %}bg-blue-700 text-white{% else %}bg-blue-500 text-white hover:bg-blue-700{% endif %}">
+                   Kutokushika Ujauzito
+                </a>
+            </li>
+            <li>
+                <a href="{% url 'kupunguza_uzito' %}" 
+                   class="inline-block text-sm font-medium px-4 py-2 rounded transition
+                   {% if request.resolver_match.url_name == 'kupunguza_uzito' %}bg-blue-700 text-white{% else %}bg-blue-500 text-white hover:bg-blue-700{% endif %}">
+                   Kupunguza Uzito
+                </a>
+            </li>
+        </ul>
+    </div>
+</div>
+
+{% block magonjwa %}
+
+{% endblock %}
+
+{% endblock %}

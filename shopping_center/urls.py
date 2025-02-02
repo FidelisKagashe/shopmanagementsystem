@@ -16,15 +16,12 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
-from products.views import Home 
 from django.conf import settings
 from django.conf.urls.static import static
 
 urlpatterns = [
-    path('fmkmyadmin/', admin.site.urls, name="adminPage"),
-    path('users/', include('users.urls')), 
-    path('', Home, name='home'), 
-    path('products/', include('products.urls')), 
+    path('bfsumaadmin/', admin.site.urls, name="adminPage"),
+    path('', include('users.urls')),
 ]
 
 # Serve media files in development

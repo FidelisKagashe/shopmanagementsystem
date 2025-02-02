@@ -1,35 +1,34 @@
 from django.db import models
-from django.contrib.auth.models import User
 
-class UserProfile(models.Model):
-    user = models.OneToOneField(User, on_delete=models.CASCADE)
-    phone_number = models.CharField(max_length=15, unique=True)
-
-    def __str__(self):
-        return self.user.username
-
-from uuid import uuid4
-from django.db import models
-from django.contrib.auth.models import User
-from django.utils import timezone
-from datetime import timedelta
-
-class PasswordResetCode(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
-    reset_code = models.CharField(max_length=6)
-    created_at = models.DateTimeField(auto_now_add=True)
-    uidb64 = models.CharField(max_length=64, blank=True, null=True)  # Store UID base64
-    token = models.CharField(max_length=128, blank=True, null=True)  # Store token
-    expires_at = models.DateTimeField(blank=True, null=True)  # Expiration time for the code and token
-    request_token = models.UUIDField(default=uuid4, editable=False)  # Unique request token
+class Oda(models.Model):
+    jina_dawa = models.CharField(max_length=255)
+    jina_mnunuzi = models.CharField(max_length=255)
+    namba_simu = models.CharField(max_length=15)
+    maelezo_ziada = models.TextField(blank=True, null=True)
+    tarehe_ya_oda = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return f"Reset Code for {self.user.email}"
+        return f'Oda ya {self.jina_dawa} - {self.jina_mnunuzi}'
 
-    def is_expired(self):
-        return timezone.now() > self.expires_at if self.expires_at else False
+class Dawa(models.Model):
+    jina = models.CharField(max_length=200, verbose_name="Jina la Dawa")  # Medicine name
+    maelezo = models.TextField(verbose_name="Maelezo ya Dawa", blank=True)  # Description
+    bei = models.DecimalField(max_digits=10, decimal_places=2, verbose_name="Bei ya Dawa")  # Price
+    picha = models.ImageField(upload_to='dawa_picha/', blank=True, null=True, verbose_name="Picha ya Dawa")  # Optional image
 
-    def delete_if_expired_or_used(self, token_used=False):
-        if self.is_expired() or token_used:
-            self.delete()
+    class Meta:
+        verbose_name = "Dawa"
+        verbose_name_plural = "Dawa"
+        ordering = ['jina']  # Sort alphabetically by name
 
+    def __str__(self):
+        return self.jina
+
+class MaoniMteja(models.Model):
+    jina_mteja = models.CharField(max_length=100)
+    eneo = models.CharField(max_length=100)
+    ujumbe = models.TextField()
+    tarehe_iliyoandikwa = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.jina_mteja} - {self.eneo}"

@@ -1,0 +1,119 @@
+{% extends 'diseases/base.html' %}
+{% load static %}
+
+{% block title %}Jacobhealth Care - Bidhaa za Tiba{% endblock %}
+
+{% block content %}
+<!-- Header Section for Product Selection -->
+<div class="bg-blue-50 shadow-inner py-6">
+    <div class="container mx-auto px-4">
+        <h2 class="text-center md:text-left md:text-2xl font-bold text-blue-700">Dawa mbalimbali na kazi zake</h2>
+    </div>
+</div>
+
+<!-- Search Bar -->
+<div class="container mx-auto px-4 my-4">
+    <input type="text" id="searchBar" onkeyup="liveSearch()" placeholder="Tafuta ugonjwa, jina la dawa, au taarifa nyingine..." class="w-full p-3 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+</div>
+
+<!-- List of Medicines -->
+<div id="dawaList" class="grid lg:grid-cols-1 md:grid-cols-1 xl:grid-cols-1 gap-3">
+    {% for dawa in dawa_list %}
+    <div class="dawa-item bg-white shadow rounded-lg p-4 flex flex-col md:flex-row items-center justify-center md:items-start hover:shadow-md w-full">
+        <!-- Image Section -->
+        <div class="md:w-1/4 flex justify-center items-center mb-4 md:mb-0">
+            {% if dawa.picha %}
+            <img src="{{ dawa.picha.url }}" alt="{{ dawa.jina }}" class="w-32 md:w-40 md:h-full object-contain rounded-lg">
+            {% endif %}
+        </div>
+        
+        <!-- Text Content Section -->
+        <div class="text-left flex flex-col justify-center items-center md:items-start md:m-4 w-full md:w-2/4">
+            <h3 class="dawa-name text-lg font-semibold my-2 text-gray-800">{{ dawa.jina }}</h3>
+            <span class="dawa-description text-gray-600">{{ dawa.maelezo|linebreaksbr }}</span>
+            <p class="text-blue-700 font-bold mt-4 text-lg md:text-xl">
+                {{ dawa.bei }}
+            </p>
+        </div>
+    
+        <!-- Button Section -->
+        <div class="md:w-1/4 flex justify-center items-center mt-4 md:mt-0">
+            <button onclick="openOrderForm('{{ dawa.jina }}')" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700">Agiza</button>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+
+<!-- Order Form Modal -->
+<div id="orderForm" class="hidden fixed inset-0 m-2 bg-gray-900 bg-opacity-50 flex items-center justify-center">
+    <div class="bg-white rounded-lg shadow-xl w-96 p-6 relative">
+        <!-- Close Button -->
+        <button onclick="closeOrderForm()" class="absolute top-2 right-2 text-gray-600 hover:text-red-500">&times;</button>
+        
+        <!-- Modal Header - Centered -->
+        <h3 class="text-xl font-bold text-blue-700 mb-4 text-center">Jaza Fomu ya Oda</h3>
+        
+        <!-- Order Form -->
+        <form action="{% url 'weka_oda' %}" method="POST" class="space-y-4">
+            {% csrf_token %}
+            
+            <!-- Medicine Name Input -->
+            <div>
+                <label for="jinaDawa" class="block text-gray-700 font-medium">Jina la Dawa:</label>
+                <input type="text" id="jinaDawa" name="jina_dawa" class="w-full border rounded-lg px-3 py-2 text-gray-700" readonly>
+            </div>
+            
+            <!-- Customer Name Input -->
+            <div>
+                <label for="jinaMnunuzi" class="block text-gray-700 font-medium">Jina la Mnunuzi:</label>
+                <input type="text" id="jinaMnunuzi" name="jina_mnunuzi" class="w-full border rounded-lg px-3 py-2" required>
+            </div>
+            
+            <!-- Phone Number Input -->
+            <div>
+                <label for="simu" class="block text-gray-700 font-medium">Namba ya Simu:</label>
+                <input type="text" id="simu" name="namba_simu" class="w-full border rounded-lg px-3 py-2" required>
+            </div>
+            
+            <!-- Additional Notes Input -->
+            <div>
+                <label for="maelezoZaidi" class="block text-gray-700 font-medium">Maelezo ya Ziada:</label>
+                <textarea id="maelezoZaidi" name="maelezo_ziada" class="w-full border rounded-lg px-3 py-2"></textarea>
+            </div>
+            
+            <!-- Submit Button - Centered -->
+            <div class="flex justify-center">
+                <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700">Tuma Oda</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+function openOrderForm(jinaDawa) {
+    document.getElementById('orderForm').classList.remove('hidden');
+    document.getElementById('jinaDawa').value = jinaDawa;
+}
+
+function closeOrderForm() {
+    document.getElementById('orderForm').classList.add('hidden');
+}
+
+function liveSearch() {
+    const searchQuery = document.getElementById('searchBar').value.toLowerCase();
+    const dawaItems = document.querySelectorAll('.dawa-item');
+
+    dawaItems.forEach(item => {
+        const name = item.querySelector('.dawa-name').textContent.toLowerCase();
+        const description = item.querySelector('.dawa-description').textContent.toLowerCase();
+
+        // Check if either name or description includes the search query
+        if (name.includes(searchQuery) || description.includes(searchQuery)) {
+            item.style.display = 'flex';
+        } else {
+            item.style.display = 'none';
+        }
+    });
+}
+</script>
+{% endblock %}
