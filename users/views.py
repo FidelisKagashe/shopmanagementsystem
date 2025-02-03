@@ -1,8 +1,11 @@
 from django.shortcuts import render
 from django.shortcuts import render, redirect
+
+from django.core.mail import send_mail
 from django.http import JsonResponse
 from .models import Oda, Dawa, MaoniMteja  # Import your order model
 from django.contrib import messages
+from django.contrib.auth.models import User
 
 def home(request):
     dawa_list = Dawa.objects.all()
@@ -79,7 +82,6 @@ def ajira(request):
 
 #__________#
 
-
 def weka_oda(request):
     if request.method == 'POST':
         jina_dawa = request.POST.get('jina_dawa')
@@ -96,10 +98,28 @@ def weka_oda(request):
                 maelezo_ziada=maelezo_ziada
             )
             oda.save()
-            messages.success(request, 'Oda yako imefanikiwa kutumwa!')
-            return redirect('home')  # Change 'index' to the name of your homepage or list page
+
+            # Notify all superusers by email
+            superusers = User.objects.filter(is_superuser=True)
+            subject = "New Order Received"
+            message = f"New order details:\n\nMedicine: {jina_dawa}\nCustomer: {jina_mnunuzi}\nPhone: {namba_simu}\nAdditional Info: {maelezo_ziada}"
+
+            # Send email to each superuser
+            for superuser in superusers:
+                send_mail(
+                    subject,
+                    message,
+                    'fmklink@gmail.com',  # Sender's email address (change this if needed)
+                    [superuser.email],  # Recipient's email
+                    fail_silently=False,
+                )
+
+            # Return success message as JSON for AJAX
+            return JsonResponse({'success': True})
+
         else:
-            messages.error(request, 'Tafadhali jaza taarifa zote zinazohitajika.')
-            return redirect('home')  # Redirect back in case of an error
+            # Return error message as JSON if required fields are missing
+            return JsonResponse({'success': False, 'error': 'Tafadhali jaza taarifa zote zinazohitajika.'})
+
     else:
         return JsonResponse({'error': 'Invalid request method.'}, status=400)

@@ -46,15 +46,26 @@
 
 <!-- Order Form Modal -->
 <div id="orderForm" class="hidden fixed inset-0 m-2 bg-gray-900 bg-opacity-50 flex items-center justify-center">
-    <div class="bg-white rounded-lg shadow-xl w-96 p-6 relative">
+    <div id="orderFormContent" class="bg-white rounded-lg shadow-xl w-96 p-6 relative">
         <!-- Close Button -->
-        <button onclick="closeOrderForm()" class="absolute top-2 right-2 text-gray-600 hover:text-red-500">&times;</button>
+        <button id="closeModalButton" onclick="closeOrderForm()" class="absolute top-2 right-2 text-gray-600 hover:text-red-500">&times;</button>
         
         <!-- Modal Header - Centered -->
         <h3 class="text-xl font-bold text-blue-700 mb-4 text-center">Jaza Fomu ya Oda</h3>
         
+        <!-- Feedback Message - Hidden initially -->
+        <div id="feedbackMessage" class="hidden text-green-700 font-medium text-center text-2xl">
+            Oda yako imefanikiwa kutumwa!
+        </div>
+        
+        <!-- Loading Spinner - Hidden initially -->
+        <div id="loadingSpinner" class="hidden text-center">
+            <i class="fa fa-spinner fa-spin text-blue-600 text-3xl"></i>
+            <p class="text-gray-700 mt-2">Tunaendelea kushughulikia oda yako...</p>
+        </div>
+        
         <!-- Order Form -->
-        <form action="{% url 'weka_oda' %}" method="POST" class="space-y-4">
+        <form id="orderFormData" action="{% url 'weka_oda' %}" method="POST" class="space-y-4">
             {% csrf_token %}
             
             <!-- Medicine Name Input -->
@@ -83,11 +94,62 @@
             
             <!-- Submit Button - Centered -->
             <div class="flex justify-center">
-                <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700">Tuma Oda</button>
+                <button type="submit" id="submitOrderBtn" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700">Tuma Oda</button>
             </div>
         </form>
     </div>
 </div>
+
+<script>
+    function closeOrderForm() {
+        document.getElementById('orderForm').classList.add('hidden');
+    }
+
+    // Handle form submission via AJAX
+    document.getElementById('orderFormData').addEventListener('submit', function(event) {
+        event.preventDefault();  // Prevent the default form submission
+
+        let form = event.target;
+        let formData = new FormData(form);
+
+        // Disable the form and close button, and show the loading spinner
+        document.getElementById('submitOrderBtn').disabled = true;
+        document.getElementById('closeModalButton').disabled = true;  // Disable the close button after submission starts
+        document.getElementById('loadingSpinner').classList.remove('hidden');
+        document.getElementById('orderFormData').classList.add('opacity-50');  // Optional, to dim the form
+
+        fetch(form.action, {
+            method: 'POST',
+            body: formData,
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                // Hide form fields and show success message
+                document.getElementById('orderFormData').classList.add('hidden');
+                document.getElementById('feedbackMessage').classList.remove('hidden');
+            } else {
+                // Handle error case (optional)
+                alert(data.error || 'Tafadhali jaza taarifa zote zinazohitajika.');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+        })
+        .finally(() => {
+            // After the process is done, re-enable the form and close button
+            document.getElementById('submitOrderBtn').disabled = false;
+            document.getElementById('closeModalButton').disabled = false;  // Enable close button after process completes
+            document.getElementById('loadingSpinner').classList.add('hidden');
+            document.getElementById('orderFormData').classList.remove('opacity-50');
+
+            setTimeout(() => {
+                location.reload();  // Reload the page after 3 seconds
+            }, 3000); // 3000 milliseconds = 3 seconds
+        });
+    });
+</script>
+
 
 <script>
 function openOrderForm(jinaDawa) {
