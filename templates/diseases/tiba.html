@@ -1,5 +1,6 @@
 {% extends 'diseases/base.html' %}
 {% load static %}
+{% load custom_filters %}
 
 {% block title %}Jacobhealth Care - Bidhaa za Tiba{% endblock %}
 
@@ -32,7 +33,7 @@
             <h3 class="dawa-name text-lg font-semibold my-2 text-gray-800">{{ dawa.jina }}</h3>
             <span class="dawa-description text-gray-600">{{ dawa.maelezo|linebreaksbr }}</span>
             <p class="text-blue-700 font-bold mt-4 text-lg md:text-xl">
-                {{ dawa.bei }}
+                {{ dawa.bei|format_currency }}
             </p>
         </div>
     

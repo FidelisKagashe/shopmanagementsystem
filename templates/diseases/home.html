@@ -1,5 +1,7 @@
 {% extends 'diseases/base.html' %}
 {% load static %}
+{% load custom_filters %}
+
 {% block title %}Jacobhealth Care - Nyumbani{% endblock %}
 
 {% block content %}
@@ -85,7 +87,7 @@
                     <div class="p-4 flex-1">
                         <h4 class="text-xl font-semibold text-blue-700">{{ dawa.jina }}</h4>
                         <p class="text-gray-600">{{ dawa.maelezo|truncatechars:50 }}</p>
-                        <p class="text-blue-700 font-bold">Tsh {{ dawa.bei }}</p>
+                        <p class="text-blue-700 font-bold">{{ dawa.bei|format_currency }}</p>
                         <button onclick="openModal('{{ dawa.id }}')" class="text-blue-500 mt-2 underline">Soma Zaidi</button>
                     </div>
                 </div>        
@@ -123,7 +125,7 @@
                 <div class="p-2 md:pt-10 flex-1">
                     <h4 class="text-xl font-semibold text-blue-700 mt-2">{{ dawa.jina }}</h4>
                     <p class="text-gray-600">{{ dawa.maelezo|linebreaksbr }}</p>
-                    <p class="text-blue-700 font-bold">Tsh {{ dawa.bei }}</p>
+                    <p class="text-blue-700 font-bold">{{ dawa.bei|format_currency }}</p>
                     <div class="mt-4 flex justify-between">
                         <button onclick="closeModal('{{ dawa.id }}')" class="px-4 py-2 bg-gray-500 text-white rounded">Funga</button>
                     </div>
