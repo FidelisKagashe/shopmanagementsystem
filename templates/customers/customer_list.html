@@ -1,0 +1,213 @@
+{% extends 'base.html' %}
+{% block title %}Customers - Shop Management{% endblock %}
+
+{% block content %}
+<div class="text-gray-800 mb-4 font-semibold">
+  Customers &rarr; <span class="text-blue-600">Customers List</span>
+</div>
+  <div class="flex flex-col md:flex-row md:justify-between md:items-center mb-6">
+    <h2 class="text-2xl font-bold">Customers</h2>
+    <div class="flex space-x-4 mt-2">
+      <a href="{% url 'customer_create' %}" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded">
+        Add Customer
+      </a>
+      <!-- New PDF Report Button -->
+      <button id="downloadPdfReport" class="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded">
+        Download PDF Report
+      </button>
+    </div>
+  </div>
+
+  <!-- Filtering Options -->
+  <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 mb-6">
+    <input id="liveFilterInput" type="text" placeholder="Search customers..." class="px-3 py-2 border border-gray-300 rounded focus:outline-none focus:border-blue-600">
+  </div>
+
+  <!-- Table Container: Only table will scroll horizontally -->
+  <div class="overflow-x-auto">
+    <table class="min-w-full bg-white shadow rounded">
+      <thead>
+        <tr>
+          <th class="py-3 px-4 border-b text-left">#</th>
+          <th class="py-3 px-4 border-b text-left">Name</th>
+          <th class="py-3 px-4 border-b text-left">Contact Number</th>
+          <th class="py-3 px-4 border-b text-left">Email</th>
+          <th class="py-3 px-4 border-b text-left">Address</th>
+          <th class="py-3 px-4 border-b text-left">Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for customer in customers %}
+          <tr class="hover:bg-gray-100">
+            <td class="row-number py-3 px-4 border-b"></td>
+            <td class="py-3 px-4 border-b">{{ customer.name }}</td>
+            <td class="py-3 px-4 border-b">{{ customer.contact_number }}</td>
+            <td class="py-3 px-4 border-b">{{ customer.email }}</td>
+            <td class="py-3 px-4 border-b">{{ customer.address }}</td>
+            <td class="py-3 px-4 border-b">
+              <a href="{% url 'customer_detail' customer.pk %}" class="text-blue-600 hover:underline">View</a>
+              <a href="{% url 'customer_update' customer.pk %}" class="text-green-600 hover:underline ml-2">Edit</a>
+              <a href="{% url 'customer_delete' customer.pk %}" class="text-red-600 hover:underline ml-2">Delete</a>
+            </td>
+          </tr>
+        {% empty %}
+          <tr>
+            <td colspan="6" class="py-3 px-4 text-center">No customers found.</td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Client-Side Pagination Controls -->
+  <div id="pagination" class="flex flex-wrap justify-center gap-2 mt-4"></div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      const rowsPerPage = 10;
+      const table = document.querySelector('table');
+      const allRows = Array.from(table.querySelectorAll('tbody tr'));
+      let filteredRows = [...allRows];
+      let currentPage = 1;
+
+      function displayRows() {
+        const start = (currentPage - 1) * rowsPerPage;
+        const end = start + rowsPerPage;
+        allRows.forEach(row => row.style.display = 'none');
+        const rowsToShow = filteredRows.slice(start, end);
+        rowsToShow.forEach((row, index) => {
+          row.style.display = '';
+          const numCell = row.querySelector('.row-number');
+          if (numCell) {
+            numCell.textContent = start + index + 1;
+          }
+        });
+      }
+
+      function setupPagination() {
+        const paginationContainer = document.getElementById('pagination');
+        paginationContainer.innerHTML = '';
+        const totalPages = Math.ceil(filteredRows.length / rowsPerPage);
+        if (totalPages <= 1) return;
+
+        const prevButton = document.createElement('button');
+        prevButton.textContent = 'Previous';
+        prevButton.disabled = currentPage === 1;
+        prevButton.className = "px-3 py-1 bg-gray-300 rounded hover:bg-gray-400";
+        prevButton.addEventListener('click', function() {
+          if (currentPage > 1) {
+            currentPage--;
+            displayRows();
+            setupPagination();
+          }
+        });
+        paginationContainer.appendChild(prevButton);
+
+        for (let i = 1; i <= totalPages; i++) {
+          const pageButton = document.createElement('button');
+          pageButton.textContent = i;
+          pageButton.className = "px-3 py-1 rounded hover:bg-blue-600 hover:text-white";
+          if (i === currentPage) {
+            pageButton.className += " bg-blue-600 text-white";
+          } else {
+            pageButton.addEventListener('click', function() {
+              currentPage = i;
+              displayRows();
+              setupPagination();
+            });
+          }
+          paginationContainer.appendChild(pageButton);
+        }
+
+        const nextButton = document.createElement('button');
+        nextButton.textContent = 'Next';
+        nextButton.disabled = currentPage === totalPages;
+        nextButton.className = "px-3 py-1 bg-gray-300 rounded hover:bg-gray-400";
+        nextButton.addEventListener('click', function() {
+          if (currentPage < totalPages) {
+            currentPage++;
+            displayRows();
+            setupPagination();
+          }
+        });
+        paginationContainer.appendChild(nextButton);
+      }
+
+      const liveFilterInput = document.getElementById('liveFilterInput');
+      liveFilterInput.addEventListener('keyup', function() {
+        const filterValue = this.value.toLowerCase();
+        filteredRows = allRows.filter(row => row.textContent.toLowerCase().includes(filterValue));
+        currentPage = 1;
+        displayRows();
+        setupPagination();
+      });
+
+      displayRows();
+      setupPagination();
+    });
+  </script>
+
+  <!-- Include jsPDF and AutoTable libraries via CDN -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.23/jspdf.plugin.autotable.min.js"></script>
+
+  <!-- PDF Generation Script -->
+<script>
+  document.getElementById('downloadPdfReport').addEventListener('click', function() {
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF('p', 'pt', 'a4');
+
+    // Header Section
+    doc.setFontSize(18);
+    doc.setTextColor(0, 0, 255);
+    doc.text("SHOP MANAGEMENT SYSTEM", 300, 30, { align: "center" });
+    doc.setFontSize(16);
+    doc.text("Customers Report", 300, 50, { align: "center" });
+    doc.setFontSize(12);
+    doc.setTextColor(0, 0, 0);
+    const currentDate = new Date().toLocaleDateString();
+    doc.text("Date: " + currentDate, 300, 70, { align: "center" });
+
+    let startY = 90;
+
+    // Extract table headers (including numbering column)
+    const headers = [];
+    const table = document.querySelector('table');
+    table.querySelectorAll('thead tr th').forEach((th, index) => {
+      if (index < 5) { // Only include first 5 columns: "#", Name, Contact Number, Email, Address
+        headers.push(th.innerText.trim());
+      }
+    });
+
+    // Extract ALL rows (not just the visible ones) and assign continuous numbering
+    const data = [];
+    const allRows = document.querySelectorAll('tbody tr');
+    allRows.forEach((tr, index) => {
+      const rowData = [];
+      // Generate continuous row number
+      rowData.push((index + 1).toString());
+      // Now extract the other columns (Name, Contact Number, Email, Address)
+      const tds = tr.querySelectorAll('td');
+      for (let i = 1; i < 5; i++) { // start at 1 to skip the numbering cell
+        rowData.push(tds[i].innerText.trim());
+      }
+      data.push(rowData);
+    });
+
+    // Generate PDF Table using jsPDF-AutoTable
+    doc.autoTable({
+      head: [headers],
+      body: data,
+      startY: startY,
+      theme: 'grid',
+      headStyles: { fillColor: [30, 144, 255], textColor: [255, 255, 255] },
+      styles: { fontSize: 10, cellPadding: 3 },
+      alternateRowStyles: { fillColor: [240, 248, 255] }
+    });
+
+    // Save PDF
+    doc.save('Customers_Report_' + currentDate + '.pdf');
+  });
+</script>
+
+{% endblock %}

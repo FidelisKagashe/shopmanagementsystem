@@ -1,0 +1,442 @@
+{% extends 'base.html' %}
+{% load custom_filters %}
+
+{% block title %}
+  {{ form.instance.pk|yesno:"Edit Sale Order,Add Sale Order" }} - Shop Management
+{% endblock %}
+
+{% block content %}
+<!-- Include Select2 CSS -->
+<link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/css/select2.min.css" rel="stylesheet" />
+
+<!-- Your existing styles -->
+<style>
+  /* Global & Container Styles */
+  body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: #f7f7f7;
+    margin: 0;
+    padding: 0;
+  }
+  .saleorder-form-container {
+    max-width: 800px;
+    margin: 2rem auto;
+    background: #fff;
+    padding: 2rem;
+    border-radius: 8px;
+    box-shadow: 0 8px 16px rgba(0,0,0,0.1);
+  }
+  .saleorder-form-title {
+    font-size: 2rem;
+    font-weight: 700;
+    text-align: center;
+    margin-bottom: 2rem;
+    color: #333;
+    font-family: 'Nunito', sans-serif;
+    border-bottom: 1px solid gray;
+  }
+  
+  /* Form Layout: horizontal on desktop, vertical on mobile */
+  .form-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+  }
+  .form-group {
+    flex: 1;
+    min-width: 200px;
+  }
+  .form-group label {
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+    display: block;
+    color: #555;
+  }
+
+  .form-group input,
+  .form-group select,
+  .form-group textarea {
+    width: 100%;
+    padding: 0.75rem;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 1rem;
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+  }
+  .form-group input:focus,
+  .form-group select:focus,
+  .form-group textarea:focus {
+    border-color: #3182ce;
+    box-shadow: 0 0 5px rgba(49, 130, 206, 0.5);
+    outline: none;
+  }
+  
+  /* Error Styling */
+  .errorlist {
+    color: #e53e3e;
+    font-size: 0.9rem;
+    margin-top: 0.25rem;
+  }
+  
+  /* Form Actions */
+  .form-actions {
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 1rem;
+    margin-top: 2rem;
+  }
+  .form-actions button,
+  .form-actions a {
+    padding: 0.75rem 1.5rem;
+    background-color: #3182ce;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    text-decoration: none;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    text-align: center;
+    flex: 1;
+  }
+  .form-actions button:hover,
+  .form-actions a:hover {
+    background-color: #2b6cb0;
+  }
+  
+  /* Order Items Section */
+  .order-items-section {
+    margin-top: 2rem;
+  }
+  .order-item {
+    border: 1px solid #e2e8f0;
+    border-radius: 4px;
+    padding: 1rem;
+    margin-bottom: 1.5rem;
+    background: #f9f9f9;
+    position: relative;
+    transition: opacity 0.5s ease-out;
+  }
+  .order-item:hover {
+    box-shadow: 0 0 8px rgba(0,0,0,0.1);
+  }
+  .order-item .delete-item {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: #e53e3e;
+    color: #fff;
+    border: none;
+    padding: 0.3rem 0.6rem;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    transition: background 0.3s ease;
+  }
+  .order-item .delete-item:hover {
+    background: #c53030;
+  }
+  .line-total-display {
+    font-weight: 600;
+    margin-top: 0.5rem;
+    color: rgb(17, 95, 53);
+  }
+  
+  /* Add Item Button */
+  #add-item {
+    display: inline-block;
+    margin-top: 1rem;
+    background-color: #38a169;
+    color: #fff;
+    border: none;
+    padding: 0.75rem 1.5rem;
+    border-radius: 4px;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+  #add-item:hover {
+    background-color: #2f855a;
+  }
+  
+  /* Responsive adjustments */
+  @media (max-width: 768px) {
+    .form-row {
+      flex-direction: column;
+    }
+    .form-actions {
+      flex-direction: column;
+    }
+  }
+</style>
+
+<div class="text-gray-800 font-semibold">
+  Sales &rarr; <span class="text-blue-600">{{ form.instance.pk|yesno:"Edit Sale Order,Add Sale Order" }}</span>
+</div>
+<div class="saleorder-form-container">
+  <h2 class="saleorder-form-title">
+    {{ form.instance.pk|yesno:"Edit Sale Order,Add Sale Order" }}
+  </h2>
+  
+  <form method="post">
+    {% csrf_token %}
+    
+    {% if form.non_field_errors %}
+      <div class="errorlist">{{ form.non_field_errors }}</div>
+    {% endif %}
+    
+    <!-- Sale Order Fields arranged horizontally -->
+    <div class="form-row">
+      <div class="form-group">
+        <label for="{{ form.customer.id_for_label }}">Customer</label>
+        <!-- Adding a class to easily target the customer select element -->
+        {{ form.customer|add_class:"form-input" }}
+        {% if form.customer.errors %}
+          <div class="errorlist">{{ form.customer.errors }}</div>
+        {% endif %}
+      </div>
+      <div class="form-group">
+        <label for="{{ form.status.id_for_label }}">Status</label>
+        {{ form.status|add_class:"form-input" }}
+        {% if form.status.errors %}
+          <div class="errorlist">{{ form.status.errors }}</div>
+        {% endif %}
+      </div>
+      <div class="form-group">
+        <label for="{{ form.payment_status.id_for_label }}">Payment Type</label>
+        {{ form.payment_status|add_class:"form-input" }}
+        {% if form.payment_status.errors %}
+          <div class="errorlist">{{ form.payment_status.errors }}</div>
+        {% endif %}
+      </div>
+    </div>
+    
+    <hr>
+    
+    <!-- Inline Formset for Order Items -->
+    <h3 style="color: #333; margin-top: 1.5rem;">Order Items</h3>
+    <div id="order-items" class="order-items-section">
+      {{ formset.management_form }}
+      {% for item in formset %}
+        <div class="order-item">
+
+          <button type="button" class="delete-item btn btn-danger p-2 mr-2">
+            <i class="bi bi-dash-circle"></i> Delete
+          </button>
+        
+          {% if item.non_field_errors %}
+            <div class="errorlist">{{ item.non_field_errors }}</div>
+          {% endif %}
+          <!-- Arrange order item fields horizontally -->
+          <div class="form-row">
+            {% for field in item %}
+              <div class="form-group">
+                <label for="{{ field.auto_id }}">{{ field.label }}</label>
+                {% if 'product' in field.name %}
+                  {{ field|add_class:"form-input product-select" }}
+                {% else %}
+                  {{ field|add_class:"form-input" }}
+                {% endif %}
+                {% if field.errors %}
+                  <div class="errorlist">{{ field.errors }}</div>
+                {% endif %}
+              </div>
+            {% endfor %}
+          </div>
+          <div class="line-total-display">Line Total: <span class="line-total">0.00</span></div>
+        </div>
+      {% endfor %}
+    </div>
+    <button type="button" id="add-item">
+      <i class="bi bi-plus-circle"></i> Add Another Item
+    </button>
+    
+    <!-- Overall Total -->
+    <div class="form-group" style="margin-top: 1.5rem;">
+      <label>Total Amount</label>
+      <div id="total-amount" style="font-weight: 600; font-size: 1.2rem; color: #333;">0.00</div>
+    </div>
+    
+    <div class="form-actions">
+      <button type="submit">Submit</button>
+      <a href="{% url 'saleorder_list' %}">Cancel</a>
+    </div>
+  </form>
+</div>
+
+<!-- Include jQuery (required for Select2) -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<!-- Include Select2 JS -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js"></script>
+
+<script>
+  // Helper function to format numbers with commas
+  function formatNumberWithCommas(num) {
+      // Ensure we work with a string
+      return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+  }
+
+  // Use modern JS declarations
+  const productPrices = {{ product_prices_json|safe }};
+
+  // Calculate a single order item's line total.
+  const updateRowTotal = (row) => {
+      const quantity = parseFloat(row.querySelector('input[name$="-quantity"]').value) || 0;
+      const salePrice = parseFloat(row.querySelector('input[name$="-sale_price"]').value) || 0;
+      const discount = parseFloat(row.querySelector('input[name$="-discount"]').value) || 0;
+      const lineTotal = quantity * salePrice * (1 - discount / 100);
+      // Use the helper to format the number with commas
+      row.querySelector('.line-total').textContent = formatNumberWithCommas(lineTotal.toFixed(2));
+      return lineTotal;
+  };
+
+  // Update overall total of all order-item rows
+  const updateOverallTotal = () => {
+      let total = 0;
+      document.querySelectorAll('.order-item').forEach(row => {
+          total += updateRowTotal(row);
+      });
+      document.getElementById('total-amount').textContent = formatNumberWithCommas(total.toFixed(2));
+  };
+
+  // Attach change/input listeners for an order item row.
+  const attachListeners = (row) => {
+      const productSelect = row.querySelector('.product-select');
+      const quantityInput = row.querySelector('input[name$="-quantity"]');
+      const discountInput = row.querySelector('input[name$="-discount"]');
+      const salePriceInput = row.querySelector('input[name$="-sale_price"]');
+
+      if (productSelect) {
+         productSelect.addEventListener('change', () => {
+             const productId = productSelect.value;
+             if (productPrices[productId]) {
+                 salePriceInput.value = productPrices[productId];
+             }
+             updateOverallTotal();
+         });
+      }
+      
+      if (quantityInput) {
+         quantityInput.addEventListener('input', updateOverallTotal);
+      }
+      
+      if (discountInput) {
+         discountInput.addEventListener('input', updateOverallTotal);
+      }
+      if (salePriceInput) {
+         salePriceInput.addEventListener('input', updateOverallTotal);
+      }
+  };
+
+  // Attach delete functionality with fade‑out effect.
+  const attachDeleteListener = (row) => {
+      const deleteButton = row.querySelector('.delete-item');
+      if (deleteButton) {
+          deleteButton.addEventListener('click', () => {
+              row.style.opacity = 0;
+              setTimeout(() => {
+                  row.parentNode.removeChild(row);
+                  const totalForms = document.getElementById('order-items').querySelector('input[name$="-TOTAL_FORMS"]');
+                  if (totalForms) {
+                      totalForms.value = parseInt(totalForms.value) - 1;
+                  }
+                  updateOverallTotal();
+              }, 500);
+          });
+      }
+  };
+
+  document.addEventListener('DOMContentLoaded', () => {
+      // Initialize Select2 on the customer select field for searchability.
+      $("#id_customer").select2();
+
+      // Initialize existing rows
+      document.querySelectorAll('.order-item').forEach(row => {
+          attachListeners(row);
+          attachDeleteListener(row);
+      });
+      updateOverallTotal();
+
+      // Manual addition of new rows via button
+      document.getElementById('add-item').addEventListener('click', () => {
+          const orderItems = document.getElementById('order-items');
+          const totalForms = orderItems.querySelector('input[name$="-TOTAL_FORMS"]');
+          const currentFormCount = totalForms ? parseInt(totalForms.value) : document.querySelectorAll('.order-item').length;
+          // Clone the first order-item as a template
+          const template = orderItems.querySelector('.order-item');
+          const newForm = template.cloneNode(true);
+
+          // Clear all input/select values
+          newForm.querySelectorAll('input, select, textarea').forEach(input => {
+              if (input.type === 'checkbox' || input.type === 'radio') {
+                  input.checked = false;
+              } else {
+                  input.value = '';
+              }
+          });
+
+          // Reset the line total display
+          newForm.querySelector('.line-total').textContent = '0.00';
+
+          // Adjust form indices (e.g., items-0 -> items-currentFormCount)
+          newForm.innerHTML = newForm.innerHTML.replace(/-\d+-/g, '-' + currentFormCount + '-');
+
+          // Append to the order-items container
+          orderItems.appendChild(newForm);
+
+          // Increment the TOTAL_FORMS count
+          if (totalForms) {
+              totalForms.value = currentFormCount + 1;
+          }
+
+          // Attach new listeners
+          attachListeners(newForm);
+          attachDeleteListener(newForm);
+
+          // Recalculate totals
+          updateOverallTotal();
+      });
+  });
+
+  // Hide certain fields on DOMContentLoaded
+  document.addEventListener("DOMContentLoaded", function() {
+    var inputId = document.getElementById("id_items-0-id");
+    if (inputId) {
+      var groupDiv = inputId.closest('.form-group');
+      if (groupDiv) groupDiv.style.display = "none";
+    }
+
+    var inputId2 = document.getElementById("id_items-1-id");
+    if (inputId2) {
+      var groupDiv = inputId2.closest('.form-group');
+      if (groupDiv) groupDiv.style.display = "none";
+    }
+
+    var inputDelete = document.getElementById("id_items-0-DELETE");
+    if (inputDelete) {
+      var groupDiv = inputDelete.closest('.form-group');
+      if (groupDiv) groupDiv.style.display = "none";
+    }
+
+    var inputDelete2 = document.getElementById("id_items-1-DELETE");
+    if (inputDelete2) {
+      var groupDiv = inputDelete2.closest('.form-group');
+      if (groupDiv) groupDiv.style.display = "none";
+    }
+
+    var inputSaleOrder = document.getElementById("id_items-0-sale_order");
+    if (inputSaleOrder) {
+      var groupDiv = inputSaleOrder.closest('.form-group');
+      if (groupDiv) groupDiv.style.display = "none";
+    }
+
+    var inputSaleOrder2 = document.getElementById("id_items-1-sale_order");
+    if (inputSaleOrder2) {
+      var groupDiv = inputSaleOrder2.closest('.form-group');
+      if (groupDiv) groupDiv.style.display = "none";
+    }
+  });
+</script>
+{% endblock %}

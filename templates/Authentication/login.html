@@ -1,0 +1,106 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+  <meta http-equiv="Pragma" content="no-cache">
+  <meta http-equiv="Expires" content="0">
+  <title>Fmk Link - Login</title>
+  <link rel="stylesheet" href="{% static 'css/tailwind.min.css' %}">
+  <link rel="stylesheet" href="{% static 'bootstrap-icons/font/bootstrap-icons.css' %}">
+</head>
+<body class="bg-gradient-to-l from-blue-50 to-blue-200 flex items-center justify-center min-h-screen">
+  <div class="bg-white p-8 rounded-lg m-3 shadow-lg w-full max-w-md">
+    <h2 class="text-2xl font-extrabold mb-6 text-center text-blue-500">Login</h2>
+
+    <div class="mt-4 border-t-2 border-blue-400"></div>
+
+    {% if messages %}
+      {% for message in messages %}
+        <div class="mb-4 p-4 rounded bg-red-100 text-red-800 text-center" role="alert">
+          {{ message }}
+        </div>
+      {% endfor %}
+    {% endif %}
+
+    <form method="post" class="space-y-4" autocomplete="off">
+      {% csrf_token %}
+      <div>
+        <label for="id_email" class="block text-sm font-medium text-gray-700">Email:</label>
+        <input 
+          type="email" 
+          name="email" 
+          maxlength="254" 
+          required 
+          id="id_email" 
+          placeholder="Enter your email" 
+          class="mt-1 p-2 border border-gray-300 rounded w-full focus:outline-none focus:border-blue-500" 
+          autocomplete="off" 
+          aria-label="Email"
+        >
+      </div>
+      <div class="relative">
+        <label for="id_password" class="block text-sm font-medium text-gray-700">Password:</label>
+        <div class="relative flex items-center">
+          <input 
+            type="password" 
+            name="password" 
+            required 
+            id="id_password" 
+            placeholder="Enter your password" 
+            class="mt-1 p-2 border border-gray-300 rounded w-full focus:outline-none focus:border-blue-500" 
+            autocomplete="new-password"
+            aria-label="Password"
+          >
+          <span class="absolute inset-y-0 right-3 flex items-center justify-center cursor-pointer" onclick="togglePasswordVisibility()">
+            <!-- Bootstrap Icons eye icon -->
+            <i id="togglePasswordIcon" class="bi bi-eye-slash text-gray-500"></i>
+          </span>
+        </div>
+      </div>
+
+      <button 
+        type="submit" 
+        class="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-500 transition duration-200"
+      >
+        Login
+      </button>
+    </form>
+
+    <div class="mt-4 border-t-2 border-blue-200"></div>
+    
+    <div class="mt-4 text-center">
+      <a href="{% url 'password_reset' %}" class="inline-block text-blue-500 hover:text-blue-400 font-semibold">
+        Forgot your password? <span class="font-bold">Reset it here</span>
+      </a>
+    </div>
+
+  </div>
+
+  <script>
+    function togglePasswordVisibility() {
+      const passwordField = document.getElementById('id_password');
+      const toggleIcon = document.getElementById('togglePasswordIcon');
+      
+      if (passwordField.type === 'password') {
+        passwordField.type = 'text';
+        toggleIcon.classList.remove('bi-eye-slash');
+        toggleIcon.classList.add('bi-eye');
+      } else {
+        passwordField.type = 'password';
+        toggleIcon.classList.remove('bi-eye');
+        toggleIcon.classList.add('bi-eye-slash');
+      }
+    }
+
+    // Prevent multiple form submissions by disabling the submit button once clicked.
+    document.querySelector('form').addEventListener('submit', function(e) {
+      const submitButton = this.querySelector('button[type="submit"]');
+      submitButton.disabled = true;
+      submitButton.innerText = "Loading...";
+    });
+  </script>
+</body>
+</html>

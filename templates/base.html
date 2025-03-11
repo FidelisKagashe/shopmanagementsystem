@@ -1,0 +1,237 @@
+{% load custom_filters %}
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <!-- Essential Meta Tags for Production -->
+  <meta name="description" content="Shop Management System - A complete solution to manage your store, products, customers, suppliers, purchases, and sales." />
+  <meta name="keywords" content="shop, management, system, products, customers, suppliers, orders, sales, purchases, e-commerce" />
+  <meta name="author" content="FMKTech" />
+  <meta name="robots" content="index, follow" />
+  <link rel="canonical" href="https://www.shopmanagementsyatem.com/" />
+
+  <!-- Open Graph / Facebook -->
+  <meta property="og:title" content="Shop Management System" />
+  <meta property="og:description" content="Manage your store operations with our Shop Management System, featuring products, customers, suppliers, and more." />
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://www.shopmanagementsyatem.com/" />
+  <meta property="og:image" content="https://www.shopmanagementsyatem.com/static/img/og-image.jpg" />
+
+  <meta name="theme-color" content="#317EFB" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Shop Management System" />
+  <meta name="twitter:description" content="Manage your store operations with our Shop Management System, featuring products, customers, suppliers, and more." />
+  <meta name="twitter:image" content="https://www.shopmanagementsyatem.com/static/img/twitter-image.jpg" />
+
+  <title>{% block title %}Shop Management System{% endblock %}</title>
+  <link href="{% static 'css/tailwind.min.css' %}" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css">
+
+  <link rel="icon" type="image/png" href="{% static 'Favicon/favicon-96x96.png' %}" sizes="96x96" />
+  <link rel="icon" type="image/svg+xml" href="{% static 'Favicon/favicon.svg' %}" />
+  <link rel="shortcut icon" href="{% static 'Favicon/favicon.ico' %}" />
+  <link rel="apple-touch-icon" sizes="180x180" href="{% static 'Favicon/apple-touch-icon.png' %}" />
+  <meta name="apple-mobile-web-app-title" content="shopmanagementsystem" />
+  <link rel="manifest" href="{% static 'Favicon/site.webmanifest' %}" />
+
+</head>
+<body class="bg-gray-100 font-sans">
+
+  <!-- Mobile Sidebar -->
+  <div id="mobile-sidebar" class="fixed inset-y-0 left-0 w-64 bg-blue-500 text-white transform -translate-x-full transition-transform duration-300 ease-in-out md:hidden z-50">
+    <div class="p-4 flex justify-between items-center border-b border-blue-400">
+      <h2 class="text-lg font-bold">Menu</h2>
+      <button id="close-sidebar" class="text-white focus:outline-none">
+        <i class="bi bi-x-lg text-2xl"></i>
+      </button>
+    </div>
+    <nav class="p-4">
+      <a href="{% url 'dashboard' %}" class="block py-2 hover:bg-blue-600 {% if request.resolver_match.url_name == 'dashboard' %}font-bold{% endif %}">
+          Dashboard
+      </a>
+      <a href="{% url 'product_list' %}" class="block py-2 hover:bg-blue-600 {% if request.resolver_match.url_name == 'product_list' %}font-bold{% endif %}">
+          Products
+      </a>
+      <a href="{% url 'supplier_list' %}" class="block py-2 hover:bg-blue-600 {% if request.resolver_match.url_name == 'supplier_list' %}font-bold{% endif %}">
+          Suppliers
+      </a>
+      <a href="{% url 'customer_list' %}" class="block py-2 hover:bg-blue-600 {% if request.resolver_match.url_name == 'customer_list' %}font-bold{% endif %}">
+          Customers
+      </a>
+      <a href="{% url 'purchaseorder_list' %}" class="block py-2 hover:bg-blue-600 {% if request.resolver_match.url_name == 'purchaseorder_list' %}font-bold{% endif %}">
+          Purchases
+      </a>
+      <a href="{% url 'saleorder_list' %}" class="block py-2 hover:bg-blue-600 {% if request.resolver_match.url_name == 'saleorder_list' %}font-bold{% endif %}">
+          Sales
+      </a>
+      <a href="{% url 'user_financial_transaction_view' %}" class="block py-2 hover:bg-blue-600 {% if request.resolver_match.url_name == 'user_financial_transaction_view' %}font-bold{% endif %}">
+        Financial Transaction
+      </a>
+      
+      {% if user.is_authenticated %}
+        <div class="mt-4 border-t border-blue-400 pt-4">
+          <span class="block py-2">Hello, {{ user.username }}</span>
+          <a href="{% url 'password_change' %}" class="block py-2 hover:bg-blue-600">Change Password</a>
+          <form method="POST" action="{% url 'logout' %}">
+            {% csrf_token %}
+            <button type="submit" class="w-full text-left py-2 hover:bg-blue-600">
+              Logout
+            </button>
+          </form>
+        </div>
+      {% else %}
+        <a href="{% url 'login' %}" class="block py-2 hover:bg-blue-600">Login</a>
+      {% endif %}
+    </nav>
+  </div>
+
+  <!-- Header -->
+  <header class="bg-blue-600 shadow p-4 flex items-center justify-between">
+    <div class="container mx-auto flex items-center">
+      <h1 class="text-white text-xl md:text-2xl font-bold">Shop Management System</h1>
+    </div>
+    <!-- Mobile menu button -->
+    <button id="open-sidebar" class="text-white md:hidden focus:outline-none">
+      <i class="bi bi-list text-2xl"></i>
+    </button>
+  </header>
+  {% if messages %}
+    <div class="fixed top-0 left-0 w-full z-50 pt-4">
+        <div class="container mx-auto flex flex-col gap-4">
+            {% for message in messages %}
+                <div class="p-4 rounded bg-green-100 text-green-800 text-center" role="alert">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+    <script>
+        setTimeout(function() {
+            document.querySelectorAll("[role='alert']").forEach(el => el.remove());
+        }, 3000);
+    </script>
+  {% endif %}
+  <!-- Desktop Navigation -->
+  <nav class="hidden md:block bg-blue-500">
+    <div class="container mx-auto flex p-2">
+      <!-- Left side links -->
+      <div class="flex space-x-4">
+        <a href="{% url 'dashboard' %}" class="text-white px-2 py-1 hover:text-blue-200 {% if request.resolver_match.url_name == 'dashboard' %}font-bold{% endif %}">
+          Dashboard
+        </a>
+        <a href="{% url 'product_list' %}" class="text-white px-2 py-1 hover:text-blue-200 {% if request.resolver_match.url_name == 'product_list' %}font-bold{% endif %}">
+          Products
+        </a>
+        <a href="{% url 'supplier_list' %}" class="text-white px-2 py-1 hover:text-blue-200 {% if request.resolver_match.url_name == 'supplier_list' %}font-bold{% endif %}">
+          Suppliers
+        </a>
+        <a href="{% url 'customer_list' %}" class="text-white px-2 py-1 hover:text-blue-200 {% if request.resolver_match.url_name == 'customer_list' %}font-bold{% endif %}">
+          Customers
+        </a>
+        <a href="{% url 'purchaseorder_list' %}" class="text-white px-2 py-1 hover:text-blue-200 {% if request.resolver_match.url_name == 'purchaseorder_list' %}font-bold{% endif %}">
+          Purchases
+        </a>
+        <a href="{% url 'saleorder_list' %}" class="text-white px-2 py-1 hover:text-blue-200 {% if request.resolver_match.url_name == 'saleorder_list' %}font-bold{% endif %}">
+          Sales
+        </a>
+        <a href="{% url 'user_financial_transaction_view' %}" class="text-white px-2 py-1 hover:text-blue-200 {% if request.resolver_match.url_name == 'user_financial_transaction_view' %}font-bold{% endif %}">
+          Financial Transaction
+        </a>
+      </div>
+      
+      <!-- Right side (username and logout) -->
+      <div class="ml-auto flex items-center space-x-4">
+        {% if user.is_authenticated %}
+          <div class="relative">
+            <!-- Dropdown Trigger -->
+            <button id="dropdown-toggle" type="button" class="flex items-center text-white focus:outline-none">
+              <span>Hello, {{ user.username }}</span>
+              <i id="dropdown-icon" class="bi bi-caret-down-fill ml-1 transition-transform duration-200"></i>
+            </button>
+
+            <!-- Dropdown Menu -->
+            <div id="dropdown-menu" class="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg hidden z-50">
+              <a href="{% url 'password_change' %}" class="block px-4 py-2 text-gray-800 hover:bg-blue-100">
+                Change Password
+              </a>
+              <form method="POST" action="{% url 'logout' %}">
+                {% csrf_token %}
+                <button type="submit" class="w-full text-left px-4 py-2 text-gray-800 hover:bg-blue-100">
+                  Logout
+                </button>
+              </form>
+            </div>
+          </div>
+        {% else %}
+          <a href="{% url 'login' %}" class="text-white hover:text-blue-200">Login</a>
+        {% endif %}
+      </div>
+    </div>
+  </nav>
+
+  <!-- Main Content -->
+  <main class="container mx-auto p-4">
+    {% block content %}{% endblock %}
+  </main>
+
+  <!-- Footer -->
+  <footer class="bg-gray-200 p-4 text-center">
+    <p class="text-gray-700">
+      &copy; 2025 Shop Management System | 
+      Developed by <a href="https://www.fmktech.com" class="text-blue-600 hover:underline" target="_blank" rel="noopener">FMKTech</a>
+    </p>
+  </footer>
+
+  <script>
+    // Toggle mobile sidebar
+    const openSidebar = document.getElementById('open-sidebar');
+    const closeSidebar = document.getElementById('close-sidebar');
+    const mobileSidebar = document.getElementById('mobile-sidebar');
+
+    openSidebar.addEventListener('click', () => {
+      mobileSidebar.classList.remove('-translate-x-full');
+    });
+
+    closeSidebar.addEventListener('click', () => {
+      mobileSidebar.classList.add('-translate-x-full');
+    });
+
+    // Optional: Close sidebar when clicking outside
+    document.addEventListener('click', function(event) {
+      if (!mobileSidebar.contains(event.target) && !openSidebar.contains(event.target)) {
+        mobileSidebar.classList.add('-translate-x-full');
+      }
+    });
+
+    // Toggle desktop user dropdown with icon rotation
+    const dropdownToggle = document.getElementById('dropdown-toggle');
+    const dropdownMenu = document.getElementById('dropdown-menu');
+    const dropdownIcon = document.getElementById('dropdown-icon');
+
+    if (dropdownToggle) {
+      dropdownToggle.addEventListener('click', function(event) {
+        event.stopPropagation();
+        dropdownMenu.classList.toggle('hidden');
+        dropdownIcon.classList.toggle('rotate-180');
+      });
+
+      // Close dropdown when clicking outside
+      document.addEventListener('click', function(event) {
+        if (!dropdownToggle.contains(event.target)) {
+          if (!dropdownMenu.classList.contains('hidden')) {
+            dropdownMenu.classList.add('hidden');
+            dropdownIcon.classList.remove('rotate-180');
+          }
+        }
+      });
+    }
+  </script>
+</body>
+</html>

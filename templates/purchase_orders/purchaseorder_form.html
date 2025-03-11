@@ -1,0 +1,197 @@
+{% extends 'base.html' %}
+
+{% block title %}
+    {{ form.instance.pk|yesno:"Edit Purchase Order,Add Purchase Order" }} - Shop Management
+{% endblock %}
+
+{% block content %}
+  <style>
+    /* Form Container */
+    .purchase-order-form-container {
+        max-width: 60rem;
+        margin: 2rem auto;
+        background: white;
+        padding: 2rem;
+        border-radius: 0.5rem;
+        box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+    }
+    
+    /* Form Title */
+    .purchase-order-form-title {
+        font-size: 1.8rem;
+        font-weight: bold;
+        color: #333;
+        text-align: center;
+        margin-bottom: 1.5rem;
+    }
+    
+    /* Error Messages */
+    .error-messages {
+        background-color: #fed7d7;
+        border: 1px solid #f56565;
+        color: #c53030;
+        padding: 1rem;
+        border-radius: 0.375rem;
+        margin-bottom: 1.5rem;
+    }
+    
+    /* Form Fields */
+    .form-field {
+        margin-bottom: 1.5rem;
+    }
+    
+    .form-field label {
+        font-size: 1.1rem;
+        font-weight: 500;
+        color: #333;
+        display: block;
+        margin-bottom: 0.5rem;
+    }
+    
+    .form-field input,
+    .form-field select {
+        width: 100%;
+        padding: 0.8rem;
+        border: 1px solid #ccc;
+        border-radius: 0.375rem;
+        font-size: 1rem;
+        transition: border-color 0.3s ease;
+    }
+    
+    .form-field input:focus,
+    .form-field select:focus {
+        border-color: #3182ce;
+        outline: none;
+    }
+    
+    /* Submit and Cancel Buttons */
+    .form-actions {
+        display: flex;
+        justify-content: space-between;
+        margin-top: 2rem;
+    }
+    
+    .form-actions button,
+    .form-actions a {
+        padding: 0.8rem 1.5rem;
+        background-color: #3182ce;
+        color: white;
+        border-radius: 0.375rem;
+        font-weight: 500;
+        text-align: center;
+        transition: background-color 0.3s ease;
+        text-decoration: none;
+    }
+    
+    .form-actions button:hover,
+    .form-actions a:hover {
+        background-color: #2b6cb0;
+    }
+    
+    /* Mobile Responsiveness */
+    @media (max-width: 768px) {
+        .purchase-order-form-container {
+            padding: 1.5rem;
+        }
+    
+        .form-actions {
+            flex-direction: column;
+            align-items: stretch;
+        }
+    
+        .form-actions button,
+        .form-actions a {
+            margin-bottom: 1rem;
+            width: 100%;
+        }
+    }
+    #id_total_amount {
+      padding-top: 1px;
+      padding-bottom: 1px;
+      padding-left: 8px;
+      width: 100%;
+      border: 1px solid rgb(129, 132, 134);
+      border-radius: 0.275rem; /* Adds rounded corners */
+    }
+  
+    
+  </style>
+  <div class="text-gray-800 mb-4 font-semibold">
+    Purchases &rarr; <span class="text-blue-600">{{ form.instance.pk|yesno:"Edit Purchase Order,Add Purchase Order" }}</span>
+  </div>
+  <div class="purchase-order-form-container">
+    <h2 class="purchase-order-form-title">
+      {{ form.instance.pk|yesno:"Edit Purchase Order,Add Purchase Order" }}
+    </h2>
+    
+    <form method="post" class="bg-white p-6 rounded-lg shadow-md max-w-lg mx-auto">
+      {% csrf_token %}
+  
+      {# Display form errors in a styled alert box #}
+      {% if form.errors %}
+      <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4">
+          <strong class="font-bold">Please fix the following errors:</strong>
+          <ul class="list-disc pl-5 mt-2">
+              {% for field in form %}
+                  {% for error in field.errors %}
+                      <li><strong>{{ field.label }}:</strong> {{ error }}</li>
+                  {% endfor %}
+              {% endfor %}
+              {% for error in form.non_field_errors %}
+                  <li>{{ error }}</li>
+              {% endfor %}
+          </ul>
+      </div>
+      {% endif %}
+  
+      {# Supplier Field #}
+      <div class="mb-4">
+          <label for="{{ form.supplier.id_for_label }}" class="block font-semibold text-gray-700">Supplier</label>
+          {{ form.supplier }}
+      </div>
+  
+      {# Status Field #}
+      <div class="mb-4">
+          <label for="{{ form.status.id_for_label }}" class="block font-semibold text-gray-700">Status</label>
+          {{ form.status }}
+      </div>
+  
+      {# Payment Method Field #}
+      <div class="mb-4">
+          <label for="{{ form.payment_method.id_for_label }}" class="block font-semibold text-gray-700">Payment Method</label>
+          {{ form.payment_method }}
+      </div>
+  
+      {# Total Amount Field #}
+      <div class="mb-4">
+          <label for="{{ form.total_amount.id_for_label }}" class="block font-semibold text-gray-700">Total Amount</label>
+          {{ form.total_amount }}
+      </div>
+  
+      {# Submit and Cancel Buttons #}
+      <div class="flex justify-between items-center">
+          <button type="submit" class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg transition">Submit</button>
+          <a href="{% url 'purchaseorder_list' %}" class="text-gray-600 bg-gray-200 px-4 py-2 rounded-lg hover:text-gray-900 hover:bg-gray-300 transition">
+            Cancel
+          </a>          
+      </div>
+    </form>
+  
+  </div>
+  <!-- Include jQuery and Select2 CSS & JS -->
+<link href="https://cdn.jsdelivr.net/npm/select2@4.0.13/dist/css/select2.min.css" rel="stylesheet" />
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/select2@4.0.13/dist/js/select2.min.js"></script>
+
+<script>
+  $(document).ready(function() {
+    // Apply Select2 to all dropdowns
+    $('select').select2({
+      width: '100%',  // Make dropdown full width
+      placeholder: "Select an option",  // Placeholder text
+      allowClear: true  // Allow clearing selection
+    });
+  });
+</script>
+
+{% endblock %}

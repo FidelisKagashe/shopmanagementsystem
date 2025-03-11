@@ -14,7 +14,11 @@ def format_currency(value):
         # Ensure value is a number, then format it as currency with two decimal places and commas
         value = float(value)
         formatted_value = f"{value:,.2f}"  # Format with commas and 2 decimal places
-        return f"Tsh {formatted_value}/="
+        return f"{formatted_value}/="
     except (ValueError, TypeError):
         # Handle cases where the value is not a valid number
         return "Tsh 0.00/="
+
+@register.filter(name='add_class')
+def add_class(field, css_class):
+    return field.as_widget(attrs={"class": css_class})

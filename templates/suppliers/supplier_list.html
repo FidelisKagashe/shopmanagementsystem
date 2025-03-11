@@ -1,0 +1,117 @@
+{% extends 'base.html' %}
+
+{% block title %}Supplier List - Shop Management{% endblock %}
+
+{% block content %}
+<div class="text-gray-800 mb-4 font-semibold">
+  Products &rarr; <span class="text-blue-600">Supplier List</span>
+</div>
+<div class="max-w-5xl mx-auto bg-white p-6 rounded shadow">
+  <h2 class="text-2xl font-bold mb-4">Supplier List</h2>
+
+  <div class="mb-4 flex justify-between items-center">
+    <a href="{% url 'supplier_create' %}" 
+       class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded">
+      Add Supplier
+    </a>
+    <!-- Download PDF Button -->
+    <button id="downloadPdf" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded">
+      Download PDF
+    </button>
+  </div>
+
+  <div class="overflow-x-auto">
+    <table id="supplierTable" class="w-full border border-gray-300 rounded-lg">
+      <thead>
+        <tr class="bg-gray-200">
+          <th class="py-2 px-4 border">#</th>
+          <th class="py-2 px-4 border">Name</th>
+          <th class="py-2 px-4 border">Contact</th>
+          <th class="py-2 px-4 border">Email</th>
+          <th class="py-2 px-4 border">Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for supplier in suppliers %}
+        <tr class="border hover:bg-gray-100">
+          <td class="py-2 px-4 border">{{ forloop.counter }}</td>
+          <td class="py-2 px-4 border">{{ supplier.name }}</td>
+          <td class="py-2 px-4 border">{{ supplier.contact_number }}</td>
+          <td class="py-2 px-4 border">{{ supplier.email }}</td>
+          <td class="py-2 px-4 border flex space-x-2">
+            <a href="{% url 'supplier_detail' supplier.id %}" class="text-blue-600 hover:underline">View</a>
+            <a href="{% url 'supplier_update' supplier.id %}" class="text-green-600 hover:underline">Edit</a>
+            <a href="{% url 'supplier_delete' supplier.id %}" class="text-red-600 hover:underline">Delete</a>
+          </td>
+        </tr>
+        {% empty %}
+        <tr>
+          <td colspan="5" class="text-center py-4">No suppliers found.</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+  <div class="mt-4">
+    <a href="{% url 'dashboard' %}" class="text-blue-600 hover:underline">
+      Back to Dashboard
+    </a>
+  </div>
+</div>
+
+<!-- Include jsPDF and AutoTable libraries via CDN -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.23/jspdf.plugin.autotable.min.js"></script>
+
+<script>
+  document.getElementById('downloadPdf').addEventListener('click', function() {
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF();
+
+    // Add header text: "SHOP MANAGEMENT SYSTEM"
+    doc.setFontSize(18);
+    doc.setTextColor(0, 0, 255); // Blue color
+    doc.text("SHOP MANAGEMENT SYSTEM", 105, 15, { align: "center" });
+
+    // Add subheader: "LIST OF SUPPLIERS"
+    doc.setFontSize(16);
+    doc.text("LIST OF SUPPLIERS", 105, 25, { align: "center" });
+
+    // Add the current date
+    doc.setFontSize(12);
+    doc.setTextColor(0, 0, 0); // Reset to black
+    const currentDate = new Date().toLocaleDateString();
+    doc.text("Date: " + currentDate, 105, 35, { align: "center" });
+
+    // Extract table data excluding the "Actions" column
+    const tableRows = [];
+    const tableHeaders = ["#", "Name", "Contact", "Email"]; // Exclude "Actions"
+
+    document.querySelectorAll("#supplierTable tbody tr").forEach(row => {
+      const rowData = [];
+      row.querySelectorAll("td").forEach((td, index) => {
+        if (index < 4) { // Only take the first 4 columns
+          rowData.push(td.innerText);
+        }
+      });
+      tableRows.push(rowData);
+    });
+
+    // Generate table in PDF with blue header
+    doc.autoTable({
+      head: [tableHeaders],
+      body: tableRows,
+      startY: 45,
+      theme: 'grid',
+      headStyles: { fillColor: [30, 144, 255], textColor: [255, 255, 255] }, // Blue header with white text
+      styles: { fontSize: 12, cellPadding: 3 },
+      alternateRowStyles: { fillColor: [240, 248, 255] }, // Light blue row background
+    });
+
+    // Save PDF
+    doc.save('Supplier_List_' + currentDate + '.pdf');
+  });
+</script>
+
+{% endblock %}

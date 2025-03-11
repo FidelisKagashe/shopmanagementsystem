@@ -1,0 +1,351 @@
+{% extends 'base.html' %}
+
+{% block title %}Dashboard - Shop Management{% endblock %}
+
+{% block content %}
+
+<!-- Dashboard Header and PDF Button -->
+<div class="container mx-auto py-8">
+  <h1 class="text-4xl font-extrabold text-gray-800 mb-4 text-center">Dashboard</h1>
+  <div class="text-center mb-8">
+    <button id="downloadDashboardPdf" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded">
+      Download Dashboard PDF
+    </button>
+  </div>
+  <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6">
+    
+    <!-- Total Products Card -->
+    <a href="{% url 'product_list' %}" class="group block">
+      <div class="bg-white p-6 rounded-lg shadow-lg text-center transform group-hover:scale-105 transition duration-300 relative">
+        <h2 class="text-xl font-bold mb-2 border-b-2 pb-2 border-blue-200">Total Products</h2>
+        <i class="bi bi-box-seam text-6xl text-blue-500 mb-4"></i>
+        <p class="text-3xl text-blue-500 font-semibold">{{ total_products }}</p>
+        <span class="absolute inset-0"></span>
+      </div>
+    </a>
+    
+    <!-- Total Suppliers Card -->
+    <a href="{% url 'supplier_list' %}" class="group block">
+      <div class="bg-white p-6 rounded-lg shadow-lg text-center transform group-hover:scale-105 transition duration-300 relative">
+        <h2 class="text-xl font-bold mb-2 border-b-2 pb-2 border-green-200">Total Suppliers</h2>
+        <i class="bi bi-truck text-6xl text-green-500 mb-4"></i>
+        <p class="text-3xl text-green-500 font-semibold">{{ total_suppliers }}</p>
+        <span class="absolute inset-0"></span>
+      </div>
+    </a>
+    
+    <!-- Total Customers Card -->
+    <a href="{% url 'customer_list' %}" class="group block">
+      <div class="bg-white p-6 rounded-lg shadow-lg text-center transform group-hover:scale-105 transition duration-300 relative">
+        <h2 class="text-xl font-bold mb-2 border-b-2 pb-2 border-purple-200">Total Customers</h2>
+        <i class="bi bi-people text-6xl text-purple-500 mb-4"></i>
+        <p class="text-3xl text-purple-500 font-semibold">{{ total_customers }}</p>
+        <span class="absolute inset-0"></span>
+      </div>
+    </a>
+    
+    <!-- Purchase Orders Card -->
+    <a href="{% url 'purchaseorder_list' %}" class="group block">
+      <div class="bg-white p-6 rounded-lg shadow-lg text-center transform group-hover:scale-105 transition duration-300 relative">
+        <h2 class="text-xl font-bold mb-2 border-b-2 pb-2 border-yellow-200">Purchase Orders</h2>
+        <i class="bi bi-receipt text-6xl text-yellow-500 mb-4"></i>
+        <p class="text-3xl text-yellow-500 font-semibold">{{ total_purchase_orders }}</p>
+        <span class="absolute inset-0"></span>
+      </div>
+    </a>
+    
+    <!-- Sale Orders Card -->
+    <a href="{% url 'saleorder_list' %}" class="group block">
+      <div class="bg-white p-6 rounded-lg shadow-lg text-center transform group-hover:scale-105 transition duration-300 relative">
+        <h2 class="text-xl font-bold mb-2 border-b-2 pb-2 border-red-200">Sale Orders</h2>
+        <i class="bi bi-cart-check text-6xl text-red-500 mb-4"></i>
+        <p class="text-3xl text-red-500 font-semibold">{{ total_sale_orders }}</p>
+        <span class="absolute inset-0"></span>
+      </div>
+    </a>
+  </div>
+</div>
+
+<!-- Filtering & Grouping Controls -->
+<div class="container mx-auto py-4">
+  <div class="flex flex-wrap justify-center gap-4">
+    
+    <!-- Filter Dropdown -->
+    <div class="w-48">
+      <label for="filterPeriod" class="block text-sm font-medium text-gray-700">Filter By:</label>
+      <select id="filterPeriod" class="mt-1 w-full border border-gray-300 rounded-lg shadow-sm px-3 py-2 text-gray-700 focus:ring-blue-500 focus:border-blue-500">
+        <option value="all">All</option>
+        <option value="today">Today</option>
+        <option value="week">This Week</option>
+        <option value="month">This Month</option>
+        <option value="year">This Year</option>
+      </select>
+    </div>
+
+    <!-- Grouping Dropdown -->
+    <div class="w-48">
+      <label for="groupBy" class="block text-sm font-medium text-gray-700">Group By:</label>
+      <select id="groupBy" class="mt-1 w-full border border-gray-300 rounded-lg shadow-sm px-3 py-2 text-gray-700 focus:ring-blue-500 focus:border-blue-500">
+        <option value="none">None</option>
+        <option value="day">Day</option>
+        <option value="week">Week</option>
+        <option value="month">Month</option>
+        <option value="year">Year</option>
+      </select>
+    </div>
+
+  </div>
+</div>
+
+<!-- Two-Column Cash Book Table -->
+<div class="container mx-auto py-8">
+  <h2 class="text-2xl font-bold text-center text-gray-800 mb-4">Two-Column Cash Book</h2>
+    <div class="bg-white shadow-lg overflow-x-auto rounded-lg">
+      <table id="cashbookTable" class="w-full border-collapse border border-gray-300">
+        <thead>
+          <tr>
+            <th rowspan="2" class="border p-2">Date</th>
+            <th rowspan="2" class="border p-2">Particulars</th>
+            <th colspan="2" class="border p-2">Cr (Money Received)</th>
+            <th colspan="2" class="border p-2">Dr (Money Paid)</th>
+            <th rowspan="2" class="border p-2">Balance</th>
+          </tr>
+          <tr>
+            <th class="border p-2">Cash</th>
+            <th class="border p-2">Bank</th>
+            <th class="border p-2">Cash</th>
+            <th class="border p-2">Bank</th>
+          </tr>
+        </thead>
+        <tbody id="cashbookBody">
+          {% for entry in cashbook_entries %}
+          <tr>
+            <td class="border p-2">{{ entry.date|date:"Y-m-d" }}</td>
+            <td class="border p-2">{{ entry.description }}</td>
+            {% if entry.transaction_type == 'CR' %}
+              <td class="border p-2">{{ entry.cash }}</td>
+              <td class="border p-2">{{ entry.bank }}</td>
+              <td class="border p-2"></td>
+              <td class="border p-2"></td>
+            {% else %}
+              <td class="border p-2"></td>
+              <td class="border p-2"></td>
+              <td class="border p-2">{{ entry.cash }}</td>
+              <td class="border p-2">{{ entry.bank }}</td>
+            {% endif %}
+            <td class="border p-2">{{ entry.balance }}</td>
+          </tr>
+          {% empty %}
+          <tr>
+            <td colspan="7" class="border p-2 text-center">No transactions recorded.</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+</div>
+
+<!-- Include jsPDF and AutoTable libraries via CDN -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.23/jspdf.plugin.autotable.min.js"></script>
+
+<script>
+  // PDF Generation for Dashboard Report
+  document.getElementById('downloadDashboardPdf').addEventListener('click', function() {
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF();
+
+    // Page Header
+    doc.setFontSize(18);
+    doc.setTextColor(0, 0, 255); // Blue title color
+    doc.text("SHOP MANAGEMENT SYSTEM", 105, 15, { align: "center" });
+    doc.setFontSize(16);
+    doc.text("Dashboard Report", 105, 25, { align: "center" });
+    doc.setFontSize(12);
+    doc.setTextColor(0, 0, 0); // Reset to black for regular text
+    const currentDate = new Date().toLocaleDateString();
+    doc.text("Date: " + currentDate, 105, 35, { align: "center" });
+
+    // Statistics Section (extracted from Django template variables)
+    const totalProducts = "{{ total_products }}";
+    const totalSuppliers = "{{ total_suppliers }}";
+    const totalCustomers = "{{ total_customers }}";
+    const totalPurchaseOrders = "{{ total_purchase_orders }}";
+    const totalSaleOrders = "{{ total_sale_orders }}";
+
+    let startY = 45;
+    doc.setFontSize(14);
+    doc.setTextColor(0, 0, 255);
+    doc.text("Statistics", 14, startY + 10);
+    doc.setFontSize(12);
+    doc.setTextColor(0, 0, 0);
+    startY += 20;
+    doc.text("Total Products: " + totalProducts, 14, startY);
+    startY += 8;
+    doc.text("Total Suppliers: " + totalSuppliers, 14, startY);
+    startY += 8;
+    doc.text("Total Customers: " + totalCustomers, 14, startY);
+    startY += 8;
+    doc.text("Purchase Orders: " + totalPurchaseOrders, 14, startY);
+    startY += 8;
+    doc.text("Sale Orders: " + totalSaleOrders, 14, startY);
+    startY += 12;
+    
+    // Section Title for Cash Book Table
+    doc.setFontSize(14);
+    doc.setTextColor(0, 0, 255);
+    doc.text("Two-Column Cash Book", 14, startY);
+    startY += 6;
+
+    // Add the Cash Book table using autoTable
+    // We use the HTML table from our page.
+    doc.autoTable({
+      html: '#cashbookTable',
+      startY: startY,
+      theme: 'grid',
+      headStyles: { fillColor: [30, 144, 255], textColor: [255, 255, 255] },
+      styles: { fontSize: 10, cellPadding: 3 },
+      alternateRowStyles: { fillColor: [240, 248, 255] }
+    });
+
+    // Save PDF with a filename containing the current date.
+    doc.save('Dashboard_Report_' + currentDate + '.pdf');
+  });
+</script>
+
+<!-- Filtering & Grouping Script (unchanged) -->
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  const filterSelect = document.getElementById('filterPeriod');
+  const groupSelect = document.getElementById('groupBy');
+  const tableBody = document.getElementById('cashbookBody');
+  const originalRows = Array.from(tableBody.querySelectorAll('tr'));
+
+  // Function to add commas to numbers
+  function numberWithCommas(x) {
+    var parts = x.toString().split(".");
+    parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+    return parts.join(".");
+  }
+
+  // Format numbers in the original rows (Cash, Bank, Balance columns: indices 2, 3, 4, 5, 6)
+  originalRows.forEach(row => {
+    [2, 3, 4, 5, 6].forEach(index => {
+      const cell = row.cells[index];
+      if (cell) {
+        const text = cell.textContent.trim();
+        if (text !== '') {
+          const num = parseFloat(text);
+          if (!isNaN(num)) {
+            cell.textContent = numberWithCommas(num.toFixed(2));
+          }
+        }
+      }
+    });
+  });
+
+  filterSelect.addEventListener('change', updateTable);
+  groupSelect.addEventListener('change', updateTable);
+
+  function updateTable() {
+    const filter = filterSelect.value;
+    const groupBy = groupSelect.value;
+    // Filter rows by date
+    const filteredRows = originalRows.filter(row => {
+      const dateCell = row.cells[0];
+      if (!dateCell) return false;
+      const dateStr = dateCell.textContent.trim();
+      const rowDate = new Date(dateStr);
+      if (isNaN(rowDate)) return false;
+      
+      const today = new Date();
+      const todayMidnight = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+      const rowMidnight = new Date(rowDate.getFullYear(), rowDate.getMonth(), rowDate.getDate());
+      
+      if (filter === 'today') {
+        return rowMidnight.getTime() === todayMidnight.getTime();
+      } else if (filter === 'week') {
+        const startOfWeek = new Date(todayMidnight);
+        startOfWeek.setDate(todayMidnight.getDate() - todayMidnight.getDay());
+        const endOfWeek = new Date(startOfWeek);
+        endOfWeek.setDate(startOfWeek.getDate() + 6);
+        return rowMidnight >= startOfWeek && rowMidnight <= endOfWeek;
+      } else if (filter === 'month') {
+        return rowDate.getMonth() === today.getMonth() && rowDate.getFullYear() === today.getFullYear();
+      } else if (filter === 'year') {
+        return rowDate.getFullYear() === today.getFullYear();
+      }
+      return true; // For 'all'
+    });
+    
+    if (groupBy === 'none') {
+      renderRows(filteredRows);
+    } else {
+      const groups = {};
+      filteredRows.forEach(row => {
+        const dateCell = row.cells[0];
+        const dateStr = dateCell.textContent.trim();
+        const rowDate = new Date(dateStr);
+        let key = '';
+        if (groupBy === 'day') {
+          key = rowDate.toISOString().split('T')[0];
+        } else if (groupBy === 'week') {
+          const firstDayOfYear = new Date(rowDate.getFullYear(), 0, 1);
+          const pastDays = (rowDate - firstDayOfYear) / 86400000;
+          const weekNumber = Math.ceil((pastDays + firstDayOfYear.getDay() + 1) / 7);
+          key = rowDate.getFullYear() + ' - Week ' + weekNumber;
+        } else if (groupBy === 'month') {
+          key = rowDate.getFullYear() + '-' + ('0' + (rowDate.getMonth() + 1)).slice(-2);
+        } else if (groupBy === 'year') {
+          key = '' + rowDate.getFullYear();
+        }
+        groups[key] = groups[key] || [];
+        groups[key].push(row);
+      });
+      
+      const groupedRows = [];
+      for (const key in groups) {
+        const group = groups[key];
+        // Use the balance from the last row in the group (correct for running balance)
+        const lastRow = group[group.length - 1];
+        const balanceCell = lastRow.cells[lastRow.cells.length - 1];
+        const balanceText = balanceCell.textContent.trim(); // Already formatted with commas
+        // Create summary row
+        const summaryRow = document.createElement('tr');
+        summaryRow.classList.add('bg-gray-200', 'font-bold');
+        const summaryCell = document.createElement('td');
+        summaryCell.colSpan = 7;
+        summaryCell.classList.add('border', 'p-2');
+        summaryCell.textContent = key + ' - Balance: ' + balanceText;
+        summaryRow.appendChild(summaryCell);
+        groupedRows.push(summaryRow);
+        // Append detail rows
+        group.forEach(row => groupedRows.push(row));
+      }
+      renderRows(groupedRows);
+    }
+  }
+  
+  function renderRows(rows) {
+    tableBody.innerHTML = '';
+    if (rows.length === 0) {
+      const noDataRow = document.createElement('tr');
+      const noDataCell = document.createElement('td');
+      noDataCell.colSpan = 7;
+      noDataCell.classList.add('border', 'p-2', 'text-center');
+      noDataCell.textContent = 'No transactions recorded.';
+      noDataRow.appendChild(noDataCell);
+      tableBody.appendChild(noDataRow);
+    } else {
+      rows.forEach(row => tableBody.appendChild(row));
+    }
+  }
+  
+  updateTable();
+});
+</script>
+
+<!-- Include Bootstrap Icons -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css">
+
+{% endblock %}

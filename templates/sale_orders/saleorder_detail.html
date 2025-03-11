@@ -1,0 +1,69 @@
+<!-- templates/sale_orders/saleorder_detail.html -->
+{% extends 'base.html' %}
+
+{% block title %}Sale Order Details{% endblock %}
+
+{% block content %}
+<div>
+  <!-- Order Details Card -->
+  <div class="bg-white shadow rounded-lg p-6 mb-6">
+    <h1 class="text-3xl font-bold text-gray-800 mb-4">Sale Order Details</h1>
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <p class="text-lg"><span class="font-semibold text-gray-700">Customer:</span> {{ sale_order.customer.name }}</p>
+      <p class="text-lg"><span class="font-semibold text-gray-700">Order Date:</span> {{ sale_order.order_date|date:"Y-m-d H:i" }}</p>
+      <p class="text-lg"><span class="font-semibold text-gray-700">Status:</span> {{ sale_order.status }}</p>
+      <p class="text-lg"><span class="font-semibold text-gray-700">Payment Status:</span> {{ sale_order.payment_status }}</p>
+      <p class="text-lg"><span class="font-semibold text-gray-700">Total Amount:</span> {{ sale_order.total_amount }}</p>
+    </div>
+  </div>
+
+  <!-- Order Items Card -->
+  <div class="bg-white shadow rounded-lg p-6">
+    <h2 class="text-2xl font-semibold text-gray-800 mb-4">Order Items</h2>
+    <div class="overflow-x-auto">
+      <table class="min-w-full divide-y divide-gray-200">
+        <thead class="bg-gray-50">
+          <tr>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">#</th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Product</th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Quantity</th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Sale Price</th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Discount (%)</th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Line Total</th>
+          </tr>
+        </thead>
+        <tbody class="bg-white divide-y divide-gray-200">
+          {% for item in sale_order.items.all %}
+          <tr>
+            <td class="px-6 py-4 whitespace-nowrap">{{ forloop.counter }}</td>
+            <td class="px-6 py-4 whitespace-nowrap">{{ item.product.name }}</td>
+            <td class="px-6 py-4 whitespace-nowrap">{{ item.quantity }}</td>
+            <td class="px-6 py-4 whitespace-nowrap">{{ item.sale_price }}</td>
+            <td class="px-6 py-4 whitespace-nowrap">{{ item.discount }}</td>
+            <td class="px-6 py-4 whitespace-nowrap">
+              {{ item.quantity|floatformat:2 }} x {{ item.sale_price }}
+            </td>
+          </tr>
+          {% empty %}
+          <tr>
+            <td colspan="6" class="px-6 py-4 text-center">No order items available.</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+        <tfoot class="bg-gray-50">
+          <tr>
+            <td colspan="5" class="px-6 py-3 text-right font-bold text-gray-700">Grand Total</td>
+            <td class="px-6 py-3 font-bold text-gray-700">{{ sale_order.total_amount }}</td>
+          </tr>
+        </tfoot>
+      </table>
+    </div>
+  </div>
+
+  <!-- Action Buttons -->
+  <div class="mt-6 flex justify-end space-x-4">
+    <a href="{% url 'saleorder_update' sale_order.id %}" class="px-4 py-2 bg-blue-600 text-white rounded shadow hover:bg-blue-700">Edit Order</a>
+    <a href="{% url 'saleorder_list' %}" class="px-4 py-2 bg-gray-300 text-gray-800 rounded shadow hover:bg-gray-400">Back to List</a>
+  </div>
+</div>
+{% endblock %}

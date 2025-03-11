@@ -1,0 +1,251 @@
+{% extends 'base.html' %}
+{% load custom_filters %}
+{% block title %}Purchase Orders - Shop Management{% endblock %}
+
+{% block content %}
+<div class="text-gray-800 mb-4 font-semibold">
+  Purchases &rarr; <span class="text-blue-600">Purchase Orders</span>
+</div>
+<div class="max-w-5xl mx-auto my-8 p-8 bg-white rounded-lg shadow-lg">
+  <h2 class="text-3xl font-bold text-center text-gray-800 mb-6">Purchase Orders</h2>
+
+  <div class="flex justify-center mb-4 space-x-4">
+    <a href="{% url 'purchaseorder_create' %}" class="block w-48 bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded text-center">
+      Add New Purchase Order
+    </a>
+    <!-- PDF Download Report Button -->
+    <button id="downloadPdfReport" class="block w-48 bg-purple-600 hover:bg-purple-700 text-white py-2 px-4 rounded text-center">
+      Download PDF Report
+    </button>
+  </div>
+
+  <!-- Filtering Options -->
+  <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 mb-6">
+    <input id="liveFilterInput" type="text" placeholder="Search orders..." class="px-3 py-2 border border-gray-300 rounded">
+    <div class="flex flex-col sm:flex-row items-stretch gap-2">
+      <input id="dateFilterInput" type="date" class="px-3 py-2 border border-gray-300 rounded">
+      <button id="filterDateButton" class="bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded">
+        Filter by Date
+      </button>
+      <button id="clearDateFilterButton" class="bg-gray-500 hover:bg-gray-600 text-white py-2 px-4 rounded">
+        Clear Date Filter
+      </button>
+    </div>
+  </div>
+
+  <!-- Table Container: Only table will scroll -->
+  <div class="overflow-x-auto">
+    <table class="min-w-full border-collapse mb-4" id="purchaseOrdersTable">
+      <thead>
+        <tr>
+          <th class="px-4 py-2 bg-gray-100 text-left text-gray-700 font-medium border-b">#</th>
+          <th class="px-4 py-2 bg-gray-100 text-left text-gray-700 font-medium border-b">Supplier</th>
+          <th class="px-4 py-2 bg-gray-100 text-left text-gray-700 font-medium border-b">Order Date</th>
+          <th class="px-4 py-2 bg-gray-100 text-left text-gray-700 font-medium border-b">Status</th>
+          <th class="px-4 py-2 bg-gray-100 text-left text-gray-700 font-medium border-b">Total Amount (Tsh)</th>
+          <th class="px-4 py-2 bg-gray-100 text-left text-gray-700 font-medium border-b">Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for purchase_order in purchase_orders %}
+          <tr data-order-date="{{ purchase_order.order_date|date:'Y-m-d' }}" class="border-b">
+            <!-- The first cell will be filled dynamically with the row number -->
+            <td class="row-number px-4 py-2"></td>
+            <td class="px-4 py-2">{{ purchase_order.supplier }}</td>
+            <td class="px-4 py-2">{{ purchase_order.order_date }}</td>
+            <td class="px-4 py-2">{{ purchase_order.status }}</td>
+            <td class="px-4 py-2">{{ purchase_order.total_amount|format_currency }}</td>
+            <td class="actions px-4 py-2">
+              <a href="{% url 'purchaseorder_detail' purchase_order.pk %}" class="text-blue-600 hover:text-blue-800">View</a> |
+              <a href="{% url 'purchaseorder_update' purchase_order.pk %}" class="text-green-600 hover:text-green-800">Edit</a> |
+              <a href="{% url 'purchaseorder_delete' purchase_order.pk %}" class="text-red-600 hover:text-red-800">Delete</a>
+            </td>
+          </tr>
+        {% empty %}
+          <tr>
+            <td colspan="6" class="text-center text-gray-500 py-4">
+              No purchase orders found.
+            </td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Client-Side Pagination Controls -->
+  <div id="pagination" class="flex flex-wrap justify-center gap-2 mt-4"></div>
+</div>
+
+<!-- Pagination & Filtering Script -->
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  const rowsPerPage = 10;
+  const table = document.querySelector('#purchaseOrdersTable');
+  const allRows = Array.from(table.querySelectorAll('tbody tr'));
+  let filteredRows = [...allRows];
+  let currentPage = 1;
+
+  function displayRows() {
+    const start = (currentPage - 1) * rowsPerPage;
+    const end = start + rowsPerPage;
+    allRows.forEach(row => row.style.display = 'none');
+    filteredRows.slice(start, end).forEach((row, index) => {
+      row.style.display = '';
+      const numCell = row.querySelector('.row-number');
+      if (numCell) {
+        numCell.textContent = start + index + 1;
+      }
+    });
+  }
+
+  function setupPagination() {
+    const paginationContainer = document.getElementById('pagination');
+    paginationContainer.innerHTML = '';
+    const totalPages = Math.ceil(filteredRows.length / rowsPerPage);
+    if (totalPages <= 1) return;
+
+    const prevButton = document.createElement('button');
+    prevButton.textContent = 'Previous';
+    prevButton.disabled = currentPage === 1;
+    prevButton.className = "px-3 py-1 bg-gray-300 rounded hover:bg-gray-400";
+    prevButton.addEventListener('click', function() {
+      if (currentPage > 1) {
+        currentPage--;
+        displayRows();
+        setupPagination();
+      }
+    });
+    paginationContainer.appendChild(prevButton);
+
+    for (let i = 1; i <= totalPages; i++) {
+      const pageButton = document.createElement('button');
+      pageButton.textContent = i;
+      pageButton.className = "px-3 py-1 rounded hover:bg-blue-600 hover:text-white";
+      if (i === currentPage) {
+        pageButton.className += " bg-blue-600 text-white";
+      } else {
+        pageButton.addEventListener('click', function() {
+          currentPage = i;
+          displayRows();
+          setupPagination();
+        });
+      }
+      paginationContainer.appendChild(pageButton);
+    }
+
+    const nextButton = document.createElement('button');
+    nextButton.textContent = 'Next';
+    nextButton.disabled = currentPage === totalPages;
+    nextButton.className = "px-3 py-1 bg-gray-300 rounded hover:bg-gray-400";
+    nextButton.addEventListener('click', function() {
+      if (currentPage < totalPages) {
+        currentPage++;
+        displayRows();
+        setupPagination();
+      }
+    });
+    paginationContainer.appendChild(nextButton);
+  }
+
+  const liveFilterInput = document.getElementById('liveFilterInput');
+  liveFilterInput.addEventListener('keyup', function() {
+    const filterValue = this.value.toLowerCase();
+    filteredRows = allRows.filter(row => row.textContent.toLowerCase().includes(filterValue));
+    currentPage = 1;
+    displayRows();
+    setupPagination();
+  });
+
+  const filterDateButton = document.getElementById('filterDateButton');
+  filterDateButton.addEventListener('click', function() {
+    const selectedDate = document.getElementById('dateFilterInput').value;
+    filteredRows = allRows.filter(row => {
+      const orderDate = row.getAttribute('data-order-date');
+      return !selectedDate || orderDate === selectedDate;
+    });
+    currentPage = 1;
+    displayRows();
+    setupPagination();
+  });
+
+  const clearDateFilterButton = document.getElementById('clearDateFilterButton');
+  clearDateFilterButton.addEventListener('click', function() {
+    document.getElementById('dateFilterInput').value = '';
+    if (liveFilterInput.value) {
+      liveFilterInput.dispatchEvent(new Event('keyup'));
+    } else {
+      filteredRows = [...allRows];
+      currentPage = 1;
+      displayRows();
+      setupPagination();
+    }
+  });
+
+  displayRows();
+  setupPagination();
+});
+</script>
+
+<!-- Include jsPDF and AutoTable libraries via CDN -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.23/jspdf.plugin.autotable.min.js"></script>
+
+<!-- PDF Generation Script for Purchase Orders -->
+<script>
+document.getElementById('downloadPdfReport').addEventListener('click', function() {
+  const { jsPDF } = window.jspdf;
+  const doc = new jsPDF('p', 'pt', 'a4');
+
+  // Header Section
+  doc.setFontSize(18);
+  doc.setTextColor(0, 0, 255); // Blue title
+  doc.text("SHOP MANAGEMENT SYSTEM", 300, 30, { align: "center" });
+  doc.setFontSize(16);
+  doc.text("Purchase Orders Report", 300, 50, { align: "center" });
+  doc.setFontSize(12);
+  doc.setTextColor(0, 0, 0);
+  const currentDate = new Date().toLocaleDateString();
+  doc.text("Date: " + currentDate, 300, 70, { align: "center" });
+
+  let startY = 90;
+
+  // Extract table headers (excluding "Actions")
+  const poHeaders = [];
+  const poData = [];
+  const poTable = document.getElementById('purchaseOrdersTable');
+
+  poTable.querySelectorAll('thead tr th').forEach((th, index) => {
+    if (index < 5) { // Only first 5 columns are desired
+      poHeaders.push(th.innerText.trim());
+    }
+  });
+
+  // Extract table rows data (skip last cell in each row)
+  poTable.querySelectorAll('tbody tr').forEach(tr => {
+    const rowData = [];
+    tr.querySelectorAll('td').forEach((td, index) => {
+      if (index < 5) {
+        rowData.push(td.innerText.trim());
+      }
+    });
+    if (rowData.length) {
+      poData.push(rowData);
+    }
+  });
+
+  // Add Purchase Orders table using autoTable
+  doc.autoTable({
+    head: [poHeaders],
+    body: poData,
+    startY: startY,
+    theme: 'grid',
+    headStyles: { fillColor: [30, 144, 255], textColor: [255, 255, 255] },
+    styles: { fontSize: 10, cellPadding: 3 },
+    alternateRowStyles: { fillColor: [240, 248, 255] }
+  });
+
+  // Save the PDF
+  doc.save('PurchaseOrders_Report_' + currentDate + '.pdf');
+});
+</script>
+{% endblock %}

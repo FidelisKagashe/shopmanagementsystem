@@ -1,0 +1,239 @@
+{% extends 'base.html' %}
+{% load custom_filters %}
+{% block title %}Products - Shop Management{% endblock %}
+
+{% block content %}
+<div class="text-gray-800 mb-4 font-semibold">
+  Products &rarr; <span class="text-blue-600">List of Products</span>
+</div>
+<div class="max-w-6xl mx-auto bg-white p-6 rounded-lg shadow-lg">
+  <h2 class="text-3xl font-bold text-center text-gray-800 mb-6">Products</h2>
+
+  {% if products %}
+  <!-- Search input -->
+  <div class="mb-4">
+    <input id="liveFilterInput" type="text" placeholder="Search products..." class="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:border-blue-600">
+  </div>
+  
+  <!-- Action Buttons (PDF & Create New Product) placed above the table -->
+  <div class="mb-4 flex justify-end space-x-4">
+    <a href="{% url 'product_create' %}" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded transition">
+      Create New Product
+    </a>
+    <button id="downloadPdfReport" class="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded transition">
+      Download PDF Report
+    </button>
+  </div>
+  {% endif %}
+
+  <div class="overflow-x-auto">
+    <table class="min-w-full border-collapse" id="productsTable">
+      <thead>
+        <tr class="bg-gray-100 text-left">
+          <th class="px-4 py-2 border">#</th>
+          <th class="px-4 py-2 border">Name</th>
+          <th class="px-4 py-2 border">Price (Tsh)</th>
+          <th class="px-4 py-2 border">Stock</th>
+          <th class="px-4 py-2 border">Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% if products %}
+          {% for product in products %}
+            <tr class="hover:bg-gray-50">
+              <td class="px-4 py-2 border row-number"></td>
+              <td class="px-4 py-2 border">{{ product.name }}</td>
+              <td class="px-4 py-2 border">{{ product.unit_price|format_currency }}</td>
+              <td class="px-4 py-2 border">{{ product.quantity_in_stock }}</td>
+              <td class="px-4 py-2 border">
+                <div class="flex space-x-2">
+                  <a href="{% url 'product_detail' product.pk %}" class="bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-600 transition">View</a>
+                  <a href="{% url 'product_update' product.pk %}" class="bg-green-500 text-white px-3 py-1 rounded hover:bg-green-600 transition">Edit</a>
+                  <a href="{% url 'product_delete' product.pk %}" class="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600 transition">Delete</a>
+                </div>
+              </td>
+            </tr>
+          {% endfor %}
+          <tr id="no-filtered-products" style="display: none;">
+            <td colspan="5" class="px-4 py-2 text-center text-gray-500">No products found.</td>
+          </tr>
+        {% else %}
+          <tr>
+            <td colspan="5" class="px-4 py-2 text-center text-gray-500">No products available.</td>
+          </tr>
+        {% endif %}
+      </tbody>
+    </table>
+  </div>
+
+  {% if products %}
+  <div id="pagination" class="flex flex-wrap justify-center gap-2 mt-4"></div>
+  {% endif %}
+
+  <!-- (Optional) Duplicate Create New Product Button at the bottom can be removed if not needed -->
+  <div class="flex justify-end mt-4">
+    <a href="{% url 'product_create' %}" class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 transition">Create New Product</a>
+  </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  if (document.getElementById('liveFilterInput')) {
+    const rowsPerPage = 10;
+    const table = document.querySelector('table');
+    const allRows = Array.from(table.querySelectorAll('tbody tr:not(#no-filtered-products)'));
+    const noFilteredProductsRow = document.getElementById('no-filtered-products');
+    let filteredRows = [...allRows];
+    let currentPage = 1;
+
+    function displayRows() {
+      const start = (currentPage - 1) * rowsPerPage;
+      const end = start + rowsPerPage;
+      allRows.forEach(row => row.style.display = 'none');
+      if (filteredRows.length === 0) {
+        if (noFilteredProductsRow) {
+          noFilteredProductsRow.style.display = '';
+        }
+      } else {
+        if (noFilteredProductsRow) {
+          noFilteredProductsRow.style.display = 'none';
+        }
+        const rowsToShow = filteredRows.slice(start, end);
+        rowsToShow.forEach((row, index) => {
+          row.style.display = '';
+          const numCell = row.querySelector('.row-number');
+          if (numCell) {
+            numCell.textContent = start + index + 1;
+          }
+        });
+      }
+    }
+
+    function setupPagination() {
+      const paginationContainer = document.getElementById('pagination');
+      paginationContainer.innerHTML = '';
+      const totalPages = Math.ceil(filteredRows.length / rowsPerPage);
+      if (totalPages <= 1) return;
+
+      const prevButton = document.createElement('button');
+      prevButton.textContent = 'Previous';
+      prevButton.disabled = currentPage === 1;
+      prevButton.className = "px-3 py-1 bg-gray-200 text-gray-700 rounded hover:bg-gray-300 disabled:opacity-50";
+      prevButton.addEventListener('click', function() {
+        if (currentPage > 1) {
+          currentPage--;
+          displayRows();
+          setupPagination();
+        }
+      });
+      paginationContainer.appendChild(prevButton);
+
+      for (let i = 1; i <= totalPages; i++) {
+        const pageButton = document.createElement('button');
+        pageButton.textContent = i;
+        if (i === currentPage) {
+          pageButton.className = "px-3 py-1 bg-blue-600 text-white rounded";
+        } else {
+          pageButton.className = "px-3 py-1 bg-gray-200 text-gray-700 rounded hover:bg-blue-600 hover:text-white";
+          pageButton.addEventListener('click', function() {
+            currentPage = i;
+            displayRows();
+            setupPagination();
+          });
+        }
+        paginationContainer.appendChild(pageButton);
+      }
+
+      const nextButton = document.createElement('button');
+      nextButton.textContent = 'Next';
+      nextButton.disabled = currentPage === totalPages;
+      nextButton.className = "px-3 py-1 bg-gray-200 text-gray-700 rounded hover:bg-gray-300 disabled:opacity-50";
+      nextButton.addEventListener('click', function() {
+        if (currentPage < totalPages) {
+          currentPage++;
+          displayRows();
+          setupPagination();
+        }
+      });
+      paginationContainer.appendChild(nextButton);
+    }
+
+    const liveFilterInput = document.getElementById('liveFilterInput');
+    liveFilterInput.addEventListener('keyup', function() {
+      const filterValue = this.value.toLowerCase();
+      filteredRows = allRows.filter(row => row.textContent.toLowerCase().includes(filterValue));
+      currentPage = 1;
+      displayRows();
+      setupPagination();
+    });
+
+    displayRows();
+    setupPagination();
+  }
+});
+</script>
+
+<!-- Include jsPDF and AutoTable libraries via CDN -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.23/jspdf.plugin.autotable.min.js"></script>
+
+<!-- PDF Generation Script for Products -->
+<script>
+document.getElementById('downloadPdfReport').addEventListener('click', function() {
+  const { jsPDF } = window.jspdf;
+  const doc = new jsPDF('p', 'pt', 'a4');
+  
+  // Header Section
+  doc.setFontSize(18);
+  doc.setTextColor(0, 0, 255); // Blue title
+  doc.text("SHOP MANAGEMENT SYSTEM", 300, 30, { align: "center" });
+  doc.setFontSize(16);
+  doc.text("Products Report", 300, 50, { align: "center" });
+  doc.setFontSize(12);
+  doc.setTextColor(0, 0, 0);
+  const currentDate = new Date().toLocaleDateString();
+  doc.text("Date: " + currentDate, 300, 70, { align: "center" });
+  
+  let startY = 90;
+  
+  // Extract table headers (excluding "Actions" column)
+  const prodHeaders = [];
+  const prodData = [];
+  const prodTable = document.getElementById('productsTable');
+  
+  prodTable.querySelectorAll('thead tr th').forEach((th, index) => {
+    if (index < 4) { // Only first 4 columns: #, Name, Price, Stock
+      prodHeaders.push(th.innerText.trim());
+    }
+  });
+  
+  // Extract table rows data (skip last cell in each row)
+  prodTable.querySelectorAll('tbody tr').forEach(tr => {
+    if(tr.id === 'no-filtered-products') return;
+    const rowData = [];
+    tr.querySelectorAll('td').forEach((td, index) => {
+      if (index < 4) {
+        rowData.push(td.innerText.trim());
+      }
+    });
+    if (rowData.length) {
+      prodData.push(rowData);
+    }
+  });
+  
+  // Add the products table using AutoTable
+  doc.autoTable({
+    head: [prodHeaders],
+    body: prodData,
+    startY: startY,
+    theme: 'grid',
+    headStyles: { fillColor: [30,144,255], textColor: [255,255,255] },
+    styles: { fontSize: 10, cellPadding: 3 },
+    alternateRowStyles: { fillColor: [240,248,255] }
+  });
+  
+  // Save the PDF
+  doc.save('Products_Report_' + currentDate + '.pdf');
+});
+</script>
+{% endblock %}

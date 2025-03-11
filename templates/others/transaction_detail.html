@@ -1,0 +1,33 @@
+{% extends 'base.html' %}
+{% block title %}Transaction Details{% endblock %}
+{% block content %}
+<div class="text-gray-800 mb-4 font-semibold">
+  Financial Transaction &rarr; <span class="text-blue-600">Transaction Details</span>
+</div>
+<div class="max-w-xl mx-auto px-4 py-8">
+  <div class="bg-white p-6 rounded-lg shadow-md">
+    <h2 class="text-2xl font-bold text-gray-800 mb-4">Transaction Details</h2>
+    <p class="mb-2"><span class="font-semibold text-gray-700">Date:</span> {{ transaction.date }}</p>
+    <p class="mb-2"><span class="font-semibold text-gray-700">Description:</span> {{ transaction.description }}</p>
+    <p class="mb-2"><span class="font-semibold text-gray-700">Amount:</span> {{ transaction.amount }}</p>
+    <p class="mb-2"><span class="font-semibold text-gray-700">Type:</span> {{ transaction.get_transaction_type_display }}</p>
+    <p class="mb-2"><span class="font-semibold text-gray-700">Account:</span> {{ transaction.get_account_display }}</p>
+    <p class="mb-4"><span class="font-semibold text-gray-700">Approved:</span> {{ transaction.approved }}</p>
+    
+    <!-- Action Buttons -->
+    <div class="flex flex-col sm:flex-row sm:space-x-4 mb-4 space-y-2 sm:space-y-0">
+      <a href="{% url 'transaction_edit_view' transaction.pk %}" class="w-full sm:w-auto text-center px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 transition duration-200">
+        Edit Transaction
+      </a>
+      <a href="{% url 'transaction_delete_view' transaction.pk %}" class="w-full sm:w-auto text-center px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 transition duration-200">
+        Delete Transaction
+      </a>
+    </div>
+    
+    <!-- Navigation Button -->
+    <a href="{% url 'user_financial_transaction_view' %}" class="block text-center px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition duration-200">
+      Back to Transactions
+    </a>
+  </div>
+</div>
+{% endblock %}

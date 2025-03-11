@@ -1,0 +1,116 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ form.instance.pk|yesno:"Edit Product,Add Product" }} - Shop Management{% endblock %}
+
+{% block content %}
+  <style>
+    /* Custom styling for form elements */
+    .form-container {
+      max-width: 500px;
+      margin: auto;
+      background: white;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    .form-container h2 {
+      font-size: 24px;
+      font-weight: bold;
+      margin-bottom: 16px;
+    }
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      margin-bottom: 16px;
+    }
+
+    .form-group label {
+      font-weight: 600;
+      margin-bottom: 4px;
+    }
+
+    .form-group input,
+    .form-group select,
+    .form-group textarea {
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      font-size: 16px;
+    }
+
+    .form-group input:focus,
+    .form-group select:focus,
+    .form-group textarea:focus {
+      border-color: #007bff;
+      outline: none;
+      box-shadow: 0 0 5px rgba(0, 123, 255, 0.3);
+    }
+
+    .error-message {
+      color: red;
+      font-size: 14px;
+      margin-top: 4px;
+    }
+
+    .submit-btn {
+      background-color: #007bff;
+      color: white;
+      padding: 10px 20px;
+      border-radius: 6px;
+      font-size: 16px;
+      cursor: pointer;
+      transition: background 0.3s ease-in-out;
+      border: none;
+    }
+
+    .submit-btn:hover {
+      background-color: #0056b3;
+    }
+
+    .cancel-btn {
+      background-color: #6c757d;
+      color: white;
+      padding: 10px 20px;
+      border-radius: 6px;
+      font-size: 16px;
+      text-decoration: none;
+      margin-left: 10px;
+      cursor: pointer;
+      transition: background 0.3s ease-in-out;
+      border: none;
+      display: inline-block;
+    }
+
+    .cancel-btn:hover {
+      background-color: #5a6268;
+    }
+  </style>
+  <div class="text-gray-800 mb-4 font-semibold">
+    Products &rarr; <span class="text-blue-600">{{ form.instance.pk|yesno:"Edit Product,Add Product" }}</span>
+  </div>
+  <div class="form-container">
+    <h2>{{ form.instance.pk|yesno:"Edit Product,Add Product" }}</h2>
+    <form method="post">
+      {% csrf_token %}
+      
+      {% for field in form %}
+        <div class="form-group">
+          <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+          {{ field }}
+          {% if field.help_text %}
+            <small class="text-gray-500">{{ field.help_text }}</small>
+          {% endif %}
+          {% for error in field.errors %}
+            <p class="error-message">{{ error }}</p>
+          {% endfor %}
+        </div>
+      {% endfor %}
+      
+      <button type="submit" class="submit-btn">Submit</button>
+      <a href="{% url 'product_list' %}" class="cancel-btn">Cancel</a>
+    </form>
+  </div>
+
+{% endblock %}
